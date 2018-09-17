@@ -7,29 +7,29 @@ Command POTUS Donald Trump's US Space Force as the spaceman sitting in the Tesla
 
 # Goals:
 
--Create a side scrolling platform for our game to reside in
--Create enemies for our hero to fight in the form of alien invaders
--Create end-level bosses that will pose a challenge to the player
--Involve power-ups that effects the players abilities
--Implement acceleration/deceleration, gravitational pull, collision detection to provide advanced physics
--Implement a limited amount of 3D graphics elements to provide a more visually pleasing aspect for our game
--Implement a networked multiplayer aspect to the game to enjoy with friends from anywhere
+-Create a side scrolling platform for our game to reside in <br />
+-Create enemies for our hero to fight in the form of alien invaders <br />
+-Create end-level bosses that will pose a challenge to the player <br />
+-Involve power-ups that effects the players abilities <br />
+-Implement acceleration/deceleration, gravitational pull, collision detection to provide advanced physics <br />
+-Implement a limited amount of 3D graphics elements to provide a more visually pleasing aspect for our game <br />
+-Implement a networked multiplayer aspect to the game to enjoy with friends from anywhere <br />
 
 # Advanced Topic Teams:
--Physics:
-	-Anthony Martrano - ajm249@pitt.edu
-	-Ruth Dereje - rud6@pitt.edu
-	-Srilakshmi Sampath - srs150@pitt.edu
--3D Graphics:
-	-Luke Malchow Bergenthal - lmb140@pitt.edu
-	-Kevin Wang - kew122@pitt.edu
-	-Dylan Umble - dau12@pitt.edu
-	-Zhisheng Xu - zhx22@pitt.edu
--Networked Multiplayer
-	-Zane Kharitonov - zvk2@pitt.edu
-	-Ryan Kuhn - rlk53@pitt.edu
-	-Carolyn Cole - cec90@pitt.edu
-	-Ling Yan - liy64@pitt.edu
+-Physics: <br />
+	-Anthony Martrano - ajm249@pitt.edu <br />
+	-Ruth Dereje - rud6@pitt.edu <br />
+	-Srilakshmi Sampath - srs150@pitt.edu <br />
+-3D Graphics: <br />
+	-Luke Malchow Bergenthal - lmb140@pitt.edu <br />
+	-Kevin Wang - kew122@pitt.edu <br />
+	-Dylan Umble - dau12@pitt.edu <br />
+	-Zhisheng Xu - zhx22@pitt.edu <br />
+-Networked Multiplayer <br />
+	-Zane Kharitonov - zvk2@pitt.edu <br />
+	-Ryan Kuhn - rlk53@pitt.edu <br />
+	-Carolyn Cole - cec90@pitt.edu <br />
+	-Ling Yan - liy64@pitt.edu <br />
 
 # Slack: https://pittspaceforce.slack.com/
 # Coding Style (tentative): https://google.github.io/styleguide/cppguide.html
