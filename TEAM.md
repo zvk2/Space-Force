@@ -7,4 +7,4 @@ Srilakshmi Sampath - srs150@pitt.edu <br/>
 Zhisheng Xu - zhx22@pitt.edu <br />
 Carolyn Cole - cec90@pitt.edu <br />
 Dylan Umble - dau12@pitt.edu<br/>
-
+Ruth Dereje - rud6@pitt.edu <br />
