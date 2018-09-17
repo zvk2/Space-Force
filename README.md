@@ -16,20 +16,20 @@ Command POTUS Donald Trump's US Space Force as the spaceman sitting in the Tesla
 -Implement a networked multiplayer aspect to the game to enjoy with friends from anywhere <br />
 
 # Advanced Topic Teams:
--Physics: <br />
-	-Anthony Martrano - ajm249@pitt.edu <br />
-	-Ruth Dereje - rud6@pitt.edu <br />
-	-Srilakshmi Sampath - srs150@pitt.edu <br />
--3D Graphics: <br />
-	-Luke Malchow Bergenthal - lmb140@pitt.edu <br />
-	-Kevin Wang - kew122@pitt.edu <br />
-	-Dylan Umble - dau12@pitt.edu <br />
-	-Zhisheng Xu - zhx22@pitt.edu <br />
--Networked Multiplayer <br />
-	-Zane Kharitonov - zvk2@pitt.edu <br />
-	-Ryan Kuhn - rlk53@pitt.edu <br />
-	-Carolyn Cole - cec90@pitt.edu <br />
-	-Ling Yan - liy64@pitt.edu <br />
+Physics: <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-Anthony Martrano - ajm249@pitt.edu <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-Ruth Dereje - rud6@pitt.edu <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-Srilakshmi Sampath - srs150@pitt.edu <br />
+3D Graphics: <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-Luke Malchow Bergenthal - lmb140@pitt.edu <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-Kevin Wang - kew122@pitt.edu <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-Dylan Umble - dau12@pitt.edu <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-Zhisheng Xu - zhx22@pitt.edu <br />
+Networked Multiplayer <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-Zane Kharitonov - zvk2@pitt.edu <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-Ryan Kuhn - rlk53@pitt.edu <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-Carolyn Cole - cec90@pitt.edu <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-Ling Yan - liy64@pitt.edu <br />
 
 # Slack: https://pittspaceforce.slack.com/
 # Coding Style (tentative): https://google.github.io/styleguide/cppguide.html
