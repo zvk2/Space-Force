@@ -1,0 +1,28 @@
+Globals and constants
+	no magic numbers
+	define specific numbers as constants at top of class
+	all caps with underscore spaces
+	NO_MAGIC_NUMBERS	
+
+Variable names
+	camelCase
+
+function names
+	PascalCase
+
+Comments above relevant code
+
+Curly braces get their own lines
+
+Always use curly braces where possible
+
+DRY (don't repeat yourself)
+	use best judgement as to what makes code easier to read:
+	making repeated code into a method
+	or
+	leaving repeated code separate due to differences in use
+	USE BEST JUDGMENT
+
+Documentation comments (i.e. params, returns and purpose) in header file
+
+	
