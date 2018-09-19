@@ -11,7 +11,7 @@ Command POTUS Donald Trump's US Space Force as the spaceman sitting in the Tesla
 -Create enemies for our hero to fight in the form of alien invaders <br />
 -Create end-level bosses that will pose a challenge to the player <br />
 -Involve power-ups that effects the players abilities <br />
--Implement acceleration/deceleration, gravitational pull, collision detection to provide advanced physics <br />
+-Implement acceleration/deceleration, gravitational pull, collision detection, 2D rigid-body dynamics to provide advanced physics <br />
 -Implement a limited amount of 3D graphics elements to provide a more visually pleasing aspect for our game <br />
 -Implement a networked multiplayer aspect to the game to enjoy with friends from anywhere <br />
 
