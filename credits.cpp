@@ -1,4 +1,4 @@
-// This file iterates over every listed file in the folder "Credit_Image" and displays it for 5 seconds
+// This file iterates over every listed file in the folder "Credit_Image" and displays it for 3 seconds
 // This uses "sdl0_hello.cpp" as boilerplate
 
 // Includes
