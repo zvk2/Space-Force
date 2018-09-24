@@ -17,6 +17,7 @@ const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
 
 // Parent folder for credit images
+// Not const due to contrivance (can pass immediately if not const)
 char CREDITS_FOLDER[] = "Credit_Image/";
 
 // Function declarations
@@ -133,31 +134,29 @@ int main() {
 		return -1;
 	}
 
-	int images = 0;
 	while ((entry = readdir(dp))) {
-		int d_name_length = strlen(entry->d_name);
+		int dNameLength = strlen(entry->d_name);
 		
 		// Crude
-		if (d_name_length > 4 && entry->d_name[d_name_length - 4] == '.') {
+		if (dNameLength > 4 && entry->d_name[dNameLength - 4] == '.') {
 			// Crude
-			char current_image_buffer[2000];
-			strcpy(current_image_buffer, CREDITS_FOLDER);
-			strcat(current_image_buffer, entry->d_name);
+			char currentImageBuffer[2000];
+			strcpy(currentImageBuffer, CREDITS_FOLDER);
+			strcat(currentImageBuffer, entry->d_name);
 			
 			// Puts the image on the buffer queue
-			gTex.push_back(loadImage(current_image_buffer));
-			images++;
+			gTex.push_back(loadImage(currentImageBuffer));
 		}
 	}
 	
 	// Close the directory
 	closedir(dp);
 	
-	for (int x=0; x < images; x++) {
+	for (auto i : gTex) {
 		// Clear
 		SDL_RenderClear(gRenderer);
 		// Render the image
-		SDL_RenderCopy(gRenderer, gTex[x], NULL, NULL);
+		SDL_RenderCopy(gRenderer, i, NULL, NULL);
 		// Display rendering
 		SDL_RenderPresent(gRenderer);
 		// Wait 5 seconds
