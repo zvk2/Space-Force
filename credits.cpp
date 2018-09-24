@@ -176,8 +176,8 @@ int main()
 		SDL_RenderCopy(gRenderer, i, NULL, NULL);
 		// Display rendering
 		SDL_RenderPresent(gRenderer);
-		// Wait 5 seconds
-		SDL_Delay(5000);
+		// Wait 3 seconds
+		SDL_Delay(3000);
 	}
 
 	// Clear the renderer one last time
