@@ -30,16 +30,19 @@ SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
 std::vector<SDL_Texture*> gTex;
 
-bool init() {
+bool init()
+{
 	// Flag what subsystems to initialize
 	// For now, just video
-	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+	{
 		std::cout << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
 		return false;
 	}
 
 	// Set texture filtering to linear
-	if(!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1")) {
+	if(!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
+	{
 		std::cout << "Warning: Linear texture filtering not enabled!" << std::endl;
 	}
 	
@@ -52,7 +55,8 @@ bool init() {
 		SCREEN_HEIGHT,
 		SDL_WINDOW_SHOWN
 	);
-	if (gWindow == nullptr) {
+	if (gWindow == nullptr)
+	{
 		std::cout << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
 		return  false;
 	}
@@ -63,7 +67,8 @@ bool init() {
 	 *   (second arg, -1)
 	 */
 	gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
-	if (gRenderer == nullptr) {	
+	if (gRenderer == nullptr)
+	{	
 		std::cout << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
 		return  false;
 	}
@@ -74,7 +79,8 @@ bool init() {
 	// Initialize PNG loading via SDL_image extension library
 	int imgFlags = IMG_INIT_PNG;
 	int retFlags = IMG_Init(imgFlags);
-	if(retFlags != imgFlags) {
+	if(retFlags != imgFlags)
+	{
 		std::cout << "SDL_image could not initialize! SDL_image Error: " << IMG_GetError() << std::endl;
 		return false;
 	}
@@ -82,17 +88,20 @@ bool init() {
 	return true;
 }
 
-SDL_Texture* loadImage(std::string fname) {
+SDL_Texture* loadImage(std::string fname)
+{
 	SDL_Texture* newText = nullptr;
 
 	SDL_Surface* startSurf = IMG_Load(fname.c_str());
-	if (startSurf == nullptr) {
+	if (startSurf == nullptr)
+	{
 		std::cout << "Unable to load image " << fname << "! SDL Error: " << SDL_GetError() << std::endl;
 		return nullptr;
 	}
 
 	newText = SDL_CreateTextureFromSurface(gRenderer, startSurf);
-	if (newText == nullptr) {
+	if (newText == nullptr)
+	{
 		std::cout << "Unable to create texture from " << fname << "! SDL Error: " << SDL_GetError() << std::endl;
 	}
 
@@ -101,8 +110,10 @@ SDL_Texture* loadImage(std::string fname) {
 	return newText;
 }
 
-void close() {
-	for (auto i : gTex) {
+void close()
+{
+	for (auto i : gTex)
+	{
 		SDL_DestroyTexture(i);
 		i = nullptr;
 	}
@@ -117,8 +128,10 @@ void close() {
 	SDL_Quit();
 }
 
-int main() {
-	if (!init()) {
+int main()
+{
+	if (!init())
+	{
 		std::cout <<  "Failed to initialize!" << std::endl;
 		close();
 		return 1;
@@ -129,16 +142,19 @@ int main() {
 	DIR *dp;
 
 	dp = opendir(CREDITS_FOLDER);
-	if (dp == NULL) {
+	if (dp == NULL)
+	{
 		perror("opendir: Path does not exist or could not be read.");
 		return -1;
 	}
 
-	while ((entry = readdir(dp))) {
+	while ((entry = readdir(dp)))
+	{
 		int dNameLength = strlen(entry->d_name);
 		
 		// Crude
-		if (dNameLength > 4 && entry->d_name[dNameLength - 4] == '.') {
+		if (dNameLength > 4 && entry->d_name[dNameLength - 4] == '.')
+		{
 			// Crude
 			char currentImageBuffer[2000];
 			strcpy(currentImageBuffer, CREDITS_FOLDER);
@@ -152,7 +168,8 @@ int main() {
 	// Close the directory
 	closedir(dp);
 	
-	for (auto i : gTex) {
+	for (auto i : gTex)
+	{
 		// Clear
 		SDL_RenderClear(gRenderer);
 		// Render the image
