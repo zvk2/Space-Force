@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <cstring>
 #include <SDL.h>
 #include <SDL_image.h>
 
@@ -128,7 +129,7 @@ void close()
 	SDL_Quit();
 }
 
-int main()
+int main(int argc, char* argv[])
 {
 	if (!init())
 	{
