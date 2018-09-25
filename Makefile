@@ -1,6 +1,6 @@
 # credits makes credits, all will make all the things eventually.
 # ALL src comes from /src/, all compiled programs go to /bin/
-# run with winrun on windows, or unixrun on unix-like systems
+# run with 'run' on windows, or './run' on unix-like systems
 # valid runs:
 #	'make' : makes all
 #	'make credits' : compiles just credits.cpp, can probably be removed eventually
@@ -15,7 +15,7 @@ OUT = bin/SpaceForce
 SRC = $(wildcard src/*.cpp)
 DEP = $(wildcard src/*.h)
 OBJ = $(patsubst src/%.cpp, obj/%.o, $(SRC))
-#OBJ = $(src:.c=.o)
+#OBJ = $(src:.c=.o) saw this syntax somewhere, threw it in for reference purposes
 
 # set appropriate flags for windows. will likely need more work for unix-like systems
 # once I know more about team member dev environments. include paths are specified,
