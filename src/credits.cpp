@@ -19,7 +19,7 @@ const int SCREEN_HEIGHT = 720;
 
 // Parent folder for credit images
 // Not const due to contrivance (can pass immediately if not const)
-char CREDITS_FOLDER[] = "Credit_Image/";
+char CREDITS_FOLDER[] = "resources/Credit_Image/";
 
 // Function declarations
 bool init();
