@@ -10,14 +10,17 @@
 
 # $< == first dependency, $^ == all dependencies, $@ == target
 
-# declaring paths
+# declaring paths for source files
 OUT = bin/SpaceForce
 SRC = $(wildcard src/*.cpp)
 DEP = $(wildcard src/*.h)
 OBJ = $(patsubst src/%.cpp, obj/%.o, $(SRC))
 
 # set appropriate flags for windows. will likely need more work for unix-like systems
-# once I know more about team member dev environments
+# once I know more about team member dev environments. include paths are specified,
+# but do not appear to cause problems if all includes are thrown into the base MinGW
+# install. this is true even if the specified directories do not exist. with luck,
+# it's the same in unix.
 ifeq ($(OS), Windows_NT)
 	DETECTED_OS = $(OS)
 	CC = g++
