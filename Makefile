@@ -22,6 +22,7 @@ OBJ = $(patsubst src/%.cpp, obj/%.o, $(SRC))
 # but do not appear to cause problems if all includes are thrown into the base MinGW
 # install. this is true even if the specified directories do not exist. with luck,
 # it's the same in unix. 'twould mean our installs can be different and still coexist.
+
 ifeq ($(OS), Windows_NT)
 	DETECTED_OS = $(OS)
 	CC = g++
