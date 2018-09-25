@@ -29,6 +29,13 @@ ifeq ($(OS), Windows_NT)
 	INCLUDE = -IC:/mingwdev/include/SDL2
 	LFLAGS = -LC:/mingwdev/lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -o $(OUT)
 	LFLAGScr = -LC:/mingwdev/lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf
+else ifeq ($(shell uname -s), Darwin)
+	DETECTED_OS := $(shell uname -s)
+	CC = g++ -std=c11
+	CFLAGS = -c -I/
+	INCLUDE = -I/
+	LFLAGS = -o $(OUT) 
+	#LFLAGScr =
 else
 	DETECTED_OS := $(shell uname -s)
 	CC = clang++
