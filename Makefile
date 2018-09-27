@@ -1,7 +1,7 @@
 # credits makes credits, all will make all the things eventually.
 # ALL src comes from /src/, all compiled programs go to /bin/
 # run with 'run' on windows, or './run' on unix-like systems
-# valid runs:
+# valid makes:
 #	'make' : makes all
 #	'make credits' : compiles just credits.cpp, can probably be removed eventually
 #	'make os' : handy little thing, outputs the current OS for troubleshooting purposes
@@ -53,7 +53,7 @@ all: $(OUT) #credits
 # target : dependencies
 # 	recipe
 $(OUT): $(OBJ)
-	$(CC) $^ $(LFLAGS) 
+	$(CC) $^ $(INCLUDE) $(LFLAGS) 
 
 # compile source files to /obj/ (no linking)
 # if a header changes, src will recompile
