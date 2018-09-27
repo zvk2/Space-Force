@@ -53,7 +53,7 @@ all: $(OUT) #credits
 # target : dependencies
 # 	recipe
 $(OUT): $(OBJ)
-	$(CC) $^ $(INCLUDE) $(LFLAGS) 
+	$(CC) $^ $(LFLAGS) 
 
 # compile source files to /obj/ (no linking)
 # if a header changes, src will recompile
