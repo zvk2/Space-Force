@@ -1,4 +1,5 @@
 # THIS WILL BE A CONFLICT FROM conflict_test1
+# DO NOT TOUCH THIS, MAX!
 
 # $< == first dependency, $^ == all dependencies, $@ == target
 
