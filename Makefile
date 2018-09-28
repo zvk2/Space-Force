@@ -1,5 +1,4 @@
-# Ahoy, this should cause a conflict
-# This will be the change from conflict_test1
+# THIS WILL BE A CONFLICT FROM conflict_test1
 
 # $< == first dependency, $^ == all dependencies, $@ == target
 
