@@ -1,4 +1,4 @@
-# Hello, this should create a merge conflict
+# Ahoy, this should cause a conflict
 # This will be the change from conflict_test1
 
 # $< == first dependency, $^ == all dependencies, $@ == target
