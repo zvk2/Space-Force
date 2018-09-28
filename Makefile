@@ -1,12 +1,5 @@
-# credits makes credits, all will make all the things eventually.
-# ALL src comes from /src/, all compiled programs go to /bin/
-# run with 'run' on windows, or './run' on unix-like systems
-# valid makes:
-#	'make' : makes all
-#	'make credits' : compiles just credits.cpp, can probably be removed eventually
-#	'make os' : handy little thing, outputs the current OS for troubleshooting purposes
-# goal is run "make" in root and it spits out an executable in bin,
-# and works regardless of OS with conditionals checking $(OS)
+# Hello, this should create a merge conflict
+# This will be the change from conflict_test1
 
 # $< == first dependency, $^ == all dependencies, $@ == target
 
