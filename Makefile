@@ -1,5 +1,5 @@
 # Ahoy, this should cause a conflict
-# This will be from the branch conflict_test2
+# This will be the change from conflict_test1
 
 # $< == first dependency, $^ == all dependencies, $@ == target
 
