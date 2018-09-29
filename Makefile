@@ -1,12 +1,11 @@
-# credits makes credits, all will make all the things eventually.
+# all will make all the things
 # ALL src comes from /src/, all compiled programs go to /bin/
 # run with 'run' on windows, or './run' on unix-like systems
 # valid makes:
 #	'make' : makes all
-#	'make credits' : compiles just credits.cpp, can probably be removed eventually
 #	'make os' : handy little thing, outputs the current OS for troubleshooting purposes
 # goal is run "make" in root and it spits out an executable in bin,
-# and works regardless of OS with conditionals checking $(OS)
+# and works regardless of OS with conditionals checking $(OS) and uname
 
 # $< == first dependency, $^ == all dependencies, $@ == target
 
@@ -29,26 +28,23 @@ ifeq ($(OS), Windows_NT)
 	CFLAGS = -c -IC:/mingwdev/include/SDL2
 	INCLUDE = -IC:/mingwdev/include/SDL2
 	LFLAGS = -LC:/mingwdev/lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -o $(OUT)
-	LFLAGScr = -LC:/mingwdev/lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf
 else ifeq ($(shell uname -s), Darwin)
 	DETECTED_OS := $(shell uname -s)
 	CC = g++ -std=c11
 	CFLAGS = -c -I/
 	INCLUDE = -I/
 	LFLAGS = -o $(OUT) 
-	#LFLAGScr =
 else
 	DETECTED_OS := $(shell uname -s)
 	CC = clang++
 	CFLAGS = -c -I/usr/include/SDL2
 	INCLUDE = -I/usr/include/SDL2
 	LFLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -o $(OUT)
-	LFLAGScr = -lSDL2 -lSDL2_image -lSDL2_ttf
 endif
 
-.PHONY: all #credits
+.PHONY: all
 
-all: $(OUT) #credits
+all: $(OUT)
 
 # target : dependencies
 # 	recipe
@@ -59,10 +55,6 @@ $(OUT): $(OBJ)
 # if a header changes, src will recompile
 obj/%.o: src/%.cpp $(DEP)
 	$(CC) $< $(CFLAGS) -o $@
-
-# additional features for small tests
-credits: src/credits.cpp
-	$(CC) $< $(INCLUDE) $(LFLAGScr) -o bin/credits
 
 os:
 	@echo $(DETECTED_OS)
