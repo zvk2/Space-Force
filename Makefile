@@ -42,7 +42,7 @@ else
 	LFLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -o $(OUT)
 endif
 
-.PHONY: all
+.PHONY: all clean mrclean os
 
 all: $(OUT)
 
@@ -55,6 +55,13 @@ $(OUT): $(OBJ)
 # if a header changes, src will recompile
 obj/%.o: src/%.cpp $(DEP)
 	$(CC) $< $(CFLAGS) -o $@
+
+# additional features, small tests, etc.
+clean:
+	rm -f $(OBJ) $(OUT) $(OUT).exe
+
+mrclean:
+	rm -f obj/*.o bin/*.exe $(OUT)
 
 os:
 	@echo $(DETECTED_OS)
