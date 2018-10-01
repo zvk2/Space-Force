@@ -136,6 +136,58 @@ void close()
 	SDL_Quit();
 }
 
+// Display the credits.
+int playCredits()
+{
+	SDL_RenderClear(gRenderer);
+	// Load media by iterating over the files in "Credit_Image"	
+	struct dirent *entry;
+	DIR *dp;
+	
+	dp = opendir(CREDITS_FOLDER);
+	if (dp == NULL)
+	{
+		perror("opendir: Path does not exist or could not be read.");
+		return -1;
+	}
+
+	while ((entry = readdir(dp)))
+	{
+		int dNameLength = strlen(entry->d_name);
+		
+		// Crude
+		if (dNameLength > 4 && entry->d_name[dNameLength - 4] == '.')
+		{
+			// Crude
+			char currentImageBuffer[2000];
+			strcpy(currentImageBuffer, CREDITS_FOLDER);
+			strcat(currentImageBuffer, entry->d_name);
+			
+			// Puts the image on the buffer queue
+			gTex.push_back(loadImage(currentImageBuffer));
+		}
+	}
+	
+	// Close the directory
+	closedir(dp);
+	
+	for (auto i : gTex)
+	{
+		// Clear
+		SDL_RenderClear(gRenderer);
+		// Render the image
+		SDL_RenderCopy(gRenderer, i, NULL, NULL);
+		// Display rendering
+		SDL_RenderPresent(gRenderer);
+		// Wait 3 seconds
+		SDL_Delay(3000);
+	}
+
+	// Clear the renderer one last time
+	SDL_RenderClear(gRenderer);
+	close();
+}
+
 int main(int argc, char* argv[])
 {
 	if (!init())
@@ -209,7 +261,7 @@ int main(int argc, char* argv[])
 		SDL_Delay(3);
 		//when none of the movement keys are pressed
 		Neutral(x_deltav_add,y_deltav_add,x_vel_add,y_vel_add);
-		
+		// 
 		// Speed up/slow down
 		x_vel += x_deltav;
 
@@ -224,21 +276,25 @@ int main(int argc, char* argv[])
 		
 		// Check you haven't moved off the screen
 
+		// Check the left side of the screen
 		if (x_pos < 0)
 		{
 			x_pos = 0;
 		}
 
+		// Check the right side of the screen
 		else if (x_pos + BOX_WIDTH > SCREEN_WIDTH)
 		{
 			x_pos = SCREEN_WIDTH - BOX_WIDTH;
 		}
 
+		// Check the top of the screen
 		if (y_pos < 0)
 		{
 			y_pos = 0;
 		}
 
+		// Check the bottom of the screen
 		else if (y_pos + BOX_HEIGHT > SCREEN_HEIGHT)
 		{
 			y_pos = SCREEN_HEIGHT - BOX_HEIGHT;
@@ -257,53 +313,8 @@ int main(int argc, char* argv[])
 		SDL_RenderFillRect(gRenderer, &fillRect);
 
 		SDL_RenderPresent(gRenderer);
-		
-	}
-	SDL_RenderClear(gRenderer);
-	// Load media by iterating over the files in "Credit_Image"	
-	struct dirent *entry;
-	DIR *dp;
-	
-	dp = opendir(CREDITS_FOLDER);
-	if (dp == NULL)
-	{
-		perror("opendir: Path does not exist or could not be read.");
-		return -1;
-	}
-
-	while ((entry = readdir(dp)))
-	{
-		int dNameLength = strlen(entry->d_name);
-		
-		// Crude
-		if (dNameLength > 4 && entry->d_name[dNameLength - 4] == '.')
-		{
-			// Crude
-			char currentImageBuffer[2000];
-			strcpy(currentImageBuffer, CREDITS_FOLDER);
-			strcat(currentImageBuffer, entry->d_name);
-			
-			// Puts the image on the buffer queue
-			gTex.push_back(loadImage(currentImageBuffer));
-		}
 	}
 	
-	// Close the directory
-	closedir(dp);
-	
-	for (auto i : gTex)
-	{
-		// Clear
-		SDL_RenderClear(gRenderer);
-		// Render the image
-		SDL_RenderCopy(gRenderer, i, NULL, NULL);
-		// Display rendering
-		SDL_RenderPresent(gRenderer);
-		// Wait 3 seconds
-		SDL_Delay(3000);
-	}
-
-	// Clear the renderer one last time
-	SDL_RenderClear(gRenderer);
-	close();
+	return playCredits();
 }
+

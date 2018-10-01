@@ -1,8 +1,8 @@
 
-int FOR_LIMIT = 4;
-int BACK_LIMIT = -4;
-int NEUTRAL_X_FOR = 1;
-int NEUTRAL_X_BACK = 1;
+int FOR_LIMIT = 3;
+int BACK_LIMIT = -3;
+int NEUTRAL_X_FOR = 0;
+int NEUTRAL_X_BACK = 0;
 int NEUTRAL_Y_UP = 0;
 int NEUTRAL_Y_DOWN = 0;
 //the max speed the player can go
