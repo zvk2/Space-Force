@@ -13,9 +13,16 @@
 #include <stdio.h>
 #include <dirent.h>
 
+//physic 
+#include "physics.hpp"
+
 // Constants for resolution
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
+
+//temp stand in for spaceship
+constexpr int BOX_WIDTH = 20;
+constexpr int BOX_HEIGHT = 20;
 
 // Parent folder for credit images
 // Not const due to contrivance (can pass immediately if not const)
@@ -137,11 +144,126 @@ int main(int argc, char* argv[])
 		close();
 		return 1;
 	}
+	
+	//starting point in game
+	//start to the left
+	int x_pos = SCREEN_WIDTH/5 - BOX_WIDTH/2;
+	
+	int y_pos = SCREEN_HEIGHT/2 - BOX_HEIGHT/2;
+	
+	//Current velocity
+	int x_vel = 0;
+	int *x_vel_add = &x_vel;
+	
+	int y_vel = 0;
+	int *y_vel_add = &y_vel;
+	
+	//change in velocity
+	int x_deltav = 0;
+	int *x_deltav_add = &x_deltav;
+	
+	int y_deltav = 0;
+	int *y_deltav_add = &y_deltav;
+	
+	SDL_Event e;
+	
+	bool gameon = true;
+	
+	while(gameon)
+	{
+		//get array of current key states
+		const Uint8* keystate = SDL_GetKeyboardState(nullptr);
+		while(SDL_PollEvent(&e))
+		{
+			if (e.type == SDL_QUIT || keystate[SDL_SCANCODE_ESCAPE])
+			{
+				gameon = false;
+			}
+		}
+		x_deltav = 0;
+		y_deltav = 0;	
 
+		if (keystate[SDL_SCANCODE_W])
+
+		{
+			y_deltav -= 1;
+		}
+
+		if (keystate[SDL_SCANCODE_A])
+
+		{
+			x_deltav -= 1;
+		}
+
+		if (keystate[SDL_SCANCODE_S])
+
+		{
+			y_deltav += 1;
+		}
+
+		if (keystate[SDL_SCANCODE_D])
+
+		{
+			x_deltav += 1;
+		}
+		SDL_Delay(3);
+		//when none of the movement keys are pressed
+		Neutral(x_deltav_add,y_deltav_add,x_vel_add,y_vel_add);
+		
+		// Speed up/slow down
+		x_vel += x_deltav;
+
+		y_vel += y_deltav;
+		
+		//the speed limit for the character
+		Speed_Limit(x_vel_add,y_vel_add);
+			
+		// Move box
+		x_pos += x_vel;
+		y_pos += y_vel;
+		
+		// Check you haven't moved off the screen
+
+		if (x_pos < 0)
+		{
+			x_pos = 0;
+		}
+
+		else if (x_pos + BOX_WIDTH > SCREEN_WIDTH)
+		{
+			x_pos = SCREEN_WIDTH - BOX_WIDTH;
+		}
+
+		if (y_pos < 0)
+		{
+			y_pos = 0;
+		}
+
+		else if (y_pos + BOX_HEIGHT > SCREEN_HEIGHT)
+		{
+			y_pos = SCREEN_HEIGHT - BOX_HEIGHT;
+		}
+			
+		SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
+
+		SDL_RenderClear(gRenderer);
+
+		// Cyan box
+
+		SDL_SetRenderDrawColor(gRenderer, 0x00, 0xFF, 0xFF, 0xFF);
+
+		SDL_Rect fillRect = {x_pos, y_pos, BOX_WIDTH, BOX_HEIGHT};
+
+		SDL_RenderFillRect(gRenderer, &fillRect);
+
+		SDL_RenderPresent(gRenderer);
+		
+	}
+	SDL_RenderClear(gRenderer);
 	// Load media by iterating over the files in "Credit_Image"	
 	struct dirent *entry;
 	DIR *dp;
-
+	
 	dp = opendir(CREDITS_FOLDER);
 	if (dp == NULL)
 	{
@@ -183,6 +305,5 @@ int main(int argc, char* argv[])
 
 	// Clear the renderer one last time
 	SDL_RenderClear(gRenderer);
-
 	close();
 }
