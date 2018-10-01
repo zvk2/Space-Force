@@ -9,7 +9,7 @@
 
 
 //Checking for the system in order for mac person to run the program
-#ifdef _WIN64
+/*#ifdef _WIN64
 #include <SDL.h>
 #include <SDL_image.h>
 #elif _WIN32
@@ -18,6 +18,14 @@
 #elif __APPLE__
 #include <SDL2/SDL.h>
 #include <SDL2_image/SDL_image.h>
+#endif*/
+
+#ifdef __APPLE__
+#include <SDL2/SDL.h>
+#include <SDL2_image/SDL_image.h>
+#else
+#include <SDL.h>
+#include <SDL_image.h>
 #endif
 
 // Used for file walk (somewhat crudely)
