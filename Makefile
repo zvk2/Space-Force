@@ -65,3 +65,7 @@ mrclean:
 
 os:
 	@echo $(DETECTED_OS)
+
+# Trash make (sorry, I am makefile illiterate!)
+3d_test:
+	clang++ -I/usr/include/SDL2 -o bin/test3d.exe src/main.cpp src/helperFunctions.c src/initShader.c -lSDL2 -lSDL2_image -lSDL2_ttf -lGLEW -lglut -lGL -lGLU -lm
