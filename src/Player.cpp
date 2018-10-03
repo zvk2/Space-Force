@@ -5,6 +5,13 @@
 class Player
 {
 	public:
+		
+		//Constructor: takes health, character sheet, and attack value and sets all member vars
+		Player(int startingHealth, SDL_Texture* characterImages, int attack): 
+			hitPoints(startingHealth), playerImages(characterImages), 
+			attackPower(attack),	attackModifier(1), defenseModifier(1)
+			{}
+
 		//Methods that can be called from model class
 
 		void LostHealth(int damage)
@@ -39,12 +46,7 @@ class Player
 		{
 			return (attackPower*attackModifier);
 		}
-
-		//Constructor: takes health, character sheet, and attack value and sets all member vars
-		Player(int startingHealth, SDL_Texture* characterImages, int attack): 
-			hitPoints(startingHealth), playerImages(characterImages), 
-			attackPower(attack),	attackModifier(1), defenseModifier(1)
-			{}
+		
 
 	private:
 

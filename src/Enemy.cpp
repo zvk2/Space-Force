@@ -6,28 +6,32 @@ class Enemy
 {
 	public:
 
-		void LostHealth(int damage){
-			DecrementHealth(damage);
-		}
-
-		void GainedHealth(int heal){
-			IncrementHealth(heal);
-		}
-
-		int GetHealth(){
-			return hitPoints;
-		}
-
-		int GetAttack(){
-			return attackPower;
-		}
-
 		Enemy(int startingHealth, SDL_Texture* characterImages, int attack): 
 			hitPoints(startingHealth), enemySheet(characterImages), attackPower(attack)
 			{}
 
-	private:
+		void LostHealth(int damage)
+		{
+			DecrementHealth(damage);
+		}
 
+		void GainedHealth(int heal)
+		{
+			IncrementHealth(heal);
+		}
+
+		int GetHealth()
+		{
+			return hitPoints;
+		}
+
+		int GetAttack()
+		{
+			return attackPower;
+		}
+
+
+	private:
 
 		/* Member variables:
 		 * health, attack
@@ -38,11 +42,13 @@ class Enemy
 		int attackPower;
 		const SDL_Texture* enemySheet;
 
-		void DecrementHealth(int decAmount){
+		void DecrementHealth(int decAmount)
+		{
 			hitPoints -= decAmount;
 		}
 
-		void IncrementHealth(int incAmount){
+		void IncrementHealth(int incAmount)
+		{
 			hitPoints += incAmount;
 		}
 
