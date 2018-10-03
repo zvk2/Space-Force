@@ -25,4 +25,6 @@ DRY (don't repeat yourself)
 
 Documentation comments (i.e. params, returns and purpose) in header file
 
+Forget about this!  It's just a damn test!
+
 	
