@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // checking for apple, else everyone else
 #ifdef __APPLE__
 #include <SDL2/SDL.h>
@@ -6,6 +7,12 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #endif
+=======
+
+#include "INC_SDL.h"
+
+#define MAX_SPEED 50
+>>>>>>> 5f6c5c0b223e2f6099745ad2a5772f6b13d47e8f
 
 class Player
 {
@@ -13,7 +20,7 @@ class Player
 		
 		//Constructor: takes health, character sheet, and attack value and sets all member vars
 		Player(int startingHealth, SDL_Texture* characterImages, int attack): 
-			hitPoints(startingHealth), playerImages(characterImages), 
+			hitPoints(startingHealth), playerSheet(characterImages), 
 			attackPower(attack),	attackModifier(1), defenseModifier(1)
 			{}
 
@@ -51,6 +58,21 @@ class Player
 		{
 			return (attackPower*attackModifier);
 		}
+
+		void IncPlayerSpeed(int addedSpeed)
+		{
+			IncrementSpeed(addedSpeed);
+		}
+
+		void DecPlayerSpeed(int lostSpeed)
+		{
+			DecrementSpeed(lostSpeed);
+		}
+
+		int GetSpeed()
+		{
+			return speed;
+		}
 		
 
 	private:
@@ -61,10 +83,12 @@ class Player
 		 * OpenGL later
 		 */
 		int hitPoints;
+		int speed;
 		double attackPower;
 		double attackModifier;
 		double defenseModifier;
-		const SDL_Texture* playerImages;
+		//Not perm obviously but here as a reminder to store player texture here
+		const SDL_Texture* playerSheet;
 
 		//Private method to decrease player health
 		void DecrementHealth(int decAmount)
@@ -78,4 +102,24 @@ class Player
 			hitPoints += incAmount;
 		}
 
+<<<<<<< HEAD
 };
+=======
+		void IncrementSpeed(int addedSpeed)
+		{
+			if(speed != MAX_SPEED)
+			{
+				speed += addedSpeed;
+			}
+		}
+
+		void DecrementSpeed(int lostSpeed)
+		{
+			if(speed != -MAX_SPEED)
+			{
+				speed -= lostSpeed;
+			}
+		}
+
+};
+>>>>>>> 5f6c5c0b223e2f6099745ad2a5772f6b13d47e8f
