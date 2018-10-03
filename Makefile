@@ -42,7 +42,7 @@ else
 	LFLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -o $(OUT)
 endif
 
-.PHONY: all clean mrclean os
+.PHONY: all clean mrclean os rebuild
 
 all: $(OUT)
 
@@ -65,3 +65,5 @@ mrclean:
 
 os:
 	@echo $(DETECTED_OS)
+
+rebuild: clean all
