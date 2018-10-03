@@ -15,7 +15,7 @@
 # declaring paths for source files
 OUT = bin/SpaceForce
 SRC = $(wildcard src/*.c src/*.cpp) 
-DEP = $(wildcard src/*.h)
+DEP = $(wildcard src/*.h src/*.hpp)
 OBJ := $(patsubst src/%.cpp, obj/%.o, $(SRC)) 
 OBJ := $(patsubst src/%.c, obj/%.o, $(OBJ))
 #OBJ = $(src:.cpp=.o) saw this syntax somewhere, threw it in for reference purposes
