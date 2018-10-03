@@ -15,7 +15,7 @@ class Physics
 	int NEUTRAL_Y_UP;
 	int NEUTRAL_Y_DOWN;
 	
-	Physics(int* x_vel, int *y_vel, int* x_del, int *y_vel, int max_speed, int neutral)
+	Physics(int* x_vel, int *y_vel, int* x_del,int max_speed, int neutral)
 	{
 		BACK_LIMIT = -max_speed;
 		FOR_LIMIT = max_speed;
@@ -82,5 +82,5 @@ class Physics
 
 	}
 	
-}
+};
 

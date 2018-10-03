@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-// checking for apple, else everyone else
-#ifdef __APPLE__
-#include <SDL2/SDL.h>
-#include <SDL2_image/SDL_image.h>
-#else
-#include <SDL.h>
-#include <SDL_image.h>
-#endif
-=======
 
 #include "INC_SDL.h"
 
 #define MAX_SPEED 50
->>>>>>> 5f6c5c0b223e2f6099745ad2a5772f6b13d47e8f
+
 
 class Player
 {
@@ -102,9 +92,7 @@ class Player
 			hitPoints += incAmount;
 		}
 
-<<<<<<< HEAD
-};
-=======
+
 		void IncrementSpeed(int addedSpeed)
 		{
 			if(speed != MAX_SPEED)
@@ -122,4 +110,4 @@ class Player
 		}
 
 };
->>>>>>> 5f6c5c0b223e2f6099745ad2a5772f6b13d47e8f
+
