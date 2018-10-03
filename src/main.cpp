@@ -148,8 +148,10 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
+	
 	while ((entry = readdir(dp)))
 	{
+
 		int dNameLength = strlen(entry->d_name);
 		
 		// Crude
@@ -167,9 +169,20 @@ int main(int argc, char* argv[])
 	
 	// Close the directory
 	closedir(dp);
+
+	bool quit = false;
+	SDL_Event e;
 	
 	for (auto i : gTex)
 	{
+		// does the user want to quit?
+		while(SDL_PollEvent(&e) != 0)  
+		{
+		 	if(e.type == SDL_QUIT)  
+		 	{
+		 		quit = true;
+		 	}
+		}
 		// Clear
 		SDL_RenderClear(gRenderer);
 		// Render the image
