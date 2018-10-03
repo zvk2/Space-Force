@@ -71,4 +71,4 @@ os:
 	clang++ -I/usr/include/SDL2 -o bin/test3d.exe src/main.cpp src/helperFunctions.c src/initShader.c -lSDL2 -lSDL2_image -lSDL2_ttf -lGLEW -lglut -lGL -lGLU -lm
 
 3d_test_win:
-	g++ -IC:/mingwdev/opengl/include -IC:/mingwdev/include/SDL2 src/helperFunctions.c src/initShader.c -LC:/mingwdev/lib -LC:/mingwdev/opengl/lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lopengl32 -lglew32 -lfreeglut -o bin/test3dw.exe
+	g++ -IC:/mingwdev/opengl/include -IC:/mingwdev/include/SDL2 src/main.cpp src/helperFunctions.c src/initShader.c -LC:/mingwdev/lib -LC:/mingwdev/opengl/lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lopengl32 -lglew32 -lfreeglut -o bin/test3dw.exe
