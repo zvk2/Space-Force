@@ -2,6 +2,8 @@
 #include <SDL.h>
 #include <SDL_image.h>
 
+#define MAX_SPEED 50
+
 class Enemy
 {
 	public:
@@ -30,6 +32,21 @@ class Enemy
 			return attackPower;
 		}
 
+		void IncEnemySpeed(int addedSpeed)
+		{
+			IncrementSpeed(addedSpeed);
+		}
+
+		void DecEnemySpeed(int lostSpeed)
+		{
+			DecrementSpeed(lostSpeed);
+		}
+
+		int GetSpeed()
+		{
+			return speed;
+		}
+
 
 	private:
 
@@ -40,6 +57,8 @@ class Enemy
 		 */
 		int hitPoints;
 		int attackPower;
+		int speed;
+		//Not perm obviously but here as a reminder to store player texture here
 		const SDL_Texture* enemySheet;
 
 		void DecrementHealth(int decAmount)
@@ -50,6 +69,22 @@ class Enemy
 		void IncrementHealth(int incAmount)
 		{
 			hitPoints += incAmount;
+		}
+
+		void IncrementSpeed(int addedSpeed)
+		{
+			if(speed != MAX_SPEED)
+			{
+				speed += addedSpeed;
+			}
+		}
+
+		void DecrementSpeed(int lostSpeed)
+		{
+			if(speed != -MAX_SPEED)
+			{
+				speed -= lostSpeed;
+			}
 		}
 
 };
