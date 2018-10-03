@@ -562,18 +562,18 @@ mat4 empty_matrix() {
 mat4 ortho(
     GLfloat left, GLfloat right,
     GLfloat bottom, GLfloat top,
-    GLfloat near, GLfloat far
+    GLfloat nyeh, GLfloat fyah
 )
 {
     mat4 ortho_matrix = identity_matrix();
     
     ortho_matrix.x.x = 2.0 / (right - left);
     ortho_matrix.y.y = 2.0 / (top - bottom);
-    ortho_matrix.z.z = 2.0 / (near - far);
+    ortho_matrix.z.z = 2.0 / (nyeh - fyah);
     
     ortho_matrix.w.x = -((right + left)/(right - left));
     ortho_matrix.w.x = -((top + bottom)/(top - bottom));
-    ortho_matrix.w.x = -((near + far)/(near - far));
+    ortho_matrix.w.x = -((nyeh + fyah)/(nyeh - fyah));
     
     return ortho_matrix;
 }
@@ -584,32 +584,32 @@ mat4 ortho(
 mat4 frustum(
     GLfloat left, GLfloat right,
     GLfloat bottom, GLfloat top,
-    GLfloat near, GLfloat far
+    GLfloat nyeh, GLfloat fyah
 )
 {
     mat4 frustum = empty_matrix();
     
-    frustum.x.x = (-2.0f * near) / (right - left);
-    frustum.y.y = (-2.0f * near) / (top - bottom);
+    frustum.x.x = (-2.0f * nyeh) / (right - left);
+    frustum.y.y = (-2.0f * nyeh) / (top - bottom);
     frustum.z.x = (left + right) / (right - left);
     frustum.z.y = (bottom + top) / (top - bottom);
-    frustum.z.z = (near + far) / (far - near);
+    frustum.z.z = (nyeh + fyah) / (fyah - nyeh);
     frustum.z.w = -1.0f;
-    frustum.w.z = -1.0f*(2.0f * near * far) / (far - near);
+    frustum.w.z = -1.0f*(2.0f * nyeh * fyah) / (fyah - nyeh);
     
     //~ mat4 frustum = identity_matrix();
-    //~ frustum.x.x = (-2 * near) / (right - left);
-    //~ frustum.y.y = (-2 * near) / (top - bottom);
+    //~ frustum.x.x = (-2 * nyeh) / (right - left);
+    //~ frustum.y.y = (-2 * nyeh) / (top - bottom);
     //~ mat4 frustum = empty_matrix();
-    //~ frustum.x.x = -(near/right);
-    //~ frustum.y.y = -(near/top);
-    //~ frustum.z.z = (near + far) / (far - near);
+    //~ frustum.x.x = -(nyeh/right);
+    //~ frustum.y.y = -(nyeh/top);
+    //~ frustum.z.z = (nyeh + fyah) / (fyah - nyeh);
     //~ frustum.z.w = -1;
-    //~ frustum.w.z = -((2 * near * far)/(far - near));
-    //~ frustum.x.x = (near/right);
-    //~ frustum.y.y = (near/top);
-    //~ frustum.z.z = (near + far) / (far - near);
+    //~ frustum.w.z = -((2 * nyeh * fyah)/(fyah - nyeh));
+    //~ frustum.x.x = (nyeh/right);
+    //~ frustum.y.y = (nyeh/top);
+    //~ frustum.z.z = (nyeh + fyah) / (fyah - nyeh);
     //~ frustum.z.w = 1;
-    //~ frustum.w.z = ((2 * near * far)/(far - near));
+    //~ frustum.w.z = ((2 * nyeh * fyah)/(fyah - nyeh));
     return frustum;
 }

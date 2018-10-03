@@ -14,17 +14,15 @@
 
 # declaring paths for source files
 OUT = bin/SpaceForce
-SRC = $(wildcard src/*.cpp src/*.c) 
+SRC = $(wildcard src/*.c src/*.cpp) 
 DEP = $(wildcard src/*.h)
 OBJ := $(patsubst src/%.cpp, obj/%.o, $(SRC)) 
 OBJ := $(patsubst src/%.c, obj/%.o, $(OBJ))
 #OBJ = $(src:.cpp=.o) saw this syntax somewhere, threw it in for reference purposes
 
-# set appropriate flags for windows. will likely need more work for unix-like systems
-# once I know more about team member dev environments. include paths are specified,
-# but do not appear to cause problems if all includes are thrown into the base MinGW
-# install. this is true even if the specified directories do not exist. with luck,
-# it's the same in unix. 'twould mean our installs can be different and still coexist.
+# set appropriate flags for machine OS. include paths are specified, but do not
+# appear to cause problems if all includes are thrown into the base MinGW install.
+# this is true even if the specified directories do not exist. 
 
 ifeq ($(OS), Windows_NT)
 	DETECTED_OS = $(OS)

@@ -1,5 +1,5 @@
+#include <GL/glew.h>
 #include <stdio.h>
-#include "../opengl/headers/GL/glew.h"
 
 typedef struct vec4 {
 	GLfloat x;
