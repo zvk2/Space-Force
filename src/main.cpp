@@ -62,7 +62,7 @@ mat4 projection = frustum(
 );
 
 mat4 frame = look_at(
-	0, 0, 1.5,
+	0, 0, 3,
 	0, 0, -100,
 	0, 1, 0
 );
@@ -281,8 +281,8 @@ bool init()
 	glVertexAttribPointer(vColor, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid *) sizeof(vertices));
 
 	ctm_location = glGetUniformLocation(program, "ctm");
-	projection_matrix_location = glGetUniformLocation(program, "projection_matrix");
-	model_view_matrix_location = glGetUniformLocation(program, "model_view_matrix");
+	projection_matrix_location = glGetUniformLocation(program, "projection");
+	model_view_matrix_location = glGetUniformLocation(program, "model_view");
 
 	glEnable(GL_DEPTH_TEST);
 	// If you want black
@@ -339,9 +339,6 @@ int main(int argc, char* argv[])
 	glClear(GL_COLOR_BUFFER_BIT);
 	SDL_GL_SwapWindow(gWindow);
 	
-	mat4_print(&projection);
-	mat4_print(&frame);
-	
 	get_rotation_matrix_about_x(PI/360, &constant_xrot);
 	get_rotation_matrix_about_y(PI/270, &constant_yrot);
 	get_rotation_matrix_about_z(PI/180, &constant_zrot);
@@ -393,8 +390,10 @@ int main(int argc, char* argv[])
 		mat4 interim3;
 		mat4_multiplication(&constant_xrot, &rot, &interim1);
 		mat4_multiplication(&constant_yrot, &interim1, &interim2);
+		
 		//~ mat4_multiplication(&constant_zrot, &interim2, &interim3);
 		//~ mat4_multiplication(&identity, &interim3, &rot);
+		
 		mat4_multiplication(&identity, &interim2, &rot);
 		
 		display();
