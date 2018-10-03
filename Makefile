@@ -11,7 +11,7 @@
 
 # declaring paths for source files
 OUT = bin/SpaceForce
-SRC = $(wildcard src/*.cpp)
+SRC = $(wildcard src/*.cpp) 
 DEP = $(wildcard src/*.h)
 OBJ = $(patsubst src/%.cpp, obj/%.o, $(SRC))
 #OBJ = $(src:.c=.o) saw this syntax somewhere, threw it in for reference purposes
@@ -25,9 +25,9 @@ OBJ = $(patsubst src/%.cpp, obj/%.o, $(SRC))
 ifeq ($(OS), Windows_NT)
 	DETECTED_OS = $(OS)
 	CC = g++
-	CFLAGS = -c -IC:/mingwdev/include/SDL2
-	INCLUDE = -IC:/mingwdev/include/SDL2
-	LFLAGS = -LC:/mingwdev/lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -o $(OUT)
+	CFLAGS = -c -IC:/mingwdev/include/SDL2 -IC:/mingwdev/opengl/include
+	INCLUDE = -IC:/mingwdev/include/SDL2 -IC:/mingwdev/opengl/include
+	LFLAGS = -LC:/mingwdev/lib -lmingw32 -LC:/mingwdev/opengl/lib -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lopengl32 -lglew32 -lfreeglut -o $(OUT)
 else ifeq ($(shell uname -s), Darwin)
 	DETECTED_OS := $(shell uname -s)
 	CC = g++ -std=c11
@@ -69,3 +69,6 @@ os:
 # Trash make (sorry, I am makefile illiterate!)
 3d_test:
 	clang++ -I/usr/include/SDL2 -o bin/test3d.exe src/main.cpp src/helperFunctions.c src/initShader.c -lSDL2 -lSDL2_image -lSDL2_ttf -lGLEW -lglut -lGL -lGLU -lm
+
+3d_test_win:
+	g++ -IC:/mingwdev/opengl/include -IC:/mingwdev/include/SDL2 src/helperFunctions.c src/initShader.c -LC:/mingwdev/lib -LC:/mingwdev/opengl/lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lopengl32 -lglew32 -lfreeglut -o bin/test3dw.exe
