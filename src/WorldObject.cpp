@@ -1,6 +1,5 @@
 
-#include <SDL.h>
-#include <SDL_image.h>
+#include "INC_SDL.h"
 
 #define MAX_SPEED 50
 
