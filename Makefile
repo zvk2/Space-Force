@@ -14,7 +14,8 @@
 
 # declaring paths for source files
 OUT = bin/SpaceForce
-SRC = $(wildcard src/*.c src/*.cpp) 
+SRC = $(wildcard src/*.c src/*.cpp)
+SRC := $(filter-out src/menu.cpp, $(SRC))
 DEP = $(wildcard src/*.h src/*.hpp)
 OBJ := $(patsubst src/%.cpp, obj/%.o, $(SRC)) 
 OBJ := $(patsubst src/%.c, obj/%.o, $(OBJ))
