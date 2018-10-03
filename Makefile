@@ -3,6 +3,9 @@
 # run with 'run' on windows, or './run' on unix-like systems
 # valid makes:
 #	'make' : makes all
+#	'make clean' : deletes all files specified by OUT and OBJ
+#	'make mrclean' : deletes all files with *.o or *.exe extensions, as well as OUT
+#	'make rebuild' : runs clean, and then makes all
 #	'make os' : handy little thing, outputs the current OS for troubleshooting purposes
 # goal is run "make" in root and it spits out an executable in bin,
 # and works regardless of OS with conditionals checking $(OS) and uname
@@ -11,10 +14,11 @@
 
 # declaring paths for source files
 OUT = bin/SpaceForce
-SRC = $(wildcard src/*.cpp) 
+SRC = $(wildcard src/*.cpp src/*.c) 
 DEP = $(wildcard src/*.h)
-OBJ = $(patsubst src/%.cpp, obj/%.o, $(SRC))
-#OBJ = $(src:.c=.o) saw this syntax somewhere, threw it in for reference purposes
+OBJ := $(patsubst src/%.cpp, obj/%.o, $(SRC)) 
+OBJ := $(patsubst src/%.c, obj/%.o, $(OBJ))
+#OBJ = $(src:.cpp=.o) saw this syntax somewhere, threw it in for reference purposes
 
 # set appropriate flags for windows. will likely need more work for unix-like systems
 # once I know more about team member dev environments. include paths are specified,
@@ -24,37 +28,42 @@ OBJ = $(patsubst src/%.cpp, obj/%.o, $(SRC))
 
 ifeq ($(OS), Windows_NT)
 	DETECTED_OS = $(OS)
-	CC = g++
+	CPP = g++
 	CFLAGS = -c -IC:/mingwdev/include/SDL2 -IC:/mingwdev/opengl/include
 	INCLUDE = -IC:/mingwdev/include/SDL2 -IC:/mingwdev/opengl/include
 	LFLAGS = -LC:/mingwdev/lib -lmingw32 -LC:/mingwdev/opengl/lib -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lopengl32 -lglew32 -lfreeglut -o $(OUT)
 else ifeq ($(shell uname -s), Darwin)
 	DETECTED_OS := $(shell uname -s)
-	CC = g++ -std=c11
+	CPP = g++ -std=c11
 	CFLAGS = -c -I/
 	INCLUDE = -I/
 	LFLAGS = -o $(OUT) 
 else
 	DETECTED_OS := $(shell uname -s)
-	CC = clang++
+	CPP = clang++
 	CFLAGS = -c -I/usr/include/SDL2
 	INCLUDE = -I/usr/include/SDL2
-	LFLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -o $(OUT)
+	LFLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -lGLEW -lglut -lGL -lGLU -lm -o $(OUT)
 endif
 
-.PHONY: all clean mrclean os
+.PHONY: all clean mrclean os rebuild
 
 all: $(OUT)
 
 # target : dependencies
 # 	recipe
 $(OUT): $(OBJ)
-	$(CC) $^ $(LFLAGS) 
+	$(CPP) $^ $(LFLAGS) 
 
 # compile source files to /obj/ (no linking)
 # if a header changes, src will recompile
+obj/%.o: src/%.c $(DEP)
+	$(CPP) $< $(CFLAGS) -o $@
+
 obj/%.o: src/%.cpp $(DEP)
-	$(CC) $< $(CFLAGS) -o $@
+	$(CPP) $< $(CFLAGS) -o $@
+
+
 
 # additional features, small tests, etc.
 clean:
@@ -63,12 +72,7 @@ clean:
 mrclean:
 	rm -f obj/*.o bin/*.exe $(OUT)
 
+rebuild: clean all
+
 os:
 	@echo $(DETECTED_OS)
-
-# Trash make (sorry, I am makefile illiterate!)
-3d_test:
-	clang++ -I/usr/include/SDL2 -o bin/test3d.exe src/main.cpp src/helperFunctions.c src/initShader.c -lSDL2 -lSDL2_image -lSDL2_ttf -lGLEW -lglut -lGL -lGLU -lm
-
-3d_test_win:
-	g++ -IC:/mingwdev/opengl/include -IC:/mingwdev/include/SDL2 src/main.cpp src/helperFunctions.c src/initShader.c -LC:/mingwdev/lib -LC:/mingwdev/opengl/lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lopengl32 -lglew32 -lfreeglut -o bin/test3dw.exe
