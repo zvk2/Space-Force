@@ -1,8 +1,13 @@
 //general outline for button events on menu and how to deal with them
 //still editing to get it to work
 
-#include "SDL/SDL.h"
-#include "SDL/SDL_image.h"
+#ifdef __APPLE__
+#include <SDL2/SDL.h>
+#include <SDL2_image/SDL_image.h>
+#else
+#include <SDL.h>
+#include <SDL_image.h>
+#endif
 #include <string>
 
 //Screen attributes
