@@ -6,7 +6,7 @@ LIST OF ART FOR THE GAME
 *The 3D graphics crew will let everyone know what aspects will be 3D as time goes on.  
 
 - Title screen (Kevin Wang)
-- Background & levels
+- Background & levels (Shree Sampath)
 - Enemies
 - Bosses
 - Powerups
