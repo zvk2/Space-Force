@@ -1,5 +1,6 @@
 // This file iterates over every listed file in the folder "Credit_Image" and displays it for 3 seconds
 // This uses "sdl0_hello.cpp" as boilerplate
+// EXAMPLE: clang++ -I/usr/include/SDL2 -o bin/test3d.exe src/main.cpp src/initShader.c -lSDL2 -lGLEW -lglut -lGL -lGLU -lm
 
 // Includes
 #include <iostream>
@@ -28,6 +29,9 @@
 // For getting the shaders
 #include "initShader.h"
 
+// TO BE REVISED: helperfunctions
+#include "helperFunctions.h"
+
 #define BUFFER_OFFSET( offset )   ((GLvoid*) (offset))
 
 // Constants for resolution
@@ -51,30 +55,58 @@ std::vector<SDL_Texture*> gTex;
 // The opengl context handle
 SDL_GLContext mainContext;
 
-// CRUDE JUST FOR TESTING
-typedef struct
-{
-    GLfloat x;
-    GLfloat y;
-    GLfloat z;
-} vec3;
+mat4 projection = frustum(
+	-1.7778, 1.7778,
+	-1, 1,
+	-1, -2000
+);
 
-typedef struct
-{
-    GLfloat x;
-    GLfloat y;
-    GLfloat z;
-    GLfloat w;
-} vec4;
+mat4 frame = look_at(
+	0, 0, 1.5,
+	0, 0, -100,
+	0, 1, 0
+);
 
-typedef struct
-{
-    vec4 x;
-    vec4 y;
-    vec4 z;
-    vec4 w;
-} mat4;
+GLuint ctm_location;
+GLuint projection_matrix_location;
+GLuint model_view_matrix_location;
 
+mat4 constant_xrot;
+mat4 constant_yrot;
+mat4 constant_zrot;
+
+mat4 identity =
+{
+	{1.0, 0.0, 0.0, 0.0},
+	{0.0, 1.0, 0.0, 0.0},
+	{0.0, 0.0, 1.0, 0.0},
+	{0.0, 0.0, 0.0, 1.0}
+};
+
+mat4 tr =
+{
+	{1.0, 0.0, 0.0, 0.0},
+	{0.0, 1.0, 0.0, 0.0},
+	{0.0, 0.0, 1.0, 0.0},
+	{0.0, 0.0, 0.0, 1.0}
+};
+
+mat4 ctm =
+{
+	{1.0, 0.0, 0.0, 0.0},
+	{0.0, 1.0, 0.0, 0.0},
+	{0.0, 0.0, 1.0, 0.0},
+	{0.0, 0.0, 0.0, 1.0}
+};
+
+mat4 rot =
+{
+	{1.0, 0.0, 0.0, 0.0},
+	{0.0, 1.0, 0.0, 0.0},
+	{0.0, 0.0, 1.0, 0.0},
+	{0.0, 0.0, 0.0, 1.0}
+};
+ 
 vec3 vertices[36] = {
 	// Face 1
 	{0.5, -0.5, -0.5},
@@ -121,109 +153,45 @@ vec3 vertices[36] = {
 };
 
 vec4 colors[36] = {
-    {1.0, 0, 0, 0},
-    {1.0, 0, 0, 0},
-    {1.0, 0, 0, 0},
-    {1.0, 0, 0, 0},
-    {1.0, 0, 0, 0},
-    {1.0, 0, 0, 0},
-    {0, 1.0, 0, 0},
-    {0, 1.0, 0, 0},
-    {0, 1.0, 0, 0},
-    {0, 1.0, 0, 0},
-    {0, 1.0, 0, 0},
-    {0, 1.0, 0, 0},
-    {0, 0, 1.0, 0},
-    {0, 0, 1.0, 0},
-    {0, 0, 1.0, 0},
-    {0, 0, 1.0, 0},
-    {0, 0, 1.0, 0},
-    {0, 0, 1.0, 0},
-    {1.0, 0, 1.0, 0},
-    {1.0, 0, 1.0, 0},
-    {1.0, 0, 1.0, 0},
-    {1.0, 0, 1.0, 0},
-    {1.0, 0, 1.0, 0},
-    {1.0, 0, 1.0, 0},
-    {1.0, 1.0, 1.0, 0},
-    {1.0, 1.0, 1.0, 0},
-    {1.0, 1.0, 1.0, 0},
-    {1.0, 1.0, 1.0, 0},
-    {1.0, 1.0, 1.0, 0},
-    {1.0, 1.0, 1.0, 0},
-    {0, 1.0, 1.0, 0},
-    {0, 1.0, 1.0, 0},
-    {0, 1.0, 1.0, 0},
-    {0, 1.0, 1.0, 0},
-    {0, 1.0, 1.0, 0},
-    {0, 1.0, 1.0, 0},
+	{1.0, 0, 0, 0},
+	{1.0, 0, 0, 0},
+	{1.0, 0, 0, 0},
+	{1.0, 0, 0, 0},
+	{1.0, 0, 0, 0},
+	{1.0, 0, 0, 0},
+	{0, 1.0, 0, 0},
+	{0, 1.0, 0, 0},
+	{0, 1.0, 0, 0},
+	{0, 1.0, 0, 0},
+	{0, 1.0, 0, 0},
+	{0, 1.0, 0, 0},
+	{0, 0, 1.0, 0},
+	{0, 0, 1.0, 0},
+	{0, 0, 1.0, 0},
+	{0, 0, 1.0, 0},
+	{0, 0, 1.0, 0},
+	{0, 0, 1.0, 0},
+	{1.0, 0, 1.0, 0},
+	{1.0, 0, 1.0, 0},
+	{1.0, 0, 1.0, 0},
+	{1.0, 0, 1.0, 0},
+	{1.0, 0, 1.0, 0},
+	{1.0, 0, 1.0, 0},
+	{1.0, 1.0, 1.0, 0},
+	{1.0, 1.0, 1.0, 0},
+	{1.0, 1.0, 1.0, 0},
+	{1.0, 1.0, 1.0, 0},
+	{1.0, 1.0, 1.0, 0},
+	{1.0, 1.0, 1.0, 0},
+	{0, 1.0, 1.0, 0},
+	{0, 1.0, 1.0, 0},
+	{0, 1.0, 1.0, 0},
+	{0, 1.0, 1.0, 0},
+	{0, 1.0, 1.0, 0},
+	{0, 1.0, 1.0, 0},
 };
 
 int num_vertices = 36;
-
-GLuint ctm_location;
-mat4 identity_matrix = 
-{{1.0, 0.0, 0.0, 0.0},
- {0.0, 1.0, 0.0, 0.0},
- {0.0, 0.0, 1.0, 0.0},
- {0.0, 0.0, 0.0, 1.0}};
-
-mat4 tr_matrix =
-{{1.0, 0.0, 0.0, 0.0},
- {0.0, 1.0, 0.0, 0.0},
- {0.0, 0.0, 1.0, 0.0},
- {0.0, 0.0, 0.0, 1.0}};
-
-int enableIdle = 0;
-int leftDown = 1;
-
-mat4 frustum(
-    GLfloat left, GLfloat right,
-    GLfloat bottom, GLfloat top,
-    GLfloat near, GLfloat far
-)
-{
-    mat4 frustum = {{0, 0, 0, 0},
-	{0, 0, 0, 0},
-	{0, 0, 0, 0},
-	{0, 0, 0, 0}};
-    
-    frustum.x.x = (-2.0f * near) / (right - left);
-    frustum.y.y = (-2.0f * near) / (top - bottom);
-    frustum.z.x = (left + right) / (right - left);
-    frustum.z.y = (bottom + top) / (top - bottom);
-    frustum.z.z = (near + far) / (far - near);
-    frustum.z.w = -1.0f;
-    frustum.w.z = -1.0f*(2.0f * near * far) / (far - near);
-    
-    return frustum;
-}
-
-void mat4_multiplication(mat4 *m1, mat4 *m2, mat4 *result) {
-    result->x.x = m1->x.x * m2->x.x + m1->y.x * m2->x.y + m1->z.x * m2->x.z + m1->w.x * m2->x.w;
-    result->x.y = m1->x.y * m2->x.x + m1->y.y * m2->x.y + m1->z.y * m2->x.z + m1->w.y * m2->x.w;
-    result->x.z = m1->x.z * m2->x.x + m1->y.z * m2->x.y + m1->z.z * m2->x.z + m1->w.z * m2->x.w;
-    result->x.w = m1->x.w * m2->x.x + m1->y.w * m2->x.y + m1->z.w * m2->x.z + m1->w.w * m2->x.w;
-    result->y.x = m1->x.x * m2->y.x + m1->y.x * m2->y.y + m1->z.x * m2->y.z + m1->w.x * m2->y.w;
-    result->y.y = m1->x.y * m2->y.x + m1->y.y * m2->y.y + m1->z.y * m2->y.z + m1->w.y * m2->y.w;
-    result->y.z = m1->x.z * m2->y.x + m1->y.z * m2->y.y + m1->z.z * m2->y.z + m1->w.z * m2->y.w;
-    result->y.w = m1->x.w * m2->y.x + m1->y.w * m2->y.y + m1->z.w * m2->y.z + m1->w.w * m2->y.w;
-    result->z.x = m1->x.x * m2->z.x + m1->y.x * m2->z.y + m1->z.x * m2->z.z + m1->w.x * m2->z.w;
-    result->z.y = m1->x.y * m2->z.x + m1->y.y * m2->z.y + m1->z.y * m2->z.z + m1->w.y * m2->z.w;
-    result->z.z = m1->x.z * m2->z.x + m1->y.z * m2->z.y + m1->z.z * m2->z.z + m1->w.z * m2->z.w;
-    result->z.w = m1->x.w * m2->z.x + m1->y.w * m2->z.y + m1->z.w * m2->z.z + m1->w.w * m2->z.w;
-    result->w.x = m1->x.x * m2->w.x + m1->y.x * m2->w.y + m1->z.x * m2->w.z + m1->w.x * m2->w.w;
-    result->w.y = m1->x.y * m2->w.x + m1->y.y * m2->w.y + m1->z.y * m2->w.z + m1->w.y * m2->w.w;
-    result->w.z = m1->x.z * m2->w.x + m1->y.z * m2->w.y + m1->z.z * m2->w.z + m1->w.z * m2->w.w;
-    result->w.w = m1->x.w * m2->w.x + m1->y.w * m2->w.y + m1->z.w * m2->w.z + m1->w.w * m2->w.w;
-}
-
-mat4 viewing_frustum = frustum(
-    -1, 1,
-    -1, 1,
-    -1, 1
-);
-
 
 bool init()
 {
@@ -246,7 +214,7 @@ bool init()
 	
 	
 	gWindow = SDL_CreateWindow(
-		"Space Force Credits",
+		"XXXtreme Peace King: Coronation MEGAMIX",
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
 		SCREEN_WIDTH,
@@ -291,60 +259,61 @@ bool init()
 	
 	// INIT STUFF SPECIFIC TO OPENGL
 	GLuint program = initShader("src/vshader.glsl", "src/fshader.glsl");
-    glUseProgram(program);
+	glUseProgram(program);
 
-    GLuint vao;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
+	GLuint vao;
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
 
-    GLuint buffer;
-    glGenBuffers(1, &buffer);
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices) + sizeof(colors), NULL, GL_STATIC_DRAW);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-    glBufferSubData(GL_ARRAY_BUFFER, sizeof(vertices), sizeof(colors), colors);
+	GLuint buffer;
+	glGenBuffers(1, &buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, buffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices) + sizeof(colors), NULL, GL_STATIC_DRAW);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+	glBufferSubData(GL_ARRAY_BUFFER, sizeof(vertices), sizeof(colors), colors);
 
-    GLuint vPosition = glGetAttribLocation(program, "vPosition");
-    glEnableVertexAttribArray(vPosition);
-    glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+	GLuint vPosition = glGetAttribLocation(program, "vPosition");
+	glEnableVertexAttribArray(vPosition);
+	glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
 
-    GLuint vColor = glGetAttribLocation(program, "vColor");
-    glEnableVertexAttribArray(vColor);
-    glVertexAttribPointer(vColor, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid *) sizeof(vertices));
+	GLuint vColor = glGetAttribLocation(program, "vColor");
+	glEnableVertexAttribArray(vColor);
+	glVertexAttribPointer(vColor, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid *) sizeof(vertices));
 
-    ctm_location = glGetUniformLocation(program, "ctm");
-    //transformation_matrix = m4_identity();
+	ctm_location = glGetUniformLocation(program, "ctm");
+	projection_matrix_location = glGetUniformLocation(program, "projection_matrix");
+	model_view_matrix_location = glGetUniformLocation(program, "model_view_matrix");
 
-    glEnable(GL_DEPTH_TEST);
-    glClearColor(0.0, 0.0, 0.0, 1.0);
-    glDepthRange(1, 0);
-    
-    // TODO TODO TODO BE SURE CHANGE THE ASPECT RATIO WITH A VIEWING FRUSTUM
+	glEnable(GL_DEPTH_TEST);
+	// If you want black
+	glClearColor(0.0, 0.0, 0.0, 1.0);
+	glDepthRange(1,0);
 	
 	return true;
 }
 
 void display(void)
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
-    //~ mat4 temp;
-    //~ mat4_multiplication(&viewing_frustum, &tr_matrix, &temp);
-    
-    //~ mat4_multiplication(&identity_matrix, &temp, &tr_matrix);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glUniformMatrix4fv(ctm_location, 1, GL_FALSE, (GLfloat *) &tr_matrix);
+	// I can reverse the order to change the effect from rotation in place to rotation about axis!
+	mat4_multiplication(&tr, &rot, &ctm);
 
-    glPolygonMode(GL_FRONT, GL_FILL);
-    //~ glPolygonMode(GL_BACK, GL_LINE);
-    glDrawArrays(GL_TRIANGLES, 0, num_vertices);
+	glUniformMatrix4fv(ctm_location, 1, GL_FALSE, (GLfloat *) &ctm);
+	glUniformMatrix4fv(projection_matrix_location, 1, GL_FALSE, (GLfloat *) &projection);
+	glUniformMatrix4fv(model_view_matrix_location, 1, GL_FALSE, (GLfloat *) &frame);
 
-    SDL_GL_SwapWindow(gWindow);
+	glPolygonMode(GL_FRONT, GL_FILL);
+	glPolygonMode(GL_BACK, GL_LINE);
+	glDrawArrays(GL_TRIANGLES, 0, num_vertices);
+	
+	glEnable(GL_CULL_FACE);
+
+	SDL_GL_SwapWindow(gWindow);
 }
 
 void close()
 {
-	
 	// Delete our OpengL context
 	SDL_GL_DeleteContext(mainContext);
 
@@ -370,6 +339,13 @@ int main(int argc, char* argv[])
 	glClear(GL_COLOR_BUFFER_BIT);
 	SDL_GL_SwapWindow(gWindow);
 	
+	mat4_print(&projection);
+	mat4_print(&frame);
+	
+	get_rotation_matrix_about_x(PI/360, &constant_xrot);
+	get_rotation_matrix_about_y(PI/270, &constant_yrot);
+	get_rotation_matrix_about_z(PI/180, &constant_zrot);
+	
 	bool loop = true;
 
 	while (loop)
@@ -390,11 +366,36 @@ int main(int argc, char* argv[])
 				case SDLK_q:
 					loop = false;
 					break;
+				// Up
+				case SDLK_w:
+					tr.w.y += 0.1;
+					break;
+				// Down
+				case SDLK_s:
+					tr.w.y -= 0.1;
+					break;
+				// Left
+				case SDLK_a:
+					tr.w.x -= 0.1;
+					break;
+				// Right
+				case SDLK_d:
+					tr.w.x += 0.1;
+					break;
 				default:
 					break;
 				}
 			}
 		}
+		
+		mat4 interim1;
+		mat4 interim2;
+		mat4 interim3;
+		mat4_multiplication(&constant_xrot, &rot, &interim1);
+		mat4_multiplication(&constant_yrot, &interim1, &interim2);
+		//~ mat4_multiplication(&constant_zrot, &interim2, &interim3);
+		//~ mat4_multiplication(&identity, &interim3, &rot);
+		mat4_multiplication(&identity, &interim2, &rot);
 		
 		display();
 	}
