@@ -21,8 +21,8 @@ const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
 
 //temp stand in for spaceship
-constexpr int BOX_WIDTH = 20;
-constexpr int BOX_HEIGHT = 20;
+constexpr int BOX_WIDTH = 200;
+constexpr int BOX_HEIGHT = 200;
 
 // Parent folder for credit images
 // Not const due to contrivance (can pass immediately if not const)
@@ -189,27 +189,17 @@ int playCredits()
 }
 
 int main(int argc, char* argv[])
-{
-	/*struct dirent *entry;
-	DIR *dp;
-	
-	dp = opendir(CREDITS_FOLDER);
-	if (dp == NULL)
-	{
-		perror("opendir: Path does not exist or could not be read.");
-		return -1;
-	}*/
-	
-	SDL_Texture* p = loadImage("resources/Credit_Image/Credit_AnthonyMartrano.png");
-	SDL_Rect pRect = {SCREEN_WIDTH/5 - BOX_WIDTH/2, SCREEN_HEIGHT/2 - BOX_HEIGHT/2, 200, 200};
-	SDL_Rect pSpriteRect = {100, 200, 200, 200};
-	
+{	
 	if (!init())
 	{
 		std::cout <<  "Failed to initialize!" << std::endl;
 		close();
 		return 1;
 	}
+	
+	SDL_Texture* p = loadImage("resources/Credit_Image/Credit_AnthonyMartrano.png");
+	SDL_Rect pRect = {SCREEN_WIDTH/5 - BOX_WIDTH/2, SCREEN_HEIGHT/2 - BOX_HEIGHT/2, 200, 200};
+	SDL_Rect pSpriteRect = {200, 200, 200, 200};
 	
 	//starting point in game
 	//start to the left
