@@ -197,9 +197,17 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 	
+	//Player rectangle
 	SDL_Texture* p = loadImage("resources/Credit_Image/Credit_AnthonyMartrano.png");
 	SDL_Rect pRect = {SCREEN_WIDTH/5 - BOX_WIDTH/2, SCREEN_HEIGHT/2 - BOX_HEIGHT/2, 200, 200};
 	SDL_Rect pSpriteRect = {200, 200, 200, 200};
+	
+	//Enemy rectangle
+	SDL_Texture* b = loadImage("resources/Credit_Image/Ling.png");
+	SDL_Rect bRect = {SCREEN_WIDTH/2 - BOX_WIDTH/2, SCREEN_HEIGHT/2 - BOX_HEIGHT/2, 200, 200};
+	SDL_Rect bSpriteRect = {150, 300, 200, 200};
+	
+	SDL_Texture* background = loadImage("resources/imgs/space_background.png");
 	
 	//starting point in game
 	//start to the left
@@ -221,6 +229,8 @@ int main(int argc, char* argv[])
 	int y_deltav = 0;
 	int *y_deltav_add = &y_deltav;
 	
+	int b_xvel = 1;
+	
 	SDL_Event e;
 	
 	bool gameon = true;
@@ -240,25 +250,21 @@ int main(int argc, char* argv[])
 		y_deltav = 0;	
 
 		if (keystate[SDL_SCANCODE_W])
-
 		{
 			y_deltav -= 1;
 		}
 
 		if (keystate[SDL_SCANCODE_A])
-
 		{
 			x_deltav -= 1;
 		}
 
 		if (keystate[SDL_SCANCODE_S])
-
 		{
 			y_deltav += 1;
 		}
 
 		if (keystate[SDL_SCANCODE_D])
-
 		{
 			x_deltav += 1;
 		}
@@ -275,49 +281,53 @@ int main(int argc, char* argv[])
 		Speed_Limit(x_vel_add,y_vel_add);
 			
 		// Move box
-		pRect.x += x_vel;
+		// Try to move vertically
 		pRect.y += y_vel;
+		if (pRect.y < 0 || (pRect.y + BOX_HEIGHT > SCREEN_HEIGHT) || SDL_HasIntersection(&bRect, &pRect))
+		{
+			pRect.y -= y_vel;
+			y_vel = 1;
+		}
+
+		// Try to move horizontally
+		pRect.x += x_vel;
+		if (pRect.x < 0 || (pRect.x + BOX_WIDTH > SCREEN_WIDTH) || SDL_HasIntersection(&bRect, &pRect))
+		{
+			pRect.x -= x_vel;
+			x_vel = 1;
+		}
 		
-		// Check you haven't moved off the screen
-
-		// Check the left side of the screen
-		if (pRect.x < 0)
+		bRect.x += b_xvel;
+		//Move the enemy rectangle to the left if it reaches the right of the screen
+		if (bRect.x + BOX_WIDTH > SCREEN_WIDTH)
 		{
-			pRect.x = 0;
+			bRect.x -= b_xvel;
+			b_xvel = -1;
 		}
-
-		// Check the right side of the screen
-		else if (pRect.x + BOX_WIDTH > SCREEN_WIDTH)
+		//Move the enemy rectangle to the right if it reaches the left of the screen
+		if (bRect.x < 0)
 		{
-			pRect.x = SCREEN_WIDTH - BOX_WIDTH;
+			bRect.x -= b_xvel;
+			b_xvel = 1;
 		}
-
-		// Check the top of the screen
-		if (pRect.y < 0)
+		
+		//Check to see if the enemy rectangle colides with the player rectangle
+		if (SDL_HasIntersection(&bRect, &pRect))
 		{
-			pRect.y = 0;
+			bRect.x -= b_xvel;
 		}
-
-		// Check the bottom of the screen
-		else if (pRect.y + BOX_HEIGHT > SCREEN_HEIGHT)
-		{
-			pRect.y = SCREEN_HEIGHT - BOX_HEIGHT;
-		}
-			
-		SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
+		
+		
+	
 
 		SDL_RenderClear(gRenderer);
 
+		SDL_RenderCopy(gRenderer, background, NULL, NULL);
+		
 		SDL_RenderCopy(gRenderer, p, &pSpriteRect, &pRect);
 		
-		// Cyan box
-
-		//SDL_SetRenderDrawColor(gRenderer, 0x00, 0xFF, 0xFF, 0xFF);
-
-		//SDL_Rect fillRect = {x_pos, y_pos, BOX_WIDTH, BOX_HEIGHT};
-
-		//SDL_RenderFillRect(gRenderer, &fillRect);
-
+		SDL_RenderCopy(gRenderer, b, &bSpriteRect, &bRect);
+		
 		SDL_RenderPresent(gRenderer);
 	}
 	
