@@ -19,6 +19,7 @@
 // Constants for resolution
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
+const int LEVEL_LEN = 3840;
 
 //temp stand in for spaceship
 constexpr int BOX_WIDTH = 200;
@@ -36,6 +37,8 @@ void close();
 // Globals
 SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
+SDL_Texture* gBackground;
+SDL_Texture* gItems;
 std::vector<SDL_Texture*> gTex;
 
 bool init()
@@ -56,7 +59,7 @@ bool init()
 	
 	
 	gWindow = SDL_CreateWindow(
-		"Space Force Credits",
+		"Space Force",
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
 		SCREEN_WIDTH,
@@ -150,9 +153,10 @@ int playCredits()
 		perror("opendir: Path does not exist or could not be read.");
 		return -1;
 	}
-
-	while ((entry = readdir(dp)))
+	SDL_Event e;
+	while ((entry = readdir(dp))&&e.type != SDL_QUIT)
 	{
+		SDL_PollEvent(&e);
 		int dNameLength = strlen(entry->d_name);
 		
 		// Crude
@@ -197,37 +201,38 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 	
+	SDL_Texture* background = loadImage("resources/imgs/space_background.png");
+	int scroll_offset = 0;
+	int rem = 0;
+	int c = 0;
+	
 	//Player rectangle
 	SDL_Texture* p = loadImage("resources/Credit_Image/Credit_AnthonyMartrano.png");
 	SDL_Rect pRect = {SCREEN_WIDTH/5 - BOX_WIDTH/2, SCREEN_HEIGHT/2 - BOX_HEIGHT/2, 200, 200};
 	SDL_Rect pSpriteRect = {200, 200, 200, 200};
+	int x_vel = 0;
+	int y_vel = 0;
+	
+	SDL_Rect pCam = {SCREEN_WIDTH/5 - BOX_WIDTH/2, SCREEN_HEIGHT/2 - BOX_HEIGHT/2, 200, 200};
+	SDL_Rect bgRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+	
+	//change in velocity
+	int x_deltav = 0;
+	int y_deltav = 0;
+	Physics playerPysics(&x_vel,&y_vel,&x_deltav,&y_deltav,3,1,1);
 	
 	//Enemy rectangle
 	SDL_Texture* b = loadImage("resources/Credit_Image/Ling.png");
 	SDL_Rect bRect = {SCREEN_WIDTH/2 - BOX_WIDTH/2, SCREEN_HEIGHT/2 - BOX_HEIGHT/2, 200, 200};
+	SDL_Rect bCam = {SCREEN_WIDTH/2 - BOX_WIDTH/2, SCREEN_HEIGHT/2 - BOX_HEIGHT/2, 200, 200};
 	SDL_Rect bSpriteRect = {150, 300, 200, 200};
 	
-	SDL_Texture* background = loadImage("resources/imgs/space_background.png");
+	SDL_Rect moveBox = {SCREEN_WIDTH/2-BOX_WIDTH/2,SCREEN_HEIGHT/2-BOX_HEIGHT/2,BOX_WIDTH,  BOX_HEIGHT};
 	
-	//starting point in game
-	//start to the left
-	//int x_pos = SCREEN_WIDTH/5 - BOX_WIDTH/2;
+	int lthird = (SCREEN_WIDTH/3) - BOX_WIDTH/2;
+	int rthird = (2 * SCREEN_WIDTH/3) - BOX_WIDTH/2;
 	
-	//int y_pos = SCREEN_HEIGHT/2 - BOX_HEIGHT/2;
-	
-	//Current velocity
-	int x_vel = 0;
-	int *x_vel_add = &x_vel;
-	
-	int y_vel = 0;
-	int *y_vel_add = &y_vel;
-	
-	//change in velocity
-	int x_deltav = 0;
-	int *x_deltav_add = &x_deltav;
-	
-	int y_deltav = 0;
-	int *y_deltav_add = &y_deltav;
+
 	
 	int b_xvel = 1;
 	
@@ -247,30 +252,27 @@ int main(int argc, char* argv[])
 			}
 		}
 		x_deltav = 0;
-		y_deltav = 0;	
-
+		y_deltav = 0;
+		
 		if (keystate[SDL_SCANCODE_W])
 		{
 			y_deltav -= 1;
 		}
-
 		if (keystate[SDL_SCANCODE_A])
 		{
 			x_deltav -= 1;
 		}
-
 		if (keystate[SDL_SCANCODE_S])
 		{
 			y_deltav += 1;
 		}
-
 		if (keystate[SDL_SCANCODE_D])
 		{
 			x_deltav += 1;
 		}
 		SDL_Delay(3);
 		//when none of the movement keys are pressed
-		Neutral(x_deltav_add,y_deltav_add,x_vel_add,y_vel_add);
+		playerPysics.Neutral();
 		// 
 		// Speed up/slow down
 		x_vel += x_deltav;
@@ -278,7 +280,7 @@ int main(int argc, char* argv[])
 		y_vel += y_deltav;
 		
 		//the speed limit for the character
-		Speed_Limit(x_vel_add,y_vel_add);
+		playerPysics.Speed_Limit();
 			
 		// Move box
 		// Try to move vertically
@@ -286,29 +288,48 @@ int main(int argc, char* argv[])
 		if (pRect.y < 0 || (pRect.y + BOX_HEIGHT > SCREEN_HEIGHT) || SDL_HasIntersection(&bRect, &pRect))
 		{
 			pRect.y -= y_vel;
-			y_vel = 1;
 		}
 
 		// Try to move horizontally
 		pRect.x += x_vel;
-		if (pRect.x < 0 || (pRect.x + BOX_WIDTH > SCREEN_WIDTH) || SDL_HasIntersection(&bRect, &pRect))
+		if (pRect.x < 0 || (pRect.x + BOX_WIDTH > LEVEL_LEN) || SDL_HasIntersection(&bRect, &pRect))
 		{
 			pRect.x -= x_vel;
-			x_vel = 1;
+
 		}
 		
 		bRect.x += b_xvel;
 		//Move the enemy rectangle to the left if it reaches the right of the screen
-		if (bRect.x + BOX_WIDTH > SCREEN_WIDTH)
+		if (bRect.x + BOX_WIDTH > SCREEN_WIDTH + scroll_offset)
 		{
 			bRect.x -= b_xvel;
 			b_xvel = -1;
 		}
 		//Move the enemy rectangle to the right if it reaches the left of the screen
-		if (bRect.x < 0)
+		if (bRect.x < scroll_offset)
 		{
 			bRect.x -= b_xvel;
 			b_xvel = 1;
+		}
+		if(pRect.x> (scroll_offset+rthird))
+		{
+			scroll_offset = pRect.x - rthird;
+			bRect.x += 1;
+		}
+		else if(pRect.x < (scroll_offset + lthird))
+		{
+			scroll_offset = pRect.x-lthird;
+			bRect.x -= 1;
+		}
+		if (scroll_offset < 0)
+		{
+			scroll_offset = 0;
+			bRect.x += 1;
+		}
+		if (scroll_offset + SCREEN_WIDTH> LEVEL_LEN)
+		{
+			scroll_offset = LEVEL_LEN - SCREEN_WIDTH;
+			bRect.x -= 1;
 		}
 		
 		//Check to see if the enemy rectangle colides with the player rectangle
@@ -316,17 +337,21 @@ int main(int argc, char* argv[])
 		{
 			bRect.x -= b_xvel;
 		}
-		
-		
-	
 
 		SDL_RenderClear(gRenderer);
+		rem = scroll_offset % SCREEN_WIDTH;
+		bgRect.x = -rem;
 
-		SDL_RenderCopy(gRenderer, background, NULL, NULL);
+		SDL_RenderCopy(gRenderer, background, NULL, &bgRect);
+		bgRect.x+= SCREEN_WIDTH;
+		SDL_RenderCopy(gRenderer, background, NULL, &bgRect);
 		
-		SDL_RenderCopy(gRenderer, p, &pSpriteRect, &pRect);
-		
-		SDL_RenderCopy(gRenderer, b, &bSpriteRect, &bRect);
+		pCam.x = pRect.x - scroll_offset;
+		pCam.y = pRect.y;
+		bCam.x = bRect.x - scroll_offset;
+		bCam.y = bRect.y;
+		SDL_RenderCopy(gRenderer, p, &pSpriteRect, &pCam);
+		SDL_RenderCopy(gRenderer, b, &bSpriteRect, &bCam);
 		
 		SDL_RenderPresent(gRenderer);
 	}
