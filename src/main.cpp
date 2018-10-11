@@ -6,15 +6,23 @@
 #include <vector>
 #include <string>
 #include <cstring>
-#include "INC_SDL.h"
+#include <SDL.h>
+#include <SDL_image.h>
 
 // Used for file walk (somewhat crudely)
 #include <stdio.h>
 #include <dirent.h>
 
+//physic 
+#include "physics.hpp"
+
 // Constants for resolution
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
+
+//temp stand in for spaceship
+constexpr int BOX_WIDTH = 200;
+constexpr int BOX_HEIGHT = 200;
 
 // Parent folder for credit images
 // Not const due to contrivance (can pass immediately if not const)
@@ -128,19 +136,14 @@ void close()
 	SDL_Quit();
 }
 
-int main(int argc, char* argv[])
+// Display the credits.
+int playCredits()
 {
-	if (!init())
-	{
-		std::cout <<  "Failed to initialize!" << std::endl;
-		close();
-		return 1;
-	}
-
+	SDL_RenderClear(gRenderer);
 	// Load media by iterating over the files in "Credit_Image"	
 	struct dirent *entry;
 	DIR *dp;
-
+	
 	dp = opendir(CREDITS_FOLDER);
 	if (dp == NULL)
 	{
@@ -148,10 +151,8 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	
 	while ((entry = readdir(dp)))
 	{
-
 		int dNameLength = strlen(entry->d_name);
 		
 		// Crude
@@ -169,20 +170,9 @@ int main(int argc, char* argv[])
 	
 	// Close the directory
 	closedir(dp);
-
-	bool quit = false;
-	SDL_Event e;
 	
 	for (auto i : gTex)
 	{
-		// does the user want to quit?
-		while(SDL_PollEvent(&e) != 0)  
-		{
-		 	if(e.type == SDL_QUIT)  
-		 	{
-		 		quit = true;
-		 	}
-		}
 		// Clear
 		SDL_RenderClear(gRenderer);
 		// Render the image
@@ -195,6 +185,152 @@ int main(int argc, char* argv[])
 
 	// Clear the renderer one last time
 	SDL_RenderClear(gRenderer);
-
 	close();
 }
+
+int main(int argc, char* argv[])
+{	
+	if (!init())
+	{
+		std::cout <<  "Failed to initialize!" << std::endl;
+		close();
+		return 1;
+	}
+	
+	//Player rectangle
+	SDL_Texture* p = loadImage("resources/Credit_Image/Credit_AnthonyMartrano.png");
+	SDL_Rect pRect = {SCREEN_WIDTH/5 - BOX_WIDTH/2, SCREEN_HEIGHT/2 - BOX_HEIGHT/2, 200, 200};
+	SDL_Rect pSpriteRect = {200, 200, 200, 200};
+	
+	//Enemy rectangle
+	SDL_Texture* b = loadImage("resources/Credit_Image/Ling.png");
+	SDL_Rect bRect = {SCREEN_WIDTH/2 - BOX_WIDTH/2, SCREEN_HEIGHT/2 - BOX_HEIGHT/2, 200, 200};
+	SDL_Rect bSpriteRect = {150, 300, 200, 200};
+	
+	SDL_Texture* background = loadImage("resources/imgs/space_background.png");
+	
+	//starting point in game
+	//start to the left
+	//int x_pos = SCREEN_WIDTH/5 - BOX_WIDTH/2;
+	
+	//int y_pos = SCREEN_HEIGHT/2 - BOX_HEIGHT/2;
+	
+	//Current velocity
+	int x_vel = 0;
+	int *x_vel_add = &x_vel;
+	
+	int y_vel = 0;
+	int *y_vel_add = &y_vel;
+	
+	//change in velocity
+	int x_deltav = 0;
+	int *x_deltav_add = &x_deltav;
+	
+	int y_deltav = 0;
+	int *y_deltav_add = &y_deltav;
+	
+	int b_xvel = 1;
+	
+	SDL_Event e;
+	
+	bool gameon = true;
+	
+	while(gameon)
+	{
+		//get array of current key states
+		const Uint8* keystate = SDL_GetKeyboardState(nullptr);
+		while(SDL_PollEvent(&e))
+		{
+			if (e.type == SDL_QUIT || keystate[SDL_SCANCODE_ESCAPE])
+			{
+				gameon = false;
+			}
+		}
+		x_deltav = 0;
+		y_deltav = 0;	
+
+		if (keystate[SDL_SCANCODE_W])
+		{
+			y_deltav -= 1;
+		}
+
+		if (keystate[SDL_SCANCODE_A])
+		{
+			x_deltav -= 1;
+		}
+
+		if (keystate[SDL_SCANCODE_S])
+		{
+			y_deltav += 1;
+		}
+
+		if (keystate[SDL_SCANCODE_D])
+		{
+			x_deltav += 1;
+		}
+		SDL_Delay(3);
+		//when none of the movement keys are pressed
+		Neutral(x_deltav_add,y_deltav_add,x_vel_add,y_vel_add);
+		// 
+		// Speed up/slow down
+		x_vel += x_deltav;
+
+		y_vel += y_deltav;
+		
+		//the speed limit for the character
+		Speed_Limit(x_vel_add,y_vel_add);
+			
+		// Move box
+		// Try to move vertically
+		pRect.y += y_vel;
+		if (pRect.y < 0 || (pRect.y + BOX_HEIGHT > SCREEN_HEIGHT) || SDL_HasIntersection(&bRect, &pRect))
+		{
+			pRect.y -= y_vel;
+			y_vel = 1;
+		}
+
+		// Try to move horizontally
+		pRect.x += x_vel;
+		if (pRect.x < 0 || (pRect.x + BOX_WIDTH > SCREEN_WIDTH) || SDL_HasIntersection(&bRect, &pRect))
+		{
+			pRect.x -= x_vel;
+			x_vel = 1;
+		}
+		
+		bRect.x += b_xvel;
+		//Move the enemy rectangle to the left if it reaches the right of the screen
+		if (bRect.x + BOX_WIDTH > SCREEN_WIDTH)
+		{
+			bRect.x -= b_xvel;
+			b_xvel = -1;
+		}
+		//Move the enemy rectangle to the right if it reaches the left of the screen
+		if (bRect.x < 0)
+		{
+			bRect.x -= b_xvel;
+			b_xvel = 1;
+		}
+		
+		//Check to see if the enemy rectangle colides with the player rectangle
+		if (SDL_HasIntersection(&bRect, &pRect))
+		{
+			bRect.x -= b_xvel;
+		}
+		
+		
+	
+
+		SDL_RenderClear(gRenderer);
+
+		SDL_RenderCopy(gRenderer, background, NULL, NULL);
+		
+		SDL_RenderCopy(gRenderer, p, &pSpriteRect, &pRect);
+		
+		SDL_RenderCopy(gRenderer, b, &bSpriteRect, &bRect);
+		
+		SDL_RenderPresent(gRenderer);
+	}
+	
+	return playCredits();
+}
+
