@@ -224,6 +224,7 @@ int main(int argc, char* argv[])
 	//Enemy rectangle
 	SDL_Texture* b = loadImage("resources/Credit_Image/Ling.png");
 	SDL_Rect bRect = {SCREEN_WIDTH/2 - BOX_WIDTH/2, SCREEN_HEIGHT/2 - BOX_HEIGHT/2, 200, 200};
+	SDL_Rect bCam = {SCREEN_WIDTH/2 - BOX_WIDTH/2, SCREEN_HEIGHT/2 - BOX_HEIGHT/2, 200, 200};
 	SDL_Rect bSpriteRect = {150, 300, 200, 200};
 	
 	SDL_Rect moveBox = {SCREEN_WIDTH/2-BOX_WIDTH/2,SCREEN_HEIGHT/2-BOX_HEIGHT/2,BOX_WIDTH,  BOX_HEIGHT};
@@ -299,13 +300,13 @@ int main(int argc, char* argv[])
 		
 		bRect.x += b_xvel;
 		//Move the enemy rectangle to the left if it reaches the right of the screen
-		if (bRect.x + BOX_WIDTH > SCREEN_WIDTH)
+		if (bRect.x + BOX_WIDTH > SCREEN_WIDTH + scroll_offset)
 		{
 			bRect.x -= b_xvel;
 			b_xvel = -1;
 		}
 		//Move the enemy rectangle to the right if it reaches the left of the screen
-		if (bRect.x < 0)
+		if (bRect.x < scroll_offset)
 		{
 			bRect.x -= b_xvel;
 			b_xvel = 1;
@@ -313,18 +314,22 @@ int main(int argc, char* argv[])
 		if(pRect.x> (scroll_offset+rthird))
 		{
 			scroll_offset = pRect.x - rthird;
+			bRect.x += 1;
 		}
 		else if(pRect.x < (scroll_offset + lthird))
 		{
 			scroll_offset = pRect.x-lthird;
+			bRect.x -= 1;
 		}
 		if (scroll_offset < 0)
 		{
 			scroll_offset = 0;
+			bRect.x += 1;
 		}
 		if (scroll_offset + SCREEN_WIDTH> LEVEL_LEN)
 		{
 			scroll_offset = LEVEL_LEN - SCREEN_WIDTH;
+			bRect.x -= 1;
 		}
 		
 		//Check to see if the enemy rectangle colides with the player rectangle
@@ -343,8 +348,10 @@ int main(int argc, char* argv[])
 		
 		pCam.x = pRect.x - scroll_offset;
 		pCam.y = pRect.y;
+		bCam.x = bRect.x - scroll_offset;
+		bCam.y = bRect.y;
 		SDL_RenderCopy(gRenderer, p, &pSpriteRect, &pCam);
-		SDL_RenderCopy(gRenderer, b, &bSpriteRect, &bRect);
+		SDL_RenderCopy(gRenderer, b, &bSpriteRect, &bCam);
 		
 		SDL_RenderPresent(gRenderer);
 	}
