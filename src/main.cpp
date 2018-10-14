@@ -133,6 +133,80 @@ void close()
 	SDL_Quit();
 }
 
+// CREDITS
+int playCredits()
+{
+	struct dirent *entry;
+	DIR *dp;
+
+	dp = opendir(CREDITS_FOLDER);
+	if (dp == NULL)
+	{
+		perror("opendir: Path does not exist or could not be read.");
+		return -1;
+	}
+
+	
+	while ((entry = readdir(dp)))
+	{
+
+		int dNameLength = strlen(entry->d_name);
+		
+		// Crude
+		if (dNameLength > 4 && entry->d_name[dNameLength - 4] == '.')
+		{
+			// Crude
+			char currentImageBuffer[2000];
+			strcpy(currentImageBuffer, CREDITS_FOLDER);
+			strcat(currentImageBuffer, entry->d_name);
+			
+			// Puts the image on the buffer queue
+			gTex.push_back(loadImage(currentImageBuffer));
+		}
+	}
+	
+	// Close the directory
+	closedir(dp);
+
+	bool quit = false;
+	SDL_Event e;
+	
+	for (auto i : gTex)
+	{
+		// does the user want to quit?
+		while(SDL_PollEvent(&e) != 0)  
+		{
+			if (e.type == SDL_QUIT)
+			{	
+				quit = true;
+			}
+		 	if(e.type == SDL_KEYDOWN)  
+		 	{
+				if (e.key.keysym.sym == SDLK_ESCAPE)
+				{
+					quit = true;
+				}
+		 	}
+		}
+		if (quit)
+		{
+			break;
+		}
+		// Clear
+		SDL_RenderClear(gRenderer);
+		// Render the image
+		SDL_RenderCopy(gRenderer, i, NULL, NULL);
+		// Display rendering
+		SDL_RenderPresent(gRenderer);
+		// Wait 3 seconds
+		SDL_Delay(3000);
+	}
+	// Clear the renderer one last time
+	SDL_RenderClear(gRenderer);
+
+	close();
+}
+
 int main(int argc, char* argv[])
 {
 	if (!init())
@@ -313,77 +387,6 @@ int main(int argc, char* argv[])
 		SDL_RenderCopyEx(gRenderer, gPlayerSheet, &playerRect, &playerCam, 0.0, nullptr, flip);
 		SDL_RenderPresent(gRenderer);
 	}
-
-
-		
-	// CREDITS	
-	struct dirent *entry;
-	DIR *dp;
-
-	dp = opendir(CREDITS_FOLDER);
-	if (dp == NULL)
-	{
-		perror("opendir: Path does not exist or could not be read.");
-		return -1;
-	}
-
 	
-	while ((entry = readdir(dp)))
-	{
-
-		int dNameLength = strlen(entry->d_name);
-		
-		// Crude
-		if (dNameLength > 4 && entry->d_name[dNameLength - 4] == '.')
-		{
-			// Crude
-			char currentImageBuffer[2000];
-			strcpy(currentImageBuffer, CREDITS_FOLDER);
-			strcat(currentImageBuffer, entry->d_name);
-			
-			// Puts the image on the buffer queue
-			gTex.push_back(loadImage(currentImageBuffer));
-		}
-	}
-	
-	// Close the directory
-	closedir(dp);
-
-	bool quit = false;
-	//SDL_Event e;
-	
-	for (auto i : gTex)
-	{
-		// does the user want to quit?
-		while(SDL_PollEvent(&e) != 0)  
-		{
-			if (e.type == SDL_QUIT)
-			{	
-				quit = true;
-			}
-		 	if(e.type == SDL_KEYDOWN)  
-		 	{
-				if (e.key.keysym.sym == SDLK_ESCAPE)
-				{
-					quit = true;
-				}
-		 	}
-		}
-		if (quit)
-		{
-			break;
-		}
-		// Clear
-		SDL_RenderClear(gRenderer);
-		// Render the image
-		SDL_RenderCopy(gRenderer, i, NULL, NULL);
-		// Display rendering
-		SDL_RenderPresent(gRenderer);
-		// Wait 3 seconds
-		SDL_Delay(3000);
-	}
-	// Clear the renderer one last time
-	SDL_RenderClear(gRenderer);
-
-	close();
+	return playCredits();
 }
