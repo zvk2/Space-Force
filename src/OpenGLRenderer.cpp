@@ -193,6 +193,9 @@ class OpenGLRenderer
 			for (auto renderObject: renderObjects) {
 				glBindTexture(GL_TEXTURE_2D, renderObject.textureID);
 
+				// Uncertain as to whether using glBegin this way is inappropriate
+				// Basically, it is supposed to make a quad with the texture
+				// (Assuming everything worked)
 				glBegin(GL_QUADS);
 					glTexCoord2f(0, 0); glVertex3f(renderObject.x, renderObject.y, 0);
 					glTexCoord2f(1, 0); glVertex3f(renderObject.x + renderObject.width, renderObject.y, 0);
