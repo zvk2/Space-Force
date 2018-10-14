@@ -1,17 +1,56 @@
 // TODO INCLUDES
+// Includes
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cstring>
+
+// checking for apple, else everyone else
+#ifdef __APPLE__
+#include <SDL2/SDL.h>
+#include <SDL2_image/SDL_image.h>
+#else
+#include <SDL.h>
+#include <SDL_image.h>
+#endif
+
+// OpenGL / glew Headers
+// ONLY TESTED ON LINUX
+#define GL3_PROTOTYPES 1
+#include <GL/glew.h>
+
+// Physics
+//~ #include "physics.hpp"
+
+// TODO DEPRECATED: SLATED FOR REMOVAL
+// For getting the shaders
+#include "initShader.h"
+
+// TO BE REVISED: helperfunctions
+#include "helperFunctions.h"
+
+// Constants for resolution
+const int SCREEN_WIDTH = 1280;
+const int SCREEN_HEIGHT = 720;
+
+#define BUFFER_OFFSET( offset )   ((GLvoid*) (offset))
 
 // Need to think about how to integrate this class with other entity classes
 class RenderObject
 {
 	public:
 		// Constructor
-		RenderObject(double initX, double initY, double initWidth, double initHeight);
-	private:
+		RenderObject(double initX, double initY, double initWidth, double initHeight, int initTextureID);
+		~RenderObject();
+	// Bad taste to make these public
+	// Also probably better to have this just be a stuct or something?
+	//~ private:
 		double x;
 		double y;
 		double width;
 		double height;
-}
+		int textureID;
+};
 
 class OpenGLRenderer
 {
@@ -19,8 +58,11 @@ class OpenGLRenderer
 		// Constructor
 		OpenGLRenderer();
 		// Destructor
-		~OpenGLRenderer();
-		void PopulateTextures;
+		//~ ~OpenGLRenderer();
+		void Close();
+		int CreateWindow();
+		// CONTRIVED AT THE MOMENT
+		void PopulateTextures();
 		void AppendRenderObject(RenderObject newRenderObject);
 		void Display();
 	private:
@@ -31,7 +73,7 @@ class OpenGLRenderer
 		// The projection (frustum, etc)
 		mat4 projection;
 		// An array of objects to render
-		std::vector<RenderObject>;
+		std::vector<RenderObject> renderObjects;
 		// TODO
 		// The window to display to
 		SDL_Window* gWindow;
