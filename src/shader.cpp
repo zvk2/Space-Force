@@ -41,7 +41,7 @@ const std::string Shader::readShaderSource(const std::string name)
 
 	if(!file.is_open())
 	{
-		std::cerr << "vshader.glsl failed to open." << std::endl;
+		std::cerr << name << " failed to open." << std::endl;
 		exit(1);
 	}
 
