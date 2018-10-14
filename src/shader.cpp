@@ -1,9 +1,7 @@
 #include "shader.h"
 
-Shader::Shader(const std::string name)
+Shader::Shader(const std::string name): program{glCreateProgram()}
 {
-	program = glCreateProgram();
-
 	const std::string vertexSource = readShaderSource(name + ".vsh");
 	const std::string fragSource = readShaderSource(name + ".fsh");
 
