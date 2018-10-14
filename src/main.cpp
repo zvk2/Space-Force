@@ -4,6 +4,7 @@
 #include <string>
 #include <cstring>
 #include "INC_SDL.h"
+#include "physics.hpp"
 
 // Used for file walk (somewhat crudely)
 #include <stdio.h>
@@ -162,6 +163,7 @@ int main(int argc, char* argv[])
 	double xDeltav = 0.0;
 	double yVel = 0.0;
 	double yDeltav = 0.0;
+	Physics playerPysics(&xVel,&yVel,&xDeltav,&yDeltav,300.0,ACCEL);
 	
 	// Player starts at center-left of screen
 	double xCoord = SCREEN_WIDTH/8;
@@ -215,56 +217,8 @@ int main(int argc, char* argv[])
 		if (keyState[SDL_SCANCODE_S])
 			yDeltav += (ACCEL * timestep);
 
-		if (xDeltav == 0) 
-		{
-			if (xVel > 0) 
-			{
-				if (xVel < (ACCEL * timestep))
-					xVel = 0;
-				else
-					xVel -= (ACCEL * timestep);
-			}
-			else if (xVel < 0) 
-			{
-				if (-xVel < (ACCEL * timestep))
-					xVel = 0;
-				else
-					xVel += (ACCEL * timestep);
-			}
-		}
-		else
-			xVel += xDeltav;
-		
-		if (yDeltav == 0)
-		{
-			if (yVel > 0)
-			{
-				if (yVel < (ACCEL * timestep))
-					yVel = 0;
-				else
-					yVel -= (ACCEL * timestep);
-			}
-			else if (yVel < 0)
-			{
-				if (-yVel < (ACCEL * timestep))
-					yVel = 0;
-				else
-					yVel += (ACCEL * timestep);
-			}
-		}
-		else
-			yVel += yDeltav;
-
-		if (xVel < -SPEED_LIMIT)
-			xVel = -SPEED_LIMIT;
-		else if (xVel > SPEED_LIMIT)
-			xVel = SPEED_LIMIT;
-
-		if (yVel < -SPEED_LIMIT)
-			yVel = -SPEED_LIMIT;
-		else if (yVel > SPEED_LIMIT)
-			yVel = SPEED_LIMIT;
-
+		playerPysics.Neutral(timestep);
+		playerPysics.Speed_Limit();
 
 		xCoord += (xVel * timestep);
 		yCoord += (yVel * timestep);
