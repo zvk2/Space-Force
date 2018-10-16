@@ -4,6 +4,8 @@
 #include <string>
 #include <cstring>
 #include "INC_SDL.h"
+#include "physics.hpp"
+#include "Player.hpp"
 
 // Used for file walk (somewhat crudely)
 #include <stdio.h>
@@ -16,8 +18,9 @@ const int SCREEN_HEIGHT = 720;
 // Constants for level
 const int LEVEL_LEN = 5120; 
 const int TILE_SIZE = 100;
-constexpr double SPEED_LIMIT = 300.0;
-constexpr double ACCEL = 3600.0;
+
+// Constant for acceleration
+const double ACCEL = 3600.0;
 
 // Parent folder for credit images
 // Not const due to contrivance (can pass immediately if not const)
@@ -229,22 +232,10 @@ int main(int argc, char* argv[])
 
 	int scrollOffset = 0;
 	int rem = 0;
-
-	gPlayerSheet = loadImage("resources/imgs/starman.png");
-
-	double xVel = 0.0;
 	double xDeltav = 0.0;
-	double yVel = 0.0;
 	double yDeltav = 0.0;
-	
-	// Player starts at center-left of screen
-	double xCoord = SCREEN_WIDTH/8;
-	double yCoord = SCREEN_HEIGHT/2;
 
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
-
-	SDL_Rect playerCam = {SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 300, 51};
-	SDL_Rect playerRect = {0, 0, 300, 51};
 
 	int frames = 0;
 	int frameCount = 0;
@@ -256,6 +247,8 @@ int main(int argc, char* argv[])
 	Uint32 moveLasttime = SDL_GetTicks();
 	double timestep = 0;
 
+	Player ply(10, loadImage("resources/imgs/starman.png"), 1);
+	
 	SDL_Event e;
 	bool gameOn = true;
 	while(gameOn) 
@@ -288,72 +281,9 @@ int main(int argc, char* argv[])
 			yDeltav -= (ACCEL * timestep);
 		if (keyState[SDL_SCANCODE_S])
 			yDeltav += (ACCEL * timestep);
-
-		if (xDeltav == 0) 
-		{
-			if (xVel > 0) 
-			{
-				if (xVel < (ACCEL * timestep))
-					xVel = 0;
-				else
-					xVel -= (ACCEL * timestep);
-			}
-			else if (xVel < 0) 
-			{
-				if (-xVel < (ACCEL * timestep))
-					xVel = 0;
-				else
-					xVel += (ACCEL * timestep);
-			}
-		}
-		else
-			xVel += xDeltav;
 		
-		if (yDeltav == 0)
-		{
-			if (yVel > 0)
-			{
-				if (yVel < (ACCEL * timestep))
-					yVel = 0;
-				else
-					yVel -= (ACCEL * timestep);
-			}
-			else if (yVel < 0)
-			{
-				if (-yVel < (ACCEL * timestep))
-					yVel = 0;
-				else
-					yVel += (ACCEL * timestep);
-			}
-		}
-		else
-			yVel += yDeltav;
-
-		if (xVel < -SPEED_LIMIT)
-			xVel = -SPEED_LIMIT;
-		else if (xVel > SPEED_LIMIT)
-			xVel = SPEED_LIMIT;
-
-		if (yVel < -SPEED_LIMIT)
-			yVel = -SPEED_LIMIT;
-		else if (yVel > SPEED_LIMIT)
-			yVel = SPEED_LIMIT;
-
-
-		xCoord += (xVel * timestep);
-		yCoord += (yVel * timestep);
-		
-		// Boundary checks
-		if (xCoord < 0)
-			xCoord = 0;
-		if (xCoord + 300 > SCREEN_WIDTH)
-			xCoord = SCREEN_WIDTH - 300;
-		if (yCoord < 0)
-			yCoord = 0;
-		if (yCoord + 51 > SCREEN_HEIGHT)
-			yCoord = SCREEN_HEIGHT - 51;		
-
-
+		ply.move(xDeltav, yDeltav, timestep);
+	
 		moveLasttime = SDL_GetTicks();
 		
 		// Scrolling background
@@ -372,19 +302,19 @@ int main(int argc, char* argv[])
 		bgRect.x += SCREEN_WIDTH;
 		SDL_RenderCopy(gRenderer, gBackground, nullptr, &bgRect);
 		
-		// Animate jet propulsion
 		frames = (frames + 1) % 6;
-		playerRect.x = frames * 300;
+		ply.animate(frames);
 		
 		// Flip if facing other direction 
-		if (xVel > 0 && flip == SDL_FLIP_HORIZONTAL)
+		if (ply.getxVel() > 0 && flip == SDL_FLIP_HORIZONTAL)
 			flip = SDL_FLIP_NONE;
-		else if (xVel < 0 && flip == SDL_FLIP_NONE)
+		else if (ply.getxVel() < 0 && flip == SDL_FLIP_NONE)
 			flip = SDL_FLIP_HORIZONTAL;
 		
-		playerCam.x = (int) xCoord;
-		playerCam.y = (int) yCoord;
-		SDL_RenderCopyEx(gRenderer, gPlayerSheet, &playerRect, &playerCam, 0.0, nullptr, flip);
+		SDL_Rect pRect = ply.getPlayerRect();
+		SDL_Rect pCam = ply.getPlayerCam();
+		
+		SDL_RenderCopyEx(gRenderer, ply.getPlayerSheet(), &pRect, &pCam, 0.0, nullptr, flip);
 		SDL_RenderPresent(gRenderer);
 	}
 	
