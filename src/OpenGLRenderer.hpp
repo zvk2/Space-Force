@@ -40,7 +40,7 @@ class RenderObject
 {
 	public:
 		// Constructor
-		RenderObject(double initX, double initY, double initWidth, double initHeight, int initTextureID);
+		RenderObject(double initX, double initY, double initWidth, double initHeight, GLuint initTextureID);
 		~RenderObject();
 	// Bad taste to make these public
 	// Also probably better to have this just be a stuct or something?
@@ -49,7 +49,7 @@ class RenderObject
 		double y;
 		double width;
 		double height;
-		int textureID;
+		GLuint textureID;
 };
 
 class OpenGLRenderer
@@ -74,9 +74,15 @@ class OpenGLRenderer
 		mat4 projection;
 		// An array of objects to render
 		std::vector<RenderObject> renderObjects;
+		// Array of textures
+		std::vector<GLuint> textureIDs;
+		// Array of buffers
+		std::vector<GLuint> bufferIDs;
 		// TODO
 		// The window to display to
 		SDL_Window* gWindow;
 		// The opengl context handle
 		SDL_GLContext mainContext;
+		// The "program" (shaders) used
+		GLuint program;
 };

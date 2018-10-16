@@ -2,6 +2,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifdef __APPLE__  // include Mac OS X verions of headers
+#include <OpenGL/OpenGL.h>
+//~ #include <GLUT/glut.h>
+#else // non-Mac OS X operating systems
+#include <GL/glew.h>
+// #include <GL/freeglut.h>
+// #include <GL/freeglut_ext.h>
+//~ #include <GL/glew.h>
+//~ #include <GL/glut.h>
+#endif  // __APPLE__
+
+
 // Create a NULL-terminated string by reading the provided file
 static char* readShaderSource(const char* shaderFile)
 {

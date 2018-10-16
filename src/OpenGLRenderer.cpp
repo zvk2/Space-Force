@@ -1,4 +1,4 @@
-// clang++ -o test.exe -lSDL2 -lSDL2_image -lSDL2_ttf -lGLEW -lglut -lGL -lGLU -lm src/OpenGLRenderer.cpp src/initShader.c src/helperFunctions.c -I/usr/include/SDL2
+// clang++ -o 3dtest.exe -lSDL2 -lSDL2_image -lSDL2_ttf -lGLEW -lglut -lGL -lGLU -lm src/OpenGLRenderer.cpp src/initShader.c src/helperFunctions.c -I/usr/include/SDL2
 
 // TODO INCLUDES
 #include "OpenGLRenderer.hpp"
@@ -7,9 +7,9 @@
 
 // Need to think about how to integrate this class with other entity classes
 // Constructor
-RenderObject::RenderObject(double initX, double initY, double initWidth, double initHeight, int initTextureID)
+RenderObject::RenderObject(double initX, double initY, double initWidth, double initHeight, GLuint initTextureID)
 {
-	// I guess I am supposed to use an initializer list
+	// I guess I am supposed to use an initializer list, but hey
 	x = initX;
 	y = initY;
 	width = initWidth;
@@ -17,13 +17,16 @@ RenderObject::RenderObject(double initX, double initY, double initWidth, double 
 	textureID = initTextureID;
 }
 // Destructor
+// EMPTY FOR NOW
 RenderObject::~RenderObject() {};
 
 // Constructor
 OpenGLRenderer::OpenGLRenderer()
 {
+	// Initialzie renderObjects to an empty vector (can be dynamically populated)
 	renderObjects = std::vector<RenderObject>();
 
+	// Create the window and continue if possible
 	if (CreateWindow())
 	{
 		// Enable double buffering for OpenGL
@@ -39,8 +42,8 @@ OpenGLRenderer::OpenGLRenderer()
 		// 3.2 is part of the modern versions of OpenGL, but most video cards whould be able to run it
 		// HOWEVER, I think we should 3.0 to avoid compatability issues
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-		//~ SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+		//~ SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
 		// Turn on double buffering with a 24bit Z buffer.
 		// You may need to change this to 16 or 32 for your system
@@ -48,12 +51,6 @@ OpenGLRenderer::OpenGLRenderer()
 
 		// Sync buffer swap with monitor vertical refresh (attempt to avoid flicker/tear)
 		SDL_GL_SetSwapInterval(1);
-
-		// OpenGL texture parameters
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
 		// Init GLEW
 		// Apparently, this is needed for Apple. Thanks to Ross Vander for letting me (headerphile) know
@@ -63,55 +60,29 @@ OpenGLRenderer::OpenGLRenderer()
 		glewInit();
 		#endif
 
-		// INIT STUFF SPECIFIC TO OPENGL
-		// NEED TO SWITCH TO DYLAN'S SHADER SOON
-		GLuint program = initShader("src/vshader.glsl", "src/fshader.glsl");
+		// NEED TO SWITCH TO DYLAN'S SHADER
+		program = initShader("src/vshader.glsl", "src/fshader.glsl");
 		glUseProgram(program);
 
-		//~ GLuint vao;
-		//~ glGenVertexArrays(1, &vao);
-		//~ glBindVertexArray(vao);
+		// Vertex array object, basically what to send to be rendered
+		GLuint vao;
+		glGenVertexArrays(1, &vao);
+		glBindVertexArray(vao);
 
-		// We theoretically *could* have one static buffer, but we would have to pass it the data for every possible thing to render all at once
-		// On one hand, this general idea is interesting because drawing repeats would not duplicate the buffer
-		// That is to say, it would draw from the same place in memory to make the repeats
-		// How one might store something like this is an interesting problem (it cannot be part of an enemy class!)
-		// Would it be reasonable to exhaustively define all possible 3D objects in a file and import them all together?
-		// Perhaps it may be best to bind the buffers after iterating over all current 3D objects
-		//~ GLuint buffer;
-		//~ glGenBuffers(1, &buffer);
-		//~ glBindBuffer(GL_ARRAY_BUFFER, buffer);
-		//~ glBufferData(GL_ARRAY_BUFFER, sizeof(vertices) + sizeof(colors), NULL, GL_STATIC_DRAW);
-		//~ glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-		//~ glBufferSubData(GL_ARRAY_BUFFER, sizeof(vertices), sizeof(colors), colors);
-
-		//~ GLuint vPosition = glGetAttribLocation(program, "vPosition");
-		//~ glEnableVertexAttribArray(vPosition);
-		//~ glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
-
-		//~ GLuint vTexCoord = glGetAttribLocation(program, "vTexCoord");
-		//~ glEnableVertexAttribArray(vTexCoord);
-		//~ glVertexAttribPointer(vTexCoord, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid *) sizeof(vertices));
-
-		// This is for straight colors
-		//~ GLuint vColor = glGetAttribLocation(program, "vColor");
-		//~ glEnableVertexAttribArray(vColor);
-		//~ glVertexAttribPointer(vColor, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid *) sizeof(vertices));
-
-		// Not sure about global transformation matrix...
-		//~ ctm_location = glGetUniformLocation(program, "ctm");
-
-		// GLOBAL: APPLIED TO ALL
-		//~ projection_matrix_location = glGetUniformLocation(program, "projection");
-		//~ model_view_matrix_location = glGetUniformLocation(program, "model_view");
-
-		glEnable(GL_DEPTH_TEST);
 		// If you want black
 		glClearColor(0.0, 0.0, 0.0, 1.0);
-		glDepthRange(1,0);
+
+		// Enable blending
+		// (For dealing with transparency, don't want blasted blocks all over!)
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		// Get the textures
+		PopulateTextures();
 	}
 }
 // Destructor
+// Not really the right way of freeing, methinks
 //~ OpenGLRenderer::~OpenGLRenderer()
 //~ {
 	//~ // Delete our OpengL context
@@ -141,6 +112,7 @@ int OpenGLRenderer::CreateWindow()
 	// Enable double buffering for OpenGL
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
+	// Actually create the window
 	gWindow = SDL_CreateWindow(
 		// Title
 		"XXXtreme Peace King: Coronation MEGAMIX",
@@ -165,73 +137,176 @@ int OpenGLRenderer::CreateWindow()
 void OpenGLRenderer::PopulateTextures()
 {
 	// CONTRIVED
+	// NOTE THAT A LIST OF TEXTURES LIKE THIS COULD GET UGLY RATHER QUICKLY...
 	std::vector<std::string> textureNames = {
-		"resources/Credit_Image/Credit_AnthonyMartrano.png"
+		"resources/test.png",
+		"resources/test2.png",
 	};
+
+	// VERY CONTRIVED
+	textureIDs = std::vector<GLuint>(textureNames.size());
+	bufferIDs = std::vector<GLuint>(textureNames.size());
+
 	// CONTRIVED LOOP
 	for (GLuint textureID=0; textureID < textureNames.size(); textureID++)
 	{
+		// Add to textureIDs (needed to bind texture when rendering)
+		textureIDs[textureID] = textureID;
+		bufferIDs[textureID] = textureID;
+
+		// Get a cstyle string for loading the image
 		char textureName[textureNames[textureID].size() + 1];
 		strcpy(textureName, textureNames[textureID].c_str());
+
+		// Debug output the name of the texture (make sure stuff isn't broken)
+		std::cout << textureName << std::endl;
+
+		// Load the image as a surface (don't need a texture, can be surface for the pixel data)
 		SDL_Surface* surface = IMG_Load(textureName);
 
-		glGenTextures(1, &textureID);
-		glBindTexture(GL_TEXTURE_2D, textureID);
-
-		int Mode = GL_RGB;
-
-		if(surface->format->BytesPerPixel == 4) {
-			Mode = GL_RGBA;
+		// If something bad happened
+		if (surface == nullptr)
+		{
+			std::cout << "Unable to load image " << textureName << "! SDL Error: " << SDL_GetError() << std::endl;
 		}
 
-		glTexImage2D(GL_TEXTURE_2D, 0, Mode, surface->w, surface->h, 0, Mode, GL_UNSIGNED_BYTE, surface->pixels);
+		// Indicate we want to make a new texture
+		glGenTextures(1, &textureIDs[textureID]);
+		// Indicate where this new texture will be bound
+		glBindTexture(GL_TEXTURE_2D, textureIDs[textureID]);
 
+		// Default to RGB
+		int mode = GL_RGB;
+
+		// Otherwise account for alpha channel (we will probably usually have alpha)
+		if(surface->format->BytesPerPixel == 4) {
+			mode = GL_RGBA;
+		}
+
+		// Slam in the texture
+		glTexImage2D(
+			// Target: Here we just say to make it a 2D texture (there are other complicated things for like cubes and stuff)
+			GL_TEXTURE_2D,
+			// Level of detail (basically for mipmapping an image (shrinking it)
+			// 0 here means don't mipmap to reduce it (ie, the base image)
+			0,
+			// Internal format: how the bytes represent the colors
+			mode,
+			// Width
+			surface->w,
+			// Height
+			surface->h,
+			// The width of the border? Apparently this should *always* be 0
+			0,
+			// The format for the texels ("3D" texture pixels)
+			mode,
+			// How exactly the texels should be passed to OpenGL
+			GL_UNSIGNED_BYTE,
+			// The pixels data itself, we rip it from the surface
+			surface->pixels
+		);
+
+		// Texture parameters
+		// Basically, repeat if you need to and linear interpolation for texel -> pixel
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		// Contrived for one rectangle
+		int numVertices = 6;
+		int verticesSize = numVertices * sizeof(vec4);
+
+		// One face of a cube
+		vec4 vertices[6] = {
+			{-0.5,  0.5,  0.5, 1.0},	// front top left
+			{-0.5, -0.5,  0.5, 1.0},	// front bottom left
+			{ 0.5, -0.5,  0.5, 1.0},	// front bottom right
+			{-0.5,  0.5,  0.5, 1.0},	// front top left
+			{ 0.5, -0.5,  0.5, 1.0},	// front bottom right
+			{ 0.5,  0.5,  0.5, 1.0},	// front top right
+		};
+
+		// **PLEASE NOTE THIS IS UPSIDE DOWN**
+		// Why? I think (though I am not sure) that the surface pixels from SDL are upside down
+		// That is, (0, 0) is top left from SDL's perspective, HOWEVER (0, 1) is top left from OpenGL's perspective
+		vec2 texCoord[6] = {
+			{0.0, 0.0},
+			{0.0, 1.0},
+			{1.0, 1.0},
+			{0.0, 0.0},
+			{1.0, 1.0},
+			{1.0, 0.0},
+		};
+
+		// Describes how we will be sending data out to be rendered
+		glGenBuffers(1, &bufferIDs[textureID]);
+		glBindBuffer(GL_ARRAY_BUFFER, bufferIDs[textureID]);
+		// Full buffer
+		glBufferData(GL_ARRAY_BUFFER, verticesSize + sizeof(texCoord), NULL, GL_STATIC_DRAW);
+		// Vertices
+		glBufferSubData(GL_ARRAY_BUFFER, 0, verticesSize, vertices);
+		// Texture stuff
+		glBufferSubData(GL_ARRAY_BUFFER, verticesSize, sizeof(texCoord), texCoord);
+
+		// Info for position (vec4 at the moment)
+		GLuint vPosition = glGetAttribLocation(program, "vPosition");
+		glEnableVertexAttribArray(vPosition);
+		glVertexAttribPointer(vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+
+		// Info for the texture (vec2 at the moment)
+		GLuint vTexCoord = glGetAttribLocation(program, "vTexCoord");
+		glEnableVertexAttribArray(vTexCoord);
+		glVertexAttribPointer(vTexCoord, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid *) verticesSize);
+
+		// FREE THE SURFACE
+		SDL_FreeSurface(surface);
 	}
 }
+// This just appends the render object
 void OpenGLRenderer::AppendRenderObject(RenderObject newRenderObject)
 {
 	renderObjects.push_back(newRenderObject);
 }
+
 void OpenGLRenderer::Display()
 {
+	// Clear initially
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// I can reverse the order to change the effect from rotation in place to rotation about axis!
-	//~ mat4_multiplication(&tr, &rot, &ctm);
+	// Iterate over every object to render
+	for (auto currentObject: renderObjects)
+	{
+		// Contrived for one rectangle
+		int numVertices = 6;
+		// Which texture to use
+		// (Somewhat crude)
+		glBindTexture(GL_TEXTURE_2D, textureIDs[currentObject.textureID]);
+		// Also pick the right buffer
+		glBindBuffer(GL_ARRAY_BUFFER, bufferIDs[currentObject.textureID]);
 
-	// The current transformation matrix depends on the current object
-	//~ glUniformMatrix4fv(ctm_location, 1, GL_FALSE, (GLfloat *) &ctm);
+		// Didn't add a transform matrix yet
+		//~ ctm_location = glGetUniformLocation(program, "ctm");
 
-	//~ glUniformMatrix4fv(projection_matrix_location, 1, GL_FALSE, (GLfloat *) &projection);
-	//~ glUniformMatrix4fv(model_view_matrix_location, 1, GL_FALSE, (GLfloat *) &frame);
+		// Enable the texture
+		// TECHNICALLY CAN BE USED TO SWAP TEXTURES IN AN ARRAY
+		// HOWEVER, YOU CAN ALSO JUST CHANGE WHAT TEXTURE IS BOUND
+		glUniform1i(glGetUniformLocation(program, "texture"), 0);
 
-	glPolygonMode(GL_FRONT, GL_FILL);
-	glPolygonMode(GL_BACK, GL_LINE);
-	// Triangles are more efficient, but quads easier to work with
-	//~ glDrawArrays(GL_TRIANGLES, 0, num_vertices);
-	//~ glDrawArrays(GL_QUADS, 0, num_vertices);
-
-	// Render every "renderObject"
-	for (auto renderObject: renderObjects) {
-		glBindTexture(GL_TEXTURE_2D, renderObject.textureID);
-
-		std::cout << renderObject.textureID << std::endl;
-
-		// Uncertain as to whether using glBegin this way is inappropriate
-		// Basically, it is supposed to make a quad with the texture
-		// (Assuming everything worked)
-		glBegin(GL_QUADS);
-			glTexCoord2f(0, 0); glVertex3f(renderObject.x, renderObject.y, 0);
-			glTexCoord2f(1, 0); glVertex3f(renderObject.x + renderObject.width, renderObject.y, 0);
-			glTexCoord2f(1, 1); glVertex3f(renderObject.x + renderObject.width, renderObject.y + renderObject.height, 0);
-			glTexCoord2f(0, 1); glVertex3f(renderObject.x, renderObject.y + renderObject.height, 0);
-		glEnd();
+		// Draw vertices in the buffer
+		glDrawArrays(GL_TRIANGLES, 0, numVertices);
 	}
 
-	glEnable(GL_CULL_FACE);
+	//~ // Get rid of faces in the wrong direction
+	//~ glEnable(GL_CULL_FACE);
+	//~ // Actually test for depth
+	//~ glEnable(GL_DEPTH_TEST);
+	// Clear to black
+	glClearColor(0, 0, 0, 1.0);
+	// Set range for depth
+	glDepthRange(1, 0);
 
+	// Actually show everything when done
 	SDL_GL_SwapWindow(gWindow);
 }
 
@@ -241,12 +316,20 @@ int main()
 	// Spawn an instance of OpenGLRenderer
 	OpenGLRenderer openGL = OpenGLRenderer();
 
+	// Rough sketch of a RenderObject?
 	RenderObject test = RenderObject(
 		0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0
 	);
 
-	openGL.AppendRenderObject(test);
+	RenderObject test2 = RenderObject(
+		0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 1
+	);
 
+	// Crude idea of how to add to render queue?
+	openGL.AppendRenderObject(test);
+	openGL.AppendRenderObject(test2);
+
+	// Displays stuff
 	openGL.Display();
 
 	bool loop = 1;
