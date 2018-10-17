@@ -5,6 +5,7 @@
 #include <cstring>
 #include "INC_SDL.h"
 #include "physics.hpp"
+#include "attack.h"
 
 // Used for file walk (somewhat crudely)
 #include <stdio.h>
@@ -33,6 +34,7 @@ void close();
 SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
 SDL_Texture* gBackground;
+SDL_Texture* gAttack;
 SDL_Texture* gPlayerSheet;
 std::vector<SDL_Texture*> gTex;
 
@@ -153,6 +155,7 @@ int main(int argc, char* argv[])
 	- Empty space present in front of sprite for blaster-fire animation to be implemented later 
 	*/ 
 	gBackground = loadImage("resources/imgs/space_background.png");
+	gAttack = loadImage("resources/imgs/attack.png");
 
 	int scrollOffset = 0;
 	int rem = 0;
@@ -173,6 +176,11 @@ int main(int argc, char* argv[])
 
 	SDL_Rect playerCam = {SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 300, 51};
 	SDL_Rect playerRect = {0, 0, 300, 51};
+	
+	SDL_Rect attackRect = {0, 0, 80, 20};
+	SDL_Rect attackCam = {SCREEN_WIDTH, SCREEN_HEIGHT/2+51/2, 80, 20};
+	//begins the attack list
+	attack hit(gRenderer,gAttack,&attackRect,attackCam);
 
 	int frames = 0;
 	int frameCount = 0;
@@ -186,6 +194,7 @@ int main(int argc, char* argv[])
 
 	SDL_Event e;
 	bool gameOn = true;
+	bool up = true;
 	while(gameOn) 
 	{
 		while(SDL_PollEvent(&e))
@@ -199,6 +208,13 @@ int main(int argc, char* argv[])
 				if (e.key.keysym.sym == SDLK_ESCAPE)
 				{
 					gameOn = false;
+				}
+			}
+			if(up == false && e.type == SDL_KEYUP && e.key.repeat == 0)
+			{
+				if(e.key.keysym.sym == SDLK_SPACE)
+				{
+					up = true;
 				}
 			}
 		}
@@ -264,6 +280,17 @@ int main(int argc, char* argv[])
 		
 		playerCam.x = (int) xCoord;
 		playerCam.y = (int) yCoord;
+		//will create another beam if and only if space is pressed once
+		//and not held
+		if(keyState[SDL_SCANCODE_SPACE] && up == true)
+		{
+			up = false;
+			attackCam.x = (int)xCoord + 300;
+			attackCam.y = (int) yCoord + 51/2;
+			hit.addAttack(attackCam);	
+		}
+		//renders attack to screen
+		hit.renderAttack(timestep);
 		SDL_RenderCopyEx(gRenderer, gPlayerSheet, &playerRect, &playerCam, 0.0, nullptr, flip);
 		SDL_RenderPresent(gRenderer);
 	}
