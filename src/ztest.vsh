@@ -1,15 +1,13 @@
-#version 150
+#version 130
 
-in vec3 vPosition;
-in vec4 vColor;
-out vec4 color;
+in vec4 vPosition;
+in vec2 vTexCoord;
+out vec2 texCoord;
 
 uniform mat4 ctm;
-uniform mat4 projection;
-uniform mat4 model_view;
 
 void main()
 {
-	color = vColor;
-	gl_Position = projection * model_view * ctm * vec4(vPosition, 1.0);
+	texCoord = vTexCoord;
+	gl_Position = ctm * vPosition;
 }
