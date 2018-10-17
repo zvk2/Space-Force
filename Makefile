@@ -30,7 +30,7 @@ ifeq ($(OS), Windows_NT)
 	CPP = g++
 	CFLAGS = -c -IC:/mingwdev/include/SDL2 -IC:/mingwdev/opengl/include
 	INCLUDE = -IC:/mingwdev/include/SDL2 -IC:/mingwdev/opengl/include
-	LFLAGS = -LC:/mingwdev/lib -LC:/mingwdev/opengl/lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lopengl32 -lglew32 -lfreeglut -o $(OUT)
+	LFLAGS = -LC:/mingwdev/lib -LC:/mingwdev/opengl/lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lopengl32 -lglew32 -o $(OUT)
 else ifeq ($(shell uname -s), Darwin)
 	DETECTED_OS := $(shell uname -s)
 	CPP = g++ -std=c11
@@ -42,7 +42,7 @@ else
 	CPP = clang++
 	CFLAGS = -c -I/usr/include/SDL2
 	INCLUDE = -I/usr/include/SDL2
-	LFLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -lGLEW -lglut -lGL -lGLU -lm -o $(OUT)
+	LFLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -lGLEW -lGL -lGLU -lm -o $(OUT)
 endif
 
 .PHONY: all clean mrclean os rebuild
