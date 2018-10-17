@@ -26,7 +26,6 @@
 // For getting the shaders
 #include "shader.h"
 
-
 // TO BE REVISED: helperfunctions
 #include "helperFunctions.h"
 

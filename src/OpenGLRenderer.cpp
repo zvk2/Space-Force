@@ -62,7 +62,7 @@ OpenGLRenderer::OpenGLRenderer()
 
 		// NEED TO SWITCH TO DYLAN'S SHADER
 		Shader shader("ztest");
-		GLuint program = shader.getProgram();
+		program = shader.getProgram();
 
 		// Vertex array object, basically what to send to be rendered
 		GLuint vao;
@@ -311,7 +311,7 @@ void OpenGLRenderer::Display()
 }
 
 // This main function exists to test OpenGLRenderer
-int main()
+int main(int argc, char* argv[])
 {
 	// Spawn an instance of OpenGLRenderer
 	OpenGLRenderer openGL = OpenGLRenderer();
