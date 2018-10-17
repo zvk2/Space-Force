@@ -30,7 +30,7 @@
 #include "physics.hpp"
 
 // For getting the shaders
-#include "initShader.h"
+#include "shader.h"
 
 // TO BE REVISED: helperfunctions
 #include "helperFunctions.h"
@@ -428,8 +428,8 @@ bool InitOpenGl()
 	#endif
 	
 	// INIT STUFF SPECIFIC TO OPENGL
-	GLuint program = initShader("src/vshader.glsl", "src/fshader.glsl");
-	glUseProgram(program);
+	Shader shader("ztest");
+	GLuint program = shader.getProgram();
 
 	GLuint vao;
 	glGenVertexArrays(1, &vao);

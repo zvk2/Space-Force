@@ -24,7 +24,7 @@
 
 // TODO DEPRECATED: SLATED FOR REMOVAL
 // For getting the shaders
-#include "initShader.h"
+#include "shader.h"
 
 
 // TO BE REVISED: helperfunctions

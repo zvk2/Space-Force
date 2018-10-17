@@ -61,8 +61,8 @@ OpenGLRenderer::OpenGLRenderer()
 		#endif
 
 		// NEED TO SWITCH TO DYLAN'S SHADER
-		program = initShader("src/vshader.glsl", "src/fshader.glsl");
-		glUseProgram(program);
+		Shader shader("ztest");
+		GLuint program = shader.getProgram();
 
 		// Vertex array object, basically what to send to be rendered
 		GLuint vao;
