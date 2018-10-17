@@ -5,6 +5,7 @@
 #include <cstring>
 #include "INC_SDL.h"
 #include "physics.hpp"
+#include "attack.h"
 
 // Used for file walk (somewhat crudely)
 #include <stdio.h>
@@ -178,6 +179,7 @@ int main(int argc, char* argv[])
 	
 	SDL_Rect attackRect = {0, 0, 80, 20};
 	SDL_Rect attackCam = {SCREEN_WIDTH, SCREEN_HEIGHT/2+51/2, 80, 20};
+	//begins the attack list
 	attack hit(gRenderer,gAttack,&attackRect,attackCam);
 
 	int frames = 0;
@@ -192,6 +194,7 @@ int main(int argc, char* argv[])
 
 	SDL_Event e;
 	bool gameOn = true;
+	bool up = true;
 	while(gameOn) 
 	{
 		while(SDL_PollEvent(&e))
@@ -277,6 +280,8 @@ int main(int argc, char* argv[])
 		
 		playerCam.x = (int) xCoord;
 		playerCam.y = (int) yCoord;
+		//will create another beam if and only if space is pressed once
+		//and not held
 		if(keyState[SDL_SCANCODE_SPACE] && up == true)
 		{
 			up = false;
@@ -284,6 +289,7 @@ int main(int argc, char* argv[])
 			attackCam.y = (int) yCoord + 51/2;
 			hit.addAttack(attackCam);	
 		}
+		//renders attack to screen
 		hit.renderAttack(timestep);
 		SDL_RenderCopyEx(gRenderer, gPlayerSheet, &playerRect, &playerCam, 0.0, nullptr, flip);
 		SDL_RenderPresent(gRenderer);
