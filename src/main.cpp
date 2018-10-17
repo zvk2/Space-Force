@@ -72,7 +72,7 @@ bool init()
 	 * Choose first driver that can provide hardware acceleration
 	 *   (second arg, -1)
 	 */
-	gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
+	gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	if (gRenderer == nullptr)
 	{	
 		std::cout << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
