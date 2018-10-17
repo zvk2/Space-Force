@@ -340,6 +340,20 @@ int main(int argc, char* argv[])
 		{
 			if (event.type == SDL_QUIT)
 				loop = false;
+			if (event.type == SDL_KEYDOWN)
+			{
+				switch (event.key.keysym.sym)
+				{
+				case SDLK_ESCAPE:
+					loop = false;
+					break;
+				case SDLK_q:
+					loop = false;
+					break;
+				default:
+					break;
+				}
+			}
 		}
 	}
 
