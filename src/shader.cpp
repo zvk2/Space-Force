@@ -12,7 +12,7 @@ Shader::Shader(const std::string name)
 
 	glAttachShader(program, vShader);
 	glAttachShader(program, fShader);
-	glBindFragDataLocation(program, 0, "outColor"); // unnecessary at 0, but used when fShader writes to multiple buffers.
+	glBindFragDataLocation(program, 0, "fColor"); // unnecessary at 0, but used when fShader writes to multiple buffers.
                                                     // will figure this out more
 	glLinkProgram(program);
     checkLinkError();
