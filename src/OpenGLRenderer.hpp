@@ -26,6 +26,10 @@
 // For getting the shaders
 #include "initShader.h"
 
+#ifdef CreateWindow
+#undef CreateWindow
+#endif
+
 // TO BE REVISED: helperfunctions
 #include "helperFunctions.h"
 
