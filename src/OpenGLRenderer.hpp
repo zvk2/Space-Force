@@ -26,12 +26,13 @@
 // For getting the shaders
 #include "initShader.h"
 
-#ifdef CreateWindow
-#undef CreateWindow
-#endif
 
 // TO BE REVISED: helperfunctions
 #include "helperFunctions.h"
+
+#ifdef CreateWindow
+#undef CreateWindow
+#endif
 
 // Constants for resolution
 const int SCREEN_WIDTH = 1280;
