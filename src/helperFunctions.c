@@ -480,18 +480,18 @@ mat4 empty_matrix()
 mat4 ortho(
     GLfloat left, GLfloat right,
     GLfloat bottom, GLfloat top,
-    GLfloat near, GLfloat far
+    GLfloat close, GLfloat distant
 )
 {
     mat4 ortho_matrix = identity_matrix();
     
     ortho_matrix.x.x = 2.0 / (right - left);
     ortho_matrix.y.y = 2.0 / (top - bottom);
-    ortho_matrix.z.z = 2.0 / (near - far);
+    ortho_matrix.z.z = 2.0 / (close - distant);
     
     ortho_matrix.w.x = -((right + left)/(right - left));
     ortho_matrix.w.x = -((top + bottom)/(top - bottom));
-    ortho_matrix.w.x = -((near + far)/(near - far));
+    ortho_matrix.w.x = -((close + distant)/(close - distant));
     
     return ortho_matrix;
 }
@@ -502,18 +502,18 @@ mat4 ortho(
 mat4 frustum(
     GLfloat left, GLfloat right,
     GLfloat bottom, GLfloat top,
-    GLfloat near, GLfloat far
+    GLfloat close, GLfloat distant
 )
 {
     mat4 frustum = empty_matrix();
     
-    frustum.x.x = (-2.0f * near) / (right - left);
-    frustum.y.y = (-2.0f * near) / (top - bottom);
+    frustum.x.x = (-2.0f * close) / (right - left);
+    frustum.y.y = (-2.0f * close) / (top - bottom);
     frustum.z.x = (left + right) / (right - left);
     frustum.z.y = (bottom + top) / (top - bottom);
-    frustum.z.z = (near + far) / (far - near);
+    frustum.z.z = (close + distant) / (distant - close);
     frustum.z.w = -1.0f;
-    frustum.w.z = -1.0f*(2.0f * near * far) / (far - near);
+    frustum.w.z = -1.0f*(2.0f * close * distant) / (distant - close);
 
     return frustum;
 }
