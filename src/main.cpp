@@ -138,6 +138,7 @@ void close()
 
 int main(int argc, char* argv[])
 {
+	bool face = true;
 	if (!init())
 	{
 		std::cout <<  "Failed to initialize!" << std::endl;
@@ -274,9 +275,15 @@ int main(int argc, char* argv[])
 		
 		// Flip if facing other direction 
 		if (xVel > 0 && flip == SDL_FLIP_HORIZONTAL)
+		{
 			flip = SDL_FLIP_NONE;
+			face = true;
+		}
 		else if (xVel < 0 && flip == SDL_FLIP_NONE)
+		{
 			flip = SDL_FLIP_HORIZONTAL;
+			face = false;
+		}
 		
 		playerCam.x = (int) xCoord;
 		playerCam.y = (int) yCoord;
@@ -287,7 +294,7 @@ int main(int argc, char* argv[])
 			up = false;
 			attackCam.x = (int)xCoord + 300;
 			attackCam.y = (int) yCoord + 51/2;
-			hit.addAttack(attackCam);	
+			hit.addAttack(attackCam,face);	
 		}
 		//renders attack to screen
 		hit.renderAttack(timestep);

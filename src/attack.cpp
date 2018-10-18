@@ -8,12 +8,16 @@
 			end->next = nullptr;
 		}
 		//new attacks are added to the end of the list
-		void attack::addAttack(SDL_Rect cam)
+		void attack::addAttack(SDL_Rect cam, bool move)
 		{
 			end->next = (struct Node*)malloc(sizeof(struct Node));
+			if(!move)
+				cam.x -= 305;
 			end ->next->attackCam = cam;
 			end = end->next;
+			end->face = move;
 			SDL_RenderCopy(gRenderer, gAttack, attackBox, &end->attackCam);
+			
 			end->next = nullptr;
 		}
 		//when the currently first attack hits the end of the screen than 
@@ -22,7 +26,7 @@
 		void attack::renderAttack(double timestep)
 		{
 			curr = head->next;
-			if(curr != nullptr && head -> attackCam.x + 80 >= 1280)
+			if(curr != nullptr && (head -> attackCam.x >= 1280 || head->attackCam.x <= 0))
 			{
 				curr = head->next;
 				free(head);
@@ -31,7 +35,10 @@
 		
 			while(curr != nullptr)
 			{
-				curr->attackCam.x +=(int) (3000 * timestep);
+				if(curr -> face)
+					curr->attackCam.x +=(int) (3000 * timestep);
+				else
+					curr->attackCam.x -=(int) (3000 * timestep);
 				SDL_RenderCopy(gRenderer, gAttack, attackBox, &curr->attackCam);
 				curr = curr->next;
 			}
