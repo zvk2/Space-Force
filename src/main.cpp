@@ -138,7 +138,6 @@ void close()
 
 int main(int argc, char* argv[])
 {
-	bool face = true;
 	if (!init())
 	{
 		std::cout <<  "Failed to initialize!" << std::endl;
@@ -150,36 +149,38 @@ int main(int argc, char* argv[])
 	/*
 	- Uses modified FINAL_sdl15_fps.cpp as basis
 	- Currently consists of Starman moving across a scrolling background repeated 4 times
-	- Controls: WASD for movement
+	- Controls: WASD for movement, Spacebar to shoot
 	- Can be terminated by x'ing out or pressing 'esc' to credits
-	- Starman sprite's dimensions are 300 x 51
-	- Empty space present in front of sprite for blaster-fire animation to be implemented later 
+	- Starman sprite's dimensions are 240 x 51
 	*/ 
-	gBackground = loadImage("resources/imgs/space_background.png");
+	// Until we figure out gradients, we'll use space_2_background for now
+	gBackground = loadImage("resources/imgs/space_2_background.png");
 	gAttack = loadImage("resources/imgs/attack.png");
 
 	int scrollOffset = 0;
 	int rem = 0;
 
-	gPlayerSheet = loadImage("resources/imgs/starman.png");
+	gPlayerSheet = loadImage("resources/imgs/starman_new.png");
 
 	double xVel = 0.0;
 	double xDeltav = 0.0;
 	double yVel = 0.0;
 	double yDeltav = 0.0;
-	Physics playerPysics(&xVel,&yVel,&xDeltav,&yDeltav,300.0,ACCEL);
+	Physics playerPysics(&xVel,&yVel,&xDeltav,&yDeltav,SPEED_LIMIT,ACCEL);
 	
 	// Player starts at center-left of screen
+	//while
 	double xCoord = SCREEN_WIDTH/8;
 	double yCoord = SCREEN_HEIGHT/2;
 
-	SDL_RendererFlip flip = SDL_FLIP_NONE;
+	//SDL_RendererFlip flip = SDL_FLIP_NONE;
 
-	SDL_Rect playerCam = {SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 300, 51};
-	SDL_Rect playerRect = {0, 0, 300, 51};
+	SDL_Rect playerCam = {SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 240, 51};
+	SDL_Rect playerRect = {0, 0, 240, 51};
 	
-	SDL_Rect attackRect = {0, 0, 80, 20};
-	SDL_Rect attackCam = {SCREEN_WIDTH, SCREEN_HEIGHT/2+51/2, 80, 20};
+	// 50 x 6 seems to be a reasonable dimension for the bolt
+	SDL_Rect attackRect = {0, 0, 50, 6};
+	SDL_Rect attackCam = {SCREEN_WIDTH, SCREEN_HEIGHT/2+51/2, 50, 6};
 	//begins the attack list
 	attack hit(gRenderer,gAttack,&attackRect,attackCam);
 
@@ -243,8 +244,8 @@ int main(int argc, char* argv[])
 		// Boundary checks
 		if (xCoord < 0)
 			xCoord = 0;
-		if (xCoord + 300 > SCREEN_WIDTH)
-			xCoord = SCREEN_WIDTH - 300;
+		if (xCoord + 240 > SCREEN_WIDTH)
+			xCoord = SCREEN_WIDTH - 240;
 		if (yCoord < 0)
 			yCoord = 0;
 		if (yCoord + 51 > SCREEN_HEIGHT)
@@ -271,20 +272,18 @@ int main(int argc, char* argv[])
 		
 		// Animate jet propulsion
 		frames = (frames + 1) % 6;
-		playerRect.x = frames * 300;
-		
+		playerRect.x = frames * 240;
+	
+		// Since game levels progress from L to R, no need for sprite to flip
+		// Code for flipping remains here if theres a change of plan
+		/*
 		// Flip if facing other direction 
 		if (xVel > 0 && flip == SDL_FLIP_HORIZONTAL)
-		{
 			flip = SDL_FLIP_NONE;
-			face = true;
-		}
 		else if (xVel < 0 && flip == SDL_FLIP_NONE)
-		{
 			flip = SDL_FLIP_HORIZONTAL;
-			face = false;
-		}
-		
+		*/
+
 		playerCam.x = (int) xCoord;
 		playerCam.y = (int) yCoord;
 		//will create another beam if and only if space is pressed once
@@ -292,13 +291,13 @@ int main(int argc, char* argv[])
 		if(keyState[SDL_SCANCODE_SPACE] && up == true)
 		{
 			up = false;
-			attackCam.x = (int)xCoord + 300;
+			attackCam.x = (int)xCoord + 240;
 			attackCam.y = (int) yCoord + 51/2;
-			hit.addAttack(attackCam,face);	
+			hit.addAttack(attackCam);	
 		}
 		//renders attack to screen
 		hit.renderAttack(timestep);
-		SDL_RenderCopyEx(gRenderer, gPlayerSheet, &playerRect, &playerCam, 0.0, nullptr, flip);
+		SDL_RenderCopy(gRenderer, gPlayerSheet, &playerRect, &playerCam);
 		SDL_RenderPresent(gRenderer);
 	}
 
