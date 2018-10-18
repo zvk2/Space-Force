@@ -4,8 +4,7 @@
 #include <string>
 #include <cstring>
 #include "INC_SDL.h"
-#include "physics.hpp"
-#include "Player.hpp"
+#include "Player.h"
 
 // Used for file walk (somewhat crudely)
 #include <stdio.h>
