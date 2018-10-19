@@ -45,7 +45,7 @@ else
 	LFLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -lGLEW -lGL -lGLU -lm -o $(OUT)
 endif
 
-.PHONY: all clean mrclean os rebuild
+.PHONY: all clean mrclean os rebuild renderer
 
 all: $(OUT)
 
@@ -65,6 +65,9 @@ obj/%.o: src/%.cpp $(DEP)
 
 
 # additional features, small tests, etc.
+renderer: $(patsubst src/%.c, obj/%.o, $(patsubst src/%.cpp, obj/%.o, $(filter-out src/main.cpp, $(SRC))))
+	$(CPP) $< $(LFLAGS)
+
 clean:
 	rm -f $(OBJ) $(OUT) $(OUT).exe
 
