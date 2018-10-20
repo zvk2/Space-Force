@@ -22,12 +22,12 @@
 // Physics
 //~ #include "physics.hpp"
 
-// TODO DEPRECATED: SLATED FOR REMOVAL
+// For type definitions etc.
+#include "matrix.h"
+
 // For getting the shaders
 #include "shader.h"
 
-// TO BE REVISED: helperfunctions
-#include "helperFunctions.h"
 
 #ifdef CreateWindow
 #undef CreateWindow

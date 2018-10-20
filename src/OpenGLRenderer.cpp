@@ -1,4 +1,4 @@
-// clang++ -o 3dtest.exe -lSDL2 -lSDL2_image -lSDL2_ttf -lGLEW -lglut -lGL -lGLU -lm src/OpenGLRenderer.cpp src/initShader.c src/helperFunctions.c -I/usr/include/SDL2
+// clang++ -o 3dtest.exe -lSDL2 -lSDL2_image -lSDL2_ttf -lGLEW -lglut -lGL -lGLU -lm src/OpenGLRenderer.cpp src/matrix.c src/shader.cpp -I/usr/include/SDL2
 
 // TODO INCLUDES
 #include "OpenGLRenderer.hpp"

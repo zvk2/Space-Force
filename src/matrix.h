@@ -6,6 +6,21 @@
 #include <GL/glew.h>
 #endif
 
+// For textures
+typedef struct vec2 {
+	GLfloat s;
+	GLfloat t;
+} vec2;
+
+// For vertices without contrived w of 1
+// (In case we ever want that)
+typedef struct vec3 {
+	GLfloat x;
+	GLfloat y;
+	GLfloat z;
+} vec3;
+
+// For vertices with w
 typedef struct vec4 {
 	GLfloat x;
 	GLfloat y;
