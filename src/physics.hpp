@@ -105,15 +105,5 @@ public:
 			{
 				y_vel = FOR_LIMIT;
 			}
-			else if (y_vel < 0)
-			{
-				if (-(y_vel) < (ACCEL * timestep))
-					y_vel = 0;
-				else
-					y_vel += (ACCEL * timestep);
-			}
-		else
-			y_vel += y_del;
-
 	}
 };

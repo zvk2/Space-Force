@@ -237,7 +237,7 @@ int main(int argc, char* argv[])
 	double xDeltav = 0.0;
 	double yDeltav = 0.0;
 
-	//SDL_RendererFlip flip = SDL_FLIP_NONE;
+	SDL_RendererFlip flip = SDL_FLIP_NONE;
 
 	int frames = 0;
 	int frameCount = 0;
@@ -321,10 +321,10 @@ int main(int argc, char* argv[])
 		// Code for flipping remains here if theres a change of plan
 		
 		// Flip if facing other direction 
-		if (ply.getxVel() > 0 && flip == SDL_FLIP_HORIZONTAL)
+		/*if (ply.getxVel() > 0 && flip == SDL_FLIP_HORIZONTAL)
 			flip = SDL_FLIP_NONE;
 		else if (ply.getxVel() < 0 && flip == SDL_FLIP_NONE)
-			flip = SDL_FLIP_HORIZONTAL;
+			flip = SDL_FLIP_HORIZONTAL;*/
 		
 		SDL_Rect pRect = ply.getPlayerRect();
 		SDL_Rect pCam = ply.getPlayerCam();
