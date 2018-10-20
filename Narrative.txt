@@ -1,0 +1,11 @@
+
+1 level 
+
+3 bosses to beat the game
+
+randomize number and type of enemies in a stage
+
+3 distinct stages with gradually more difficult enemies
+
+enemies | boss 1 | enemies | boss 2 | enemies | boss 3
+
