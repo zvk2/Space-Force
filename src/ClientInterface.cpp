@@ -70,8 +70,9 @@ SDL_Rect ClientInterface::Communicate(SDL_Rect playerRect){
 	{
 		cerr << e.what() << endl;
 	}
-
-	return receivedMessage;
+	SDL_Rect emptyReturn = {0, 0, 0, 0};
+	
+	return emptyReturn;
 }
 
 // Current serialization method, this will change as the game changes
