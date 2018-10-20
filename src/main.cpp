@@ -556,7 +556,14 @@ int main(int argc, char* argv[])
 				case SDLK_k:
 					tr.w.z -= 0.3;
 					break;
+				case SDLK_KP_8:
+					tr.w.z += 0.3;
+					break;
+				case SDLK_KP_2:
+					tr.w.z -= 0.3;
+					break;
 				default:
+					printf("%d\n", event.key.keysym.sym);
 					break;
 				}
 			}
