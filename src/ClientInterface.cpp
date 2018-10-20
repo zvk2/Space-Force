@@ -39,7 +39,7 @@ int ClientInterface::Connect(){
 	try
 	{
 		// Connect to the server at the specified IP & port
-		connected = cs->connectToServer();
+		connected = cs->ConnectToServer();
 	}
 	catch (SocketException e)
 	{
@@ -57,9 +57,9 @@ SDL_Rect ClientInterface::Communicate(SDL_Rect playerRect){
 		// Serialize the message with our personal protocol
 		string transmitInfo = Serialize(playerRect);
 		// Transmit that data
-		cs->transmit(transmitInfo);
+		cs->Transmit(transmitInfo);
 		// Check for incoming messages
-		receivedMessage = cs->checkForIncomingMessages();
+		receivedMessage = cs->CheckForIncomingMessages();
 		// Deserialize received data and return it
 		if (receivedMessage != "")
 		{
