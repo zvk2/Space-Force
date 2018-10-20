@@ -1,92 +1,138 @@
 
 #include "INC_SDL.h"
+#include "Enemy.h"
 
 #define MAX_SPEED 50
    
 
-class Enemy
+
+Enemy(int startingHealth, SDL_Texture* characterImages, int attack): 
+	hitPoints(startingHealth), enemySheet(characterImages), attackPower(attack)
+	{}
+
+void Enemy::LostHealth(int damage)
 {
-	public:
+	DecrementHealth(damage);
+}
 
-		Enemy(int startingHealth, SDL_Texture* characterImages, int attack): 
-			hitPoints(startingHealth), enemySheet(characterImages), attackPower(attack)
-			{}
+void Enemy::GainedHealth(int heal)
+{
+	IncrementHealth(heal);
+}
 
-		void LostHealth(int damage)
-		{
-			DecrementHealth(damage);
-		}
+int Enemy::GetHealth()
+{
+	return hitPoints;
+}
 
-		void GainedHealth(int heal)
-		{
-			IncrementHealth(heal);
-		}
+int Enemy::GetAttack()
+{
+	return attackPower;
+}
 
-		int GetHealth()
-		{
-			return hitPoints;
-		}
+void Enemy::IncEnemySpeed(int addedSpeed)
+{
+	IncrementSpeed(addedSpeed);
+}
 
-		int GetAttack()
-		{
-			return attackPower;
-		}
+void Enemy::DecEnemySpeed(int lostSpeed)
+{
+	DecrementSpeed(lostSpeed);
+}
 
-		void IncEnemySpeed(int addedSpeed)
-		{
-			IncrementSpeed(addedSpeed);
-		}
+int Enemy::GetSpeed()
+{
+	return speed;
+}
 
-		void DecEnemySpeed(int lostSpeed)
-		{
-			DecrementSpeed(lostSpeed);
-		}
+//Set the position of the player on screen
+void Enemy::setPosition(int x, int y)
+{
+	playerCam.x = x;
+	playerCam.y = y;
+}
+	
+//Methods that can be called from model class
+void Enemy::move(double xdvel, double ydvel, double tstep)
+{
+	phys.ChangeVelocity(xdvel, ydvel, tstep);
+	
+	xCoord += (phys.getxVelocity() * tstep);
+	yCoord += (phys.getyVelocity() * tstep);
+	
+	CheckBoundaries();
+	
+	playerCam.x = (int) xCoord;
+	playerCam.y = (int) yCoord;
+}
 
-		int GetSpeed()
-		{
-			return speed;
-		}
+// Animate jet propulsion
+void Enemy::animate(int frames)
+{
+	playerRect.x = frames * 300;
+}
 
+//Return the current x velocity
+double Enemy::getxVel()
+{
+	return phys.getxVelocity();
+}
 
-	private:
+//Get the enemy camera rectangle
+SDL_Rect Enemy::getEnemyCam()
+{
+	return playerCam;
+}
 
-		/* Member variables:
-		 * health, attack
-		 * currently a character sheet but can be updated to
-		 * OpenGL later
-		 */
-		int hitPoints;
-		int attackPower;
-		int speed;
-		//Not perm obviously but here as a reminder to store player texture here
-		const SDL_Texture* enemySheet;
+//Get the current rectangle from the sprite sheet
+SDL_Rect Enemy::getEnemyRect()
+{
+	return playerRect;
+}
 
-		void DecrementHealth(int decAmount)
-		{
-			hitPoints -= decAmount;
-		}
+//Get the enemy sprite sheet
+SDL_Texture* Enemy::getEnemySheet()
+{
+	return playerSheet;
+}
 
-		void IncrementHealth(int incAmount)
-		{
-			hitPoints += incAmount;
-		}
+void Enemy::DecrementHealth(int decAmount)
+{
+	hitPoints -= decAmount;
+}
 
+void Enemy::IncrementHealth(int incAmount)
+{
+	hitPoints += incAmount;
+}
 
-		void IncrementSpeed(int addedSpeed)
-		{
-			if(speed != MAX_SPEED)
-			{
-				speed += addedSpeed;
-			}
-		}
+void Enemy::CheckBoundaries()
+{
+	// Boundary checks against the window
+	if (xCoord < 0)
+		xCoord = 0;
+	if (xCoord + 300 > SCREEN_WIDTH)
+		xCoord = SCREEN_WIDTH - 300;
+	if (yCoord < 0)
+		yCoord = 0;
+	if (yCoord + 51 > SCREEN_HEIGHT)
+		yCoord = SCREEN_HEIGHT - 51;
+}
 
-		void DecrementSpeed(int lostSpeed)
-		{
-			if(speed != -MAX_SPEED)
-			{
-				speed -= lostSpeed;
-			}
-		}
+void Enemy::IncrementSpeed(int addedSpeed)
+{
+	if(speed != MAX_SPEED)
+	{
+		speed += addedSpeed;
+	}
+}
 
-};
+void Enemy::DecrementSpeed(int lostSpeed)
+{
+	if(speed != -MAX_SPEED)
+	{
+		speed -= lostSpeed;
+	}
+}
+
 
