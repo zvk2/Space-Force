@@ -122,7 +122,7 @@ string ClientSocket::CheckForIncomingMessages()
 			if (serverResponseByteCount != 0)
 			{
 				// Convert message to string
-				receivedMessage = toString(dataBuffer);
+				receivedMessage = ToString(dataBuffer);
 			}
 			else
 			{
