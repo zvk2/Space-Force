@@ -20,6 +20,7 @@
 #define PI 3.14159265359
 
 #include <math.h>
+#include "shader.h"
 
 // Definition of a vec3 (vector of size 3)
 typedef struct

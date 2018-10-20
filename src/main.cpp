@@ -30,7 +30,7 @@
 #include "physics.hpp"
 
 // For getting the shaders
-#include "initShader.h"
+#include "shader.h"
 
 // TO BE REVISED: helperfunctions
 #include "helperFunctions.h"
@@ -115,46 +115,46 @@ mat4 rot =
  
 vec3 vertices[36] = {
 	// Face 1
-	{0.5, -0.5, -0.5},
 	{0.5, 0.5, -0.5},
-	{-0.5, 0.5, -0.5},
+	{0.5, -0.5, -0.5},
 	{-0.5, 0.5, -0.5},
 	{-0.5, -0.5, -0.5},
+	{-0.5, 0.5, -0.5},
 	{0.5, -0.5, -0.5},
 	// Face 2
+	{-0.5, 0.5, 0.5},
 	{0.5, -0.5, 0.5},
-	{-0.5, 0.5, 0.5},
 	{0.5, 0.5, 0.5},
-	{-0.5, -0.5, 0.5},
 	{-0.5, 0.5, 0.5},
+	{-0.5, -0.5, 0.5},
 	{0.5, -0.5, 0.5},
 	// Face 3
-	{0.5, -0.5, -0.5},
 	{0.5, -0.5, 0.5},
-	{0.5, 0.5, 0.5},
+	{0.5, -0.5, -0.5},
 	{0.5, 0.5, 0.5},
 	{0.5, 0.5, -0.5},
+	{0.5, 0.5, 0.5},
 	{0.5, -0.5, -0.5},
 	// Face 4
-	{-0.5, -0.5, -0.5},
 	{-0.5, 0.5, 0.5},
+	{-0.5, -0.5, -0.5},
 	{-0.5, -0.5, 0.5},
-	{-0.5, 0.5, 0.5},
 	{-0.5, -0.5, -0.5},
+	{-0.5, 0.5, 0.5},
 	{-0.5, 0.5, -0.5},
 	// Face 5
-	{0.5, 0.5, -0.5},
 	{0.5, 0.5, 0.5},
-	{-0.5, 0.5, 0.5},
+	{0.5, 0.5, -0.5},
 	{-0.5, 0.5, 0.5},
 	{-0.5, 0.5, -0.5},
+	{-0.5, 0.5, 0.5},
 	{0.5, 0.5, -0.5},
 	// Face 6
-	{0.5, -0.5, -0.5},
 	{-0.5, -0.5, 0.5},
+	{0.5, -0.5, -0.5},
 	{0.5, -0.5, 0.5},
-	{-0.5, -0.5, 0.5},
 	{0.5, -0.5, -0.5},
+	{-0.5, -0.5, 0.5},
 	{-0.5, -0.5, -0.5},
 };
 
@@ -428,8 +428,8 @@ bool InitOpenGl()
 	#endif
 	
 	// INIT STUFF SPECIFIC TO OPENGL
-	GLuint program = initShader("src/vshader.glsl", "src/fshader.glsl");
-	glUseProgram(program);
+	Shader shader("ztest");
+	GLuint program = shader.getProgram();
 
 	GLuint vao;
 	glGenVertexArrays(1, &vao);
@@ -495,7 +495,6 @@ void CloseOpenGl()
 	gRenderer = nullptr;
 }
 
-
 int main(int argc, char* argv[])
 {
 	if (!InitOpenGl())
@@ -550,6 +549,12 @@ int main(int argc, char* argv[])
 				// Right
 				case SDLK_d:
 					tr.w.x += 0.1;
+					break;
+				case SDLK_i:
+					tr.w.z += 0.3;
+					break;
+				case SDLK_k:
+					tr.w.z -= 0.3;
 					break;
 				default:
 					break;
