@@ -5,6 +5,7 @@
 #include <cstring>
 #include "INC_SDL.h"
 #include "Player.h"
+#include "attack.h"
 
 // Used for file walk (somewhat crudely)
 #include <stdio.h>
@@ -34,6 +35,7 @@ void close();
 SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
 SDL_Texture* gBackground;
+SDL_Texture* gAttack;
 SDL_Texture* gPlayerSheet;
 std::vector<SDL_Texture*> gTex;
 
@@ -73,7 +75,7 @@ bool init()
 	 * Choose first driver that can provide hardware acceleration
 	 *   (second arg, -1)
 	 */
-	gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
+	gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	if (gRenderer == nullptr)
 	{	
 		std::cout << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
@@ -222,19 +224,20 @@ int main(int argc, char* argv[])
 	/*
 	- Uses modified FINAL_sdl15_fps.cpp as basis
 	- Currently consists of Starman moving across a scrolling background repeated 4 times
-	- Controls: WASD for movement
+	- Controls: WASD for movement, Spacebar to shoot
 	- Can be terminated by x'ing out or pressing 'esc' to credits
-	- Starman sprite's dimensions are 300 x 51
-	- Empty space present in front of sprite for blaster-fire animation to be implemented later 
+	- Starman sprite's dimensions are 240 x 51
 	*/ 
-	gBackground = loadImage("resources/imgs/space_background.png");
+	// Until we figure out gradients, we'll use space_2_background for now
+	gBackground = loadImage("resources/imgs/space_2_background.png");
+	gAttack = loadImage("resources/imgs/attack.png");
 
 	int scrollOffset = 0;
 	int rem = 0;
 	double xDeltav = 0.0;
 	double yDeltav = 0.0;
 
-	SDL_RendererFlip flip = SDL_FLIP_NONE;
+	//SDL_RendererFlip flip = SDL_FLIP_NONE;
 
 	int frames = 0;
 	int frameCount = 0;
@@ -250,6 +253,7 @@ int main(int argc, char* argv[])
 	
 	SDL_Event e;
 	bool gameOn = true;
+	bool up = true;
 	while(gameOn) 
 	{
 		while(SDL_PollEvent(&e))
@@ -263,6 +267,13 @@ int main(int argc, char* argv[])
 				if (e.key.keysym.sym == SDLK_ESCAPE)
 				{
 					gameOn = false;
+				}
+			}
+			if(up == false && e.type == SDL_KEYUP && e.key.repeat == 0)
+			{
+				if(e.key.keysym.sym == SDLK_SPACE)
+				{
+					up = true;
 				}
 			}
 		}
@@ -302,7 +313,12 @@ int main(int argc, char* argv[])
 		SDL_RenderCopy(gRenderer, gBackground, nullptr, &bgRect);
 		
 		frames = (frames + 1) % 6;
+
 		ply.animate(frames);
+		
+	
+		// Since game levels progress from L to R, no need for sprite to flip
+		// Code for flipping remains here if theres a change of plan
 		
 		// Flip if facing other direction 
 		if (ply.getxVel() > 0 && flip == SDL_FLIP_HORIZONTAL)
@@ -312,6 +328,7 @@ int main(int argc, char* argv[])
 		
 		SDL_Rect pRect = ply.getPlayerRect();
 		SDL_Rect pCam = ply.getPlayerCam();
+
 		
 		SDL_RenderCopyEx(gRenderer, ply.getPlayerSheet(), &pRect, &pCam, 0.0, nullptr, flip);
 		SDL_RenderPresent(gRenderer);

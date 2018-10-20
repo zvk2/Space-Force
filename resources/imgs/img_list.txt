@@ -8,5 +8,6 @@ LIST OF ART FOR THE GAME
 - Title screen (Kevin Wang)
 - Background & levels (Shree Sampath)
 - Enemies
-- Bosses
-- Powerups
+- Bosses (Extreme Peaceful King: Zhisheng Xu)
+- Powerups (Speed boost and Shield: Zhisheng Xu)
+- Weaponaries (Missile and Laser cannon: Zhisheng Xu)
