@@ -550,15 +550,19 @@ int main(int argc, char* argv[])
 				case SDLK_d:
 					tr.w.x += 0.1;
 					break;
+				// zoom in
 				case SDLK_i:
 					tr.w.z += 0.3;
 					break;
+				// zoom out
 				case SDLK_k:
 					tr.w.z -= 0.3;
 					break;
+				// zoom in
 				case SDLK_KP_8:
 					tr.w.z += 0.3;
 					break;
+				// zoom out
 				case SDLK_KP_2:
 					tr.w.z -= 0.3;
 					break;
