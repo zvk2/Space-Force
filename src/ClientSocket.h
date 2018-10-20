@@ -3,7 +3,7 @@
 
 #include <string>
 #include <sstream>
-#include "SDL_net.h"
+#include "INC_SDL.h"
 #include "SocketException.h"
 
 using std::string;

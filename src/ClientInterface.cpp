@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include "SDL_net.h"
+#include "INC_SDL.h"
 #include "ClientInterface.h"
 #include "ClientSocket.h"
 

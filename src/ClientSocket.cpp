@@ -1,3 +1,4 @@
+#include "INC_SDL.h"
 #include "ClientSocket.h"
 #include <string.h>
 #include <stdio.h>

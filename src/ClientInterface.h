@@ -1,7 +1,7 @@
 
 #include <iostream>
 #include <string>
-#include "SDL_net.h"
+#include "INC_SDL.h"
 #include "ClientSocket.h"
 
 using std::string;
