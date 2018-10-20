@@ -1,5 +1,7 @@
+
 #ifndef ENEMY_H
 #define ENEMY_H
+#endif
 #include "INC_SDL.h"
 #include "physics.hpp"
 #define MAX_SPEED 50
@@ -8,14 +10,19 @@ class Enemy
 {
 	public:
 
+		//Constructor: takes health, character sheet, and attack value and sets all member vars
 		Enemy(int startingHealth, SDL_Texture* characterImages, int attack);
 		
+		//Subract hit points from the player
 		void LostHealth(int damage);
-
+		
+		//Add hit points to the player
 		void GainedHealth(int heal);
 
+		//Return the enemy's current health points
 		int GetHealth();
-
+		
+		//Return the enemy's current attack
 		int GetAttack();
 
 		void IncEnemySpeed(int addedSpeed);
@@ -24,7 +31,7 @@ class Enemy
 
 		int GetSpeed();
 
-		//Set the position of the player on screen
+		//Set the position of the enemy on screen
 		void setPosition(int x, int y);
 			
 		//Methods that can be called from model class
@@ -36,13 +43,13 @@ class Enemy
 		//Return the current x velocity
 		double getxVel();
 		
-		//Get the player camera rectangle
+		//Get the enemy camera rectangle
 		SDL_Rect getEnemyCam();
 		
 		//Get the current rectangle from the sprite sheet
 		SDL_Rect getEnemyRect();
 		
-		//Get the player sprite sheet
+		//Get the enemy sprite sheet
 		SDL_Texture* getEnemySheet();
 
 
@@ -63,7 +70,7 @@ class Enemy
 		int speed;
 		double attackPower;
 
-		//Not perm obviously but here as a reminder to store player texture here
+		//Not perm obviously but here as a reminder to store enemy texture here
 		SDL_Texture* enemySheet;
 		Physics phys;
 
