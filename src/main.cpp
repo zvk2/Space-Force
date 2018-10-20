@@ -209,6 +209,7 @@ int playCredits()
 	SDL_RenderClear(gRenderer);
 
 	close();
+    return 0;
 }
 
 int main(int argc, char* argv[])
