@@ -16,7 +16,7 @@ const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
 
 // Constants for level
-const int LEVEL_LEN = 5120; 
+const int LEVEL_LEN = 5120;
 const int TILE_SIZE = 100;
 
 // Constant for acceleration
@@ -27,12 +27,9 @@ const double ACCEL = 3600.0;
 char CREDITS_FOLDER[] = "resources/Credit_Image/";
 
 // Function declarations
-bool InitOpenGl();
-bool InitSdlRenderer();
-int playCredits();
+bool init();
 SDL_Texture* loadImage(std::string fname);
-void CloseOpenGl();
-int CloseProgram();
+void close();
 
 // Globals
 SDL_Window* gWindow = nullptr;
@@ -42,168 +39,63 @@ SDL_Texture* gAttack;
 SDL_Texture* gPlayerSheet;
 std::vector<SDL_Texture*> gTex;
 
-// The opengl context handle
-SDL_GLContext mainContext;
-
-mat4 projection = frustum(
-	-1.7778, 1.7778,
-	-1, 1,
-	-1, -2000
-);
-
-mat4 frame = look_at(
-	0, 0, 3,
-	0, 0, -100,
-	0, 1, 0
-);
-
-GLuint ctm_location;
-GLuint projection_matrix_location;
-GLuint model_view_matrix_location;
-
-mat4 constant_xrot;
-mat4 constant_yrot;
-mat4 constant_zrot;
-
-mat4 identity =
+bool init()
 {
-	{1.0, 0.0, 0.0, 0.0},
-	{0.0, 1.0, 0.0, 0.0},
-	{0.0, 0.0, 1.0, 0.0},
-	{0.0, 0.0, 0.0, 1.0}
-};
-
-mat4 tr =
-{
-	{1.0, 0.0, 0.0, 0.0},
-	{0.0, 1.0, 0.0, 0.0},
-	{0.0, 0.0, 1.0, 0.0},
-	{0.0, 0.0, 0.0, 1.0}
-};
-
-mat4 ctm =
-{
-	{1.0, 0.0, 0.0, 0.0},
-	{0.0, 1.0, 0.0, 0.0},
-	{0.0, 0.0, 1.0, 0.0},
-	{0.0, 0.0, 0.0, 1.0}
-};
-
-mat4 rot =
-{
-	{1.0, 0.0, 0.0, 0.0},
-	{0.0, 1.0, 0.0, 0.0},
-	{0.0, 0.0, 1.0, 0.0},
-	{0.0, 0.0, 0.0, 1.0}
-};
- 
-vec3 vertices[36] = {
-	// Face 1
-	{0.5, -0.5, -0.5},
-	{0.5, 0.5, -0.5},
-	{-0.5, 0.5, -0.5},
-	{-0.5, 0.5, -0.5},
-	{-0.5, -0.5, -0.5},
-	{0.5, -0.5, -0.5},
-	// Face 2
-	{0.5, -0.5, 0.5},
-	{-0.5, 0.5, 0.5},
-	{0.5, 0.5, 0.5},
-	{-0.5, -0.5, 0.5},
-	{-0.5, 0.5, 0.5},
-	{0.5, -0.5, 0.5},
-	// Face 3
-	{0.5, -0.5, -0.5},
-	{0.5, -0.5, 0.5},
-	{0.5, 0.5, 0.5},
-	{0.5, 0.5, 0.5},
-	{0.5, 0.5, -0.5},
-	{0.5, -0.5, -0.5},
-	// Face 4
-	{-0.5, -0.5, -0.5},
-	{-0.5, 0.5, 0.5},
-	{-0.5, -0.5, 0.5},
-	{-0.5, 0.5, 0.5},
-	{-0.5, -0.5, -0.5},
-	{-0.5, 0.5, -0.5},
-	// Face 5
-	{0.5, 0.5, -0.5},
-	{0.5, 0.5, 0.5},
-	{-0.5, 0.5, 0.5},
-	{-0.5, 0.5, 0.5},
-	{-0.5, 0.5, -0.5},
-	{0.5, 0.5, -0.5},
-	// Face 6
-	{0.5, -0.5, -0.5},
-	{-0.5, -0.5, 0.5},
-	{0.5, -0.5, 0.5},
-	{-0.5, -0.5, 0.5},
-	{0.5, -0.5, -0.5},
-	{-0.5, -0.5, -0.5},
-};
-
-vec4 colors[36] = {
-	{1.0, 0, 0, 0},
-	{1.0, 0, 0, 0},
-	{1.0, 0, 0, 0},
-	{1.0, 0, 0, 0},
-	{1.0, 0, 0, 0},
-	{1.0, 0, 0, 0},
-	{0, 1.0, 0, 0},
-	{0, 1.0, 0, 0},
-	{0, 1.0, 0, 0},
-	{0, 1.0, 0, 0},
-	{0, 1.0, 0, 0},
-	{0, 1.0, 0, 0},
-	{0, 0, 1.0, 0},
-	{0, 0, 1.0, 0},
-	{0, 0, 1.0, 0},
-	{0, 0, 1.0, 0},
-	{0, 0, 1.0, 0},
-	{0, 0, 1.0, 0},
-	{1.0, 0, 1.0, 0},
-	{1.0, 0, 1.0, 0},
-	{1.0, 0, 1.0, 0},
-	{1.0, 0, 1.0, 0},
-	{1.0, 0, 1.0, 0},
-	{1.0, 0, 1.0, 0},
-	{1.0, 1.0, 1.0, 0},
-	{1.0, 1.0, 1.0, 0},
-	{1.0, 1.0, 1.0, 0},
-	{1.0, 1.0, 1.0, 0},
-	{1.0, 1.0, 1.0, 0},
-	{1.0, 1.0, 1.0, 0},
-	{0, 1.0, 1.0, 0},
-	{0, 1.0, 1.0, 0},
-	{0, 1.0, 1.0, 0},
-	{0, 1.0, 1.0, 0},
-	{0, 1.0, 1.0, 0},
-	{0, 1.0, 1.0, 0},
-};
-
-int num_vertices = 36;
-
-
-int CloseProgram()
-{
-	for (auto i : gTex)
+	// Flag what subsystems to initialize
+	// For now, just video
+	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
-		SDL_DestroyTexture(i);
-		i = nullptr;
+		std::cout << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
+		return false;
 	}
 
-	SDL_DestroyRenderer(gRenderer);
-	SDL_DestroyWindow(gWindow);
-	gWindow = nullptr;
-	gRenderer = nullptr;
+	// Set texture filtering to linear
+	if(!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
+	{
+		std::cout << "Warning: Linear texture filtering not enabled!" << std::endl;
+	}
 
-	// Quit SDL subsystems
-	IMG_Quit();
-	SDL_Quit();
-	
-	return -1;
+
+	gWindow = SDL_CreateWindow(
+		"Space Force",
+		SDL_WINDOWPOS_UNDEFINED,
+		SDL_WINDOWPOS_UNDEFINED,
+		SCREEN_WIDTH,
+		SCREEN_HEIGHT,
+		SDL_WINDOW_SHOWN
+	);
+	if (gWindow == nullptr)
+	{
+		std::cout << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
+		return  false;
+	}
+
+	/* Create a renderer for our window
+	 * Use hardware acceleration (last arg)
+	 * Choose first driver that can provide hardware acceleration
+	 *   (second arg, -1)
+	 */
+	gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	if (gRenderer == nullptr)
+	{
+		std::cout << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
+		return  false;
+	}
+
+	// Set renderer draw/clear color
+	SDL_SetRenderDrawColor( gRenderer, 0x00, 0x00, 0x00, 0xFF );
+
+	// Initialize PNG loading via SDL_image extension library
+	int imgFlags = IMG_INIT_PNG;
+	int retFlags = IMG_Init(imgFlags);
+	if(retFlags != imgFlags)
+	{
+		std::cout << "SDL_image could not initialize! SDL_image Error: " << IMG_GetError() << std::endl;
+		return false;
+	}
+
+	return true;
 }
-
 
 SDL_Texture* loadImage(std::string fname)
 {
@@ -227,65 +119,23 @@ SDL_Texture* loadImage(std::string fname)
 	return newText;
 }
 
-
-bool InitSdlRenderer()
+void close()
 {
-	// Flag what subsystems to initialize
-	// For now, just video
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+	for (auto i : gTex)
 	{
-		std::cout << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
-		return false;
+		SDL_DestroyTexture(i);
+		i = nullptr;
 	}
 
-	// Set texture filtering to linear
-	if(!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
-	{
-		std::cout << "Warning: Linear texture filtering not enabled!" << std::endl;
-	}
-	
-	
-	gWindow = SDL_CreateWindow(
-		"Space Force",
-		SDL_WINDOWPOS_UNDEFINED,
-		SDL_WINDOWPOS_UNDEFINED,
-		SCREEN_WIDTH,
-		SCREEN_HEIGHT,
-		SDL_WINDOW_SHOWN
-	);
-	if (gWindow == nullptr)
-	{
-		std::cout << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
-		return  false;
-	}
+	SDL_DestroyRenderer(gRenderer);
+	SDL_DestroyWindow(gWindow);
+	gWindow = nullptr;
+	gRenderer = nullptr;
 
-	/* Create a renderer for our window
-	 * Use hardware acceleration (last arg)
-	 * Choose first driver that can provide hardware acceleration
-	 *   (second arg, -1)
-	 */
-	gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-	if (gRenderer == nullptr)
-	{	
-		std::cout << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
-		return  false;
-	}
-
-	// Set renderer draw/clear color
-	SDL_SetRenderDrawColor( gRenderer, 0x00, 0x00, 0x00, 0xFF );
-			
-	// Initialize PNG loading via SDL_image extension library
-	int imgFlags = IMG_INIT_PNG;
-	int retFlags = IMG_Init(imgFlags);
-	if(retFlags != imgFlags)
-	{
-		std::cout << "SDL_image could not initialize! SDL_image Error: " << IMG_GetError() << std::endl;
-		return false;
-	}
-	
-	return true;
+	// Quit SDL subsystems
+	IMG_Quit();
+	SDL_Quit();
 }
-
 
 // CREDITS
 int playCredits()
@@ -300,12 +150,12 @@ int playCredits()
 		return -1;
 	}
 
-	
+
 	while ((entry = readdir(dp)))
 	{
 
 		int dNameLength = strlen(entry->d_name);
-		
+
 		// Crude
 		if (dNameLength > 4 && entry->d_name[dNameLength - 4] == '.')
 		{
@@ -313,28 +163,28 @@ int playCredits()
 			char currentImageBuffer[2000];
 			strcpy(currentImageBuffer, CREDITS_FOLDER);
 			strcat(currentImageBuffer, entry->d_name);
-			
+
 			// Puts the image on the buffer queue
 			gTex.push_back(loadImage(currentImageBuffer));
 		}
 	}
-	
+
 	// Close the directory
 	closedir(dp);
 
 	bool quit = false;
 	SDL_Event e;
-	
+
 	for (auto i : gTex)
 	{
 		// does the user want to quit?
-		while(SDL_PollEvent(&e) != 0)  
+		while(SDL_PollEvent(&e) != 0)
 		{
 			if (e.type == SDL_QUIT)
-			{	
+			{
 				quit = true;
 			}
-		 	if(e.type == SDL_KEYDOWN)  
+		 	if(e.type == SDL_KEYDOWN)
 		 	{
 				if (e.key.keysym.sym == SDLK_ESCAPE)
 				{
@@ -359,19 +209,18 @@ int playCredits()
 	SDL_RenderClear(gRenderer);
 
 	close();
+    return 0;
 }
 
-
-bool InitOpenGl()
+int main(int argc, char* argv[])
 {
-	// Flag what subsystems to initialize
-	// For now, just video
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+	if (!init())
 	{
-		std::cout << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
-		return false;
+		std::cout <<  "Failed to initialize!" << std::endl;
+		close();
+		return 1;
 	}
-	
+
 	// GAME
 	/*
 	- Uses modified FINAL_sdl15_fps.cpp as basis
@@ -379,7 +228,7 @@ bool InitOpenGl()
 	- Controls: WASD for movement, Spacebar to shoot
 	- Can be terminated by x'ing out or pressing 'esc' to credits
 	- Starman sprite's dimensions are 240 x 51
-	*/ 
+	*/
 	// Until we figure out gradients, we'll use space_2_background for now
 	gBackground = loadImage("resources/imgs/space_2_background.png");
 	gAttack = loadImage("resources/imgs/attack.png");
@@ -389,24 +238,24 @@ bool InitOpenGl()
 	double xDeltav = 0.0;
 	double yDeltav = 0.0;
 
-	//SDL_RendererFlip flip = SDL_FLIP_NONE;
+	SDL_RendererFlip flip = SDL_FLIP_NONE;
 
 	int frames = 0;
 	int frameCount = 0;
-	
+
 	SDL_Rect bgRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
-	
+
 	Uint32 fpsLasttime = SDL_GetTicks();
 	Uint32 fpsCurtime = 0;
 	Uint32 moveLasttime = SDL_GetTicks();
 	double timestep = 0;
 
 	Player ply(10, loadImage("resources/imgs/starman.png"), 1);
-	
+
 	SDL_Event e;
 	bool gameOn = true;
 	bool up = true;
-	while(gameOn) 
+	while(gameOn)
 	{
 		while(SDL_PollEvent(&e))
 		{
@@ -414,7 +263,7 @@ bool InitOpenGl()
 			{
 				gameOn = false;
 			}
-			if (e.type == SDL_KEYDOWN) 
+			if (e.type == SDL_KEYDOWN)
 			{
 				if (e.key.keysym.sym == SDLK_ESCAPE)
 				{
@@ -432,7 +281,7 @@ bool InitOpenGl()
 		timestep = (SDL_GetTicks() - moveLasttime) / 1000.0;
 		xDeltav = 0.0;
 		yDeltav = 0.0;
-		
+
 		// WASD movement
 		const Uint8* keyState = SDL_GetKeyboardState(nullptr);
 		if (keyState[SDL_SCANCODE_A])
@@ -443,11 +292,11 @@ bool InitOpenGl()
 			yDeltav -= (ACCEL * timestep);
 		if (keyState[SDL_SCANCODE_S])
 			yDeltav += (ACCEL * timestep);
-		
+
 		ply.move(xDeltav, yDeltav, timestep);
-	
+
 		moveLasttime = SDL_GetTicks();
-		
+
 		// Scrolling background
 		++scrollOffset;
 		if (scrollOffset > bgRect.w)
@@ -457,41 +306,34 @@ bool InitOpenGl()
 
 		SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
 		SDL_RenderClear(gRenderer);
-		
+
 		rem = scrollOffset % SCREEN_WIDTH;
 		bgRect.x = -rem;
 		SDL_RenderCopy(gRenderer, gBackground, nullptr, &bgRect);
 		bgRect.x += SCREEN_WIDTH;
 		SDL_RenderCopy(gRenderer, gBackground, nullptr, &bgRect);
-		
+
 		frames = (frames + 1) % 6;
 
 		ply.animate(frames);
-		
-	
+
+
 		// Since game levels progress from L to R, no need for sprite to flip
 		// Code for flipping remains here if theres a change of plan
-		
-		// Flip if facing other direction 
-		if (ply.getxVel() > 0 && flip == SDL_FLIP_HORIZONTAL)
+
+		// Flip if facing other direction
+		/*if (ply.getxVel() > 0 && flip == SDL_FLIP_HORIZONTAL)
 			flip = SDL_FLIP_NONE;
 		else if (ply.getxVel() < 0 && flip == SDL_FLIP_NONE)
-			flip = SDL_FLIP_HORIZONTAL;
-		
+			flip = SDL_FLIP_HORIZONTAL;*/
+
 		SDL_Rect pRect = ply.getPlayerRect();
 		SDL_Rect pCam = ply.getPlayerCam();
 
-		
+
 		SDL_RenderCopyEx(gRenderer, ply.getPlayerSheet(), &pRect, &pCam, 0.0, nullptr, flip);
 		SDL_RenderPresent(gRenderer);
 	}
-	
-	CloseOpenGl();
-	
-	if (kill) {
-		CloseProgram();
-	}
-	else {
-		return playCredits();
-	}
+
+	return playCredits();
 }
