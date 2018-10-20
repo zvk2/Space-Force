@@ -289,7 +289,7 @@ int inverse(mat4 a, mat4* rmat) {
     /*for (i = 0; i < 16; i++)
         outout[i] = out[i] * det;*/
 
-  rmat->x.x = out[0]  * det;
+    rmat->x.x = out[0]  * det;
 	rmat->x.y = out[1]  * det;
 	rmat->x.z = out[2]  * det;
 	rmat->x.w = out[3]  * det;

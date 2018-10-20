@@ -15,7 +15,7 @@
 # declaring paths for source files
 OUT = bin/SpaceForce
 SRC = $(wildcard src/*.c src/*.cpp)
-SRC := $(filter-out src/menu.cpp src/main.cpp, $(SRC))
+SRC := $(filter-out src/menu.cpp, $(SRC))
 DEP = $(wildcard src/*.h src/*.hpp)
 OBJ := $(patsubst src/%.cpp, obj/%.o, $(SRC)) 
 OBJ := $(patsubst src/%.c, obj/%.o, $(OBJ))
@@ -45,7 +45,7 @@ else
 	LFLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -lGLEW -lGL -lGLU -lm -o $(OUT)
 endif
 
-.PHONY: all clean mrclean os rebuild renderer
+.PHONY: all clean mrclean os rebuild
 
 all: $(OUT)
 

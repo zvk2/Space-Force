@@ -1,0 +1,13 @@
+LIST OF ART FOR THE GAME
+
+*Since everyone is expected to do some artsy stuff, anyone can change this list/take a list item and make it.
+*If you do make one, place your name(s) next to it (see "Title screen" below as example) so everyone can get credit for artistic elements.
+*The theme to go for is 80s retro arcade style; use any art program but keep the theme in mind. 
+*The 3D graphics crew will let everyone know what aspects will be 3D as time goes on.  
+
+- Title screen (Kevin Wang)
+- Background & levels (Shree Sampath)
+- Enemies
+- Bosses (Extreme Peaceful King: Zhisheng Xu)
+- Powerups (Speed boost and Shield: Zhisheng Xu)
+- Weaponaries (Missile and Laser cannon: Zhisheng Xu)

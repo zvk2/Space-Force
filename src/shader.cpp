@@ -1,9 +1,7 @@
 #include "shader.h"
 
-Shader::Shader(const std::string name)
+Shader::Shader(const std::string name): program{glCreateProgram()}
 {
-	program = glCreateProgram();
-
 	const std::string vertexSource = readShaderSource(name + ".vsh");
 	const std::string fragSource = readShaderSource(name + ".fsh");
 
@@ -12,7 +10,7 @@ Shader::Shader(const std::string name)
 
 	glAttachShader(program, vShader);
 	glAttachShader(program, fShader);
-	glBindFragDataLocation(program, 0, "fColor"); // unnecessary at 0, but used when fShader writes to multiple buffers.
+	glBindFragDataLocation(program, 0, "outColor"); // unnecessary at 0, but used when fShader writes to multiple buffers.
                                                     // will figure this out more
 	glLinkProgram(program);
     checkLinkError();

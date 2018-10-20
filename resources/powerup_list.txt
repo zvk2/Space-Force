@@ -1,0 +1,6 @@
+LIST OF POTENTIAL POWERUPS
+
+- Health boost
+- Speed boost
+- Shield
+- KILL EVERYTHING (appears once)
