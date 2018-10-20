@@ -252,7 +252,7 @@ int main(int argc, char* argv[])
 	Uint32 moveLasttime = SDL_GetTicks();
 	double timestep = 0;
 	SDL_Rect attackRect = {0, 0, 80, 20};
-	SDL_Rect attackCam = {SCREEN_WIDTH, SCREEN_HEIGHT/2+51/2, 80, 20};
+	SDL_Rect attackCam = {SCREEN_WIDTH+80, SCREEN_HEIGHT/2+51/2, 80, 20};
 	Player ply(10, loadImage("resources/imgs/starman.png"), 1);
 	attack hit(gRenderer,gAttack,&attackRect,attackCam);
 	SDL_Event e;
