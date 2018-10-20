@@ -7,7 +7,7 @@
 #include "Player.h"
 #include "attack.h"
 
-//Testing for merging branch from Max
+
 
 // Used for file walk (somewhat crudely)
 #include <stdio.h>
