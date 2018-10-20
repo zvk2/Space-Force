@@ -11,7 +11,10 @@ class Physics
 
 //the max speed the player can go
 public:
-
+	Physics(double* x_v, double *y_v, double* x_d, double* y_d,double max_speed, double accel):
+	BACK_LIMIT{-max_speed}, FOR_LIMIT{max_speed},ACCEL{accel}, x_velp{x_v},y_velp{y_v},x_delp{x_d}, y_delp{y_d}
+	{
+	}
 	Physics(double x_v, double y_v, double max_speed, double accel):
 	BACK_LIMIT{-max_speed}, FOR_LIMIT{max_speed},ACCEL{accel}, x_vel{x_v},y_vel{y_v}
 
@@ -20,6 +23,49 @@ public:
 	
 	
 //What to do when no buttons are pressed
+	void Neutral(double timestep)
+	{
+		if (*x_delp == 0) 
+		{
+			if (*x_velp > 0) 
+			{
+				if (*x_velp < (ACCEL * timestep))
+					*x_velp = 0;
+				else
+					*x_velp -= (ACCEL * timestep);
+			}
+			else if (*x_velp < 0) 
+			{
+				if (-(*x_velp) < (ACCEL * timestep))
+					*x_velp = 0;
+				else
+					*x_velp += (ACCEL * timestep);
+			}
+		}
+		else
+			*x_velp += *x_delp;
+		
+		if (*y_delp == 0)
+		{
+			if (*y_velp > 0)
+			{
+				if (*y_velp < (ACCEL * timestep))
+					*y_velp = 0;
+				else
+					*y_velp -= (ACCEL * timestep);
+			}
+			else if (*y_velp < 0)
+			{
+				if (-(*y_velp) < (ACCEL * timestep))
+					*y_velp = 0;
+				else
+					*y_velp += (ACCEL * timestep);
+			}
+		}
+		else
+			*y_velp += *y_delp;
+
+	}
 	void ChangeVelocity(double x_del, double y_del, double timestep)
 	{
 		if (x_del == 0.0) 
@@ -85,6 +131,10 @@ public:
 	double ACCEL;
 	double x_vel;
 	double y_vel;
+	double *x_velp;
+	double *y_velp;
+	double *x_delp;
+	double *y_delp;
 	
 	// Check speed limits
 	void Speed_Limit()
