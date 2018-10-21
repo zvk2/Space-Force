@@ -65,6 +65,9 @@ obj/%.o: src/%.cpp $(DEP)
 
 
 # additional features, small tests, etc.
+renderer: $(patsubst src/%.c, obj/%.o, $(patsubst src/%.cpp, obj/%.o, $(filter-out src/main.cpp, $(SRC))))
+	$(CPP) $< $(LFLAGS)
+
 clean:
 	rm -f $(OBJ) $(OUT) $(OUT).exe
 
