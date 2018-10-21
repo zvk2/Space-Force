@@ -311,52 +311,52 @@ void OpenGLRenderer::Display()
 }
 
 // This main function exists to test OpenGLRenderer
-int main(int argc, char* argv[])
-{
-	// Spawn an instance of OpenGLRenderer
-	OpenGLRenderer openGL = OpenGLRenderer();
+//~ int main(int argc, char* argv[])
+//~ {
+	//~ // Spawn an instance of OpenGLRenderer
+	//~ OpenGLRenderer openGL = OpenGLRenderer();
 
-	// Rough sketch of a RenderObject?
-	RenderObject test = RenderObject(
-		0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0
-	);
+	//~ // Rough sketch of a RenderObject?
+	//~ RenderObject test = RenderObject(
+		//~ 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0
+	//~ );
 
-	RenderObject test2 = RenderObject(
-		0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 1
-	);
+	//~ RenderObject test2 = RenderObject(
+		//~ 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 1
+	//~ );
 
-	// Crude idea of how to add to render queue?
-	openGL.AppendRenderObject(test);
-	openGL.AppendRenderObject(test2);
+	//~ // Crude idea of how to add to render queue?
+	//~ openGL.AppendRenderObject(test);
+	//~ openGL.AppendRenderObject(test2);
 
-	// Displays stuff
-	openGL.Display();
+	//~ // Displays stuff
+	//~ openGL.Display();
 
-	bool loop = 1;
-	while (loop)
-	{
-		SDL_Event event;
-		while (SDL_PollEvent(&event))
-		{
-			if (event.type == SDL_QUIT)
-				loop = false;
-			if (event.type == SDL_KEYDOWN)
-			{
-				switch (event.key.keysym.sym)
-				{
-				case SDLK_ESCAPE:
-					loop = false;
-					break;
-				case SDLK_q:
-					loop = false;
-					break;
-				default:
-					break;
-				}
-			}
-		}
-	}
+	//~ bool loop = 1;
+	//~ while (loop)
+	//~ {
+		//~ SDL_Event event;
+		//~ while (SDL_PollEvent(&event))
+		//~ {
+			//~ if (event.type == SDL_QUIT)
+				//~ loop = false;
+			//~ if (event.type == SDL_KEYDOWN)
+			//~ {
+				//~ switch (event.key.keysym.sym)
+				//~ {
+				//~ case SDLK_ESCAPE:
+					//~ loop = false;
+					//~ break;
+				//~ case SDLK_q:
+					//~ loop = false;
+					//~ break;
+				//~ default:
+					//~ break;
+				//~ }
+			//~ }
+		//~ }
+	//~ }
 
-	openGL.Close();
-	return -1;
-}
+	//~ openGL.Close();
+	//~ return -1;
+//~ }
