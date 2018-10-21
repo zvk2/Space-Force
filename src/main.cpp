@@ -7,6 +7,8 @@
 #include "Player.h"
 #include "attack.h"
 
+
+
 // Used for file walk (somewhat crudely)
 #include <stdio.h>
 #include <dirent.h>
@@ -249,9 +251,10 @@ int main(int argc, char* argv[])
 	Uint32 fpsCurtime = 0;
 	Uint32 moveLasttime = SDL_GetTicks();
 	double timestep = 0;
-
+	SDL_Rect attackRect = {0, 0, 80, 20};
+	SDL_Rect attackCam = {SCREEN_WIDTH+80, SCREEN_HEIGHT/2+51/2, 80, 20};
 	Player ply(10, loadImage("resources/imgs/starman.png"), 1);
-
+	attack hit(gRenderer,gAttack,&attackRect,attackCam);
 	SDL_Event e;
 	bool gameOn = true;
 	bool up = true;
@@ -329,8 +332,14 @@ int main(int argc, char* argv[])
 
 		SDL_Rect pRect = ply.getPlayerRect();
 		SDL_Rect pCam = ply.getPlayerCam();
-
-
+		if(keyState[SDL_SCANCODE_SPACE] && up == true)
+		{
+			up = false;
+			attackCam.x = pCam.x + 300;
+			attackCam.y = pCam.y + 51/2;
+			hit.addAttack(attackCam);
+		}
+		hit.renderAttack(timestep);
 		SDL_RenderCopyEx(gRenderer, ply.getPlayerSheet(), &pRect, &pCam, 0.0, nullptr, flip);
 		SDL_RenderPresent(gRenderer);
 	}
