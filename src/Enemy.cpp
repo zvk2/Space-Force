@@ -2,7 +2,7 @@
 #include "INC_SDL.h"
 
 #define MAX_SPEED 50
-
+   
 
 class Enemy
 {

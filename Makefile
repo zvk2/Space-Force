@@ -42,7 +42,7 @@ else
 	CPP = clang++
 	CFLAGS = -c -I/usr/include/SDL2
 	INCLUDE = -I/usr/include/SDL2
-	LFLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -lGLEW -lGL -lGLU -lm -o $(OUT)
+	LFLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_net -lGLEW -lGL -lGLU -lm -o $(OUT)
 endif
 
 .PHONY: all clean mrclean os rebuild

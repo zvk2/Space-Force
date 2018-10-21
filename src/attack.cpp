@@ -22,17 +22,21 @@
 		void attack::renderAttack(double timestep)
 		{
 			curr = head->next;
-			if(curr != nullptr && head -> attackCam.x + 80 >= 1280)
-			{
-				curr = head->next;
-				free(head);
-				head = curr;
-			}
-		
 			while(curr != nullptr)
 			{
 				curr->attackCam.x +=(int) (3000 * timestep);
 				SDL_RenderCopy(gRenderer, gAttack, attackBox, &curr->attackCam);
 				curr = curr->next;
+			}
+			curr = head->next;
+			if(curr != nullptr && curr -> attackCam.x + 80 >= 1280)
+			{
+				
+				head->next = curr->next;
+				if(curr == end)
+				{
+					end = head;
+				}
+				free(curr);
 			}
 		}
