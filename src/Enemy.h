@@ -43,6 +43,9 @@ class Enemy
 		//Return the current x velocity
 		double getxVel();
 		
+		//Return the current x velocity
+		double getyVel();
+		
 		//Get the enemy camera rectangle
 		SDL_Rect getEnemyCam();
 		

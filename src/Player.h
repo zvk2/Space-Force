@@ -29,6 +29,8 @@ class Player
 		//Return the current x velocity
 		double getxVel();
 
+		//Return the current y velocity
+		double getyVel();
 		
 		//Get the player camera rectangle
 		SDL_Rect getPlayerCam();

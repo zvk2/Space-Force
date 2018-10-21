@@ -1,7 +1,9 @@
 
 #include "Player.h"
 #define MAX_SPEED 50
-		
+
+
+//Public methods	
 //Constructor: takes health, character sheet, and attack value and sets all member vars
 Player::Player(int startingHealth, SDL_Texture* characterImages, int attack): 
 	hitPoints(startingHealth), playerSheet(characterImages),
@@ -21,6 +23,7 @@ void Player::setPosition(int x, int y)
 }
 	
 //Methods that can be called from model class
+//TODO: Add CheckCollision(SDL_Rect r)
 void Player::move(double xdvel, double ydvel, double tstep)
 {
 	phys.ChangeVelocity(xdvel, ydvel, tstep);
@@ -44,6 +47,12 @@ void Player::animate(int frames)
 double Player::getxVel()
 {
 	return phys.getxVelocity();
+}
+
+//Return the current y velocity
+double Player::getyVel()
+{
+	return phys.getyVelocity();
 }
 
 //Get the player camera rectangle
@@ -102,7 +111,7 @@ int Player::GetAttack()
 	return (attackPower*attackModifier);
 }	
 
-
+//Private methods
 
 void Player::CheckBoundaries()
 {

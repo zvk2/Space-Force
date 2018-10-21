@@ -2,13 +2,14 @@
 #include "INC_SDL.h"
 #include "Enemy.h"
 #define MAX_SPEED 50
-   
+ 
+//Public methods 
 Enemy::Enemy(int startingHealth, SDL_Texture* characterImages, int attack): 
 	hitPoints(startingHealth), enemySheet(characterImages),
 	attackPower(attack), phys(0, 0, 300.0, 3600.0), xCoord(1280/8), yCoord(720/2)
 	{
-		enemyRect = {0, 0, 300, 51};
-		enemyCam = {1280/2, 720/2, 300, 51};
+		enemyRect = {0, 400, 200, 200};
+		enemyCam = {1280/2, 720/2, 200, 200};
 	}
 
 void Enemy::LostHealth(int damage)
@@ -79,6 +80,12 @@ double Enemy::getxVel()
 	return phys.getxVelocity();
 }
 
+//Return the current y velocity
+double Enemy::getyVel()
+{
+	return phys.getyVelocity();
+}
+
 //Get the enemy camera rectangle
 SDL_Rect Enemy::getEnemyCam()
 {
@@ -96,6 +103,8 @@ SDL_Texture* Enemy::getEnemySheet()
 {
 	return enemySheet;
 }
+
+//Private methods
 
 void Enemy::DecrementHealth(int decAmount)
 {

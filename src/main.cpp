@@ -5,9 +5,8 @@
 #include <cstring>
 #include "INC_SDL.h"
 #include "Player.h"
+#include "Enemy.h"
 #include "attack.h"
-
-
 
 // Used for file walk (somewhat crudely)
 #include <stdio.h>
@@ -152,7 +151,6 @@ int playCredits()
 		return -1;
 	}
 
-	
 	while ((entry = readdir(dp)))
 	{
 
@@ -254,10 +252,15 @@ int main(int argc, char* argv[])
 	SDL_Rect attackRect = {0, 0, 80, 20};
 	SDL_Rect attackCam = {SCREEN_WIDTH, SCREEN_HEIGHT/2+51/2, 80, 20};
 	Player ply(10, loadImage("resources/imgs/starman.png"), 1);
+	Enemy emy(10, loadImage("resources/Credit_Image/KevinW_credit.png"), 1);
+	emy.setPosition(960, 0);
 	attack hit(gRenderer,gAttack,&attackRect,attackCam);
 	SDL_Event e;
 	bool gameOn = true;
 	bool up = true;
+	
+	int emyDeltav = 1;
+	
 	while(gameOn) 
 	{
 		while(SDL_PollEvent(&e))
@@ -296,7 +299,38 @@ int main(int argc, char* argv[])
 		if (keyState[SDL_SCANCODE_S])
 			yDeltav += (ACCEL * timestep);
 		
+		if (emy.getEnemyCam().y + 200 == SCREEN_HEIGHT)
+		{
+			emyDeltav = -1;
+		}
+		if (emy.getEnemyCam().y == 0)
+		{
+			emyDeltav = 1;
+		}
+		
 		ply.move(xDeltav, yDeltav, timestep);
+		
+		SDL_Rect pRect = ply.getPlayerRect();
+		SDL_Rect pCam = ply.getPlayerCam();
+		
+		SDL_Rect eRect = emy.getEnemyRect();
+		SDL_Rect eCam = emy.getEnemyCam();
+		
+		if (SDL_HasIntersection(&eRect, &pRect))
+		{
+			ply.move(-ply.getxVel(), -ply.getyVel(), timestep);
+			pRect = ply.getPlayerRect();
+			pCam = ply.getPlayerCam();
+		}
+		
+		emy.move(0, emyDeltav, timestep);
+		
+		if (SDL_HasIntersection(&eRect, &pRect))
+		{
+			emy.move(-emy.getxVel(), -emy.getyVel(), timestep);
+			eRect = emy.getEnemyRect();
+			eCam = emy.getEnemyCam();
+		}
 	
 		moveLasttime = SDL_GetTicks();
 		
@@ -319,6 +353,7 @@ int main(int argc, char* argv[])
 		frames = (frames + 1) % 6;
 
 		ply.animate(frames);
+		emy.animate(frames);
 		
 	
 		// Since game levels progress from L to R, no need for sprite to flip
@@ -330,8 +365,6 @@ int main(int argc, char* argv[])
 		else if (ply.getxVel() < 0 && flip == SDL_FLIP_NONE)
 			flip = SDL_FLIP_HORIZONTAL;*/
 		
-		SDL_Rect pRect = ply.getPlayerRect();
-		SDL_Rect pCam = ply.getPlayerCam();
 		if(keyState[SDL_SCANCODE_SPACE] && up == true)
 		{
 			up = false;
@@ -341,6 +374,7 @@ int main(int argc, char* argv[])
 		}
 		hit.renderAttack(timestep);
 		SDL_RenderCopyEx(gRenderer, ply.getPlayerSheet(), &pRect, &pCam, 0.0, nullptr, flip);
+		SDL_RenderCopyEx(gRenderer, emy.getEnemySheet(), &eRect, &eCam, 0.0, nullptr, flip);
 		SDL_RenderPresent(gRenderer);
 	}
 	
