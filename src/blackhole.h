@@ -7,10 +7,11 @@
 class blackhole
 {
 public:
-    void spawnBlackhole(SDL_Renderer* Renderer, SDL_Texture* gBlackhole, SDL_Rect* rectBlackhole,SDL_Rect cam);
+    blackhole(SDL_Renderer* Renderer, SDL_Texture* gBlackhole, SDL_Rect* blackholeRect,SDL_Rect blackholeCam);
+    void showBlackhole(SDL_Rect blackholeCam);
 private:
-    SDL_Rect* attackBox;
+    SDL_Rect* blackholeRect;
     SDL_Renderer* gRenderer;
-    SDL_Texture* gAttack;
+    SDL_Texture* gBlackhole;
 };
 #endif

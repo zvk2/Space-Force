@@ -38,6 +38,7 @@ SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
 SDL_Texture* gBackground;
 SDL_Texture* gAttack;
+SDL_Texture* gBlackhole;
 SDL_Texture* gPlayerSheet;
 std::vector<SDL_Texture*> gTex;
 
@@ -234,6 +235,7 @@ int main(int argc, char* argv[])
 	// Until we figure out gradients, we'll use space_2_background for now
 	gBackground = loadImage("resources/imgs/space_2_background.png");
 	gAttack = loadImage("resources/imgs/attack.png");
+    gBlackhole = loadImage("resources/imgs/blackhole.png");
 
 	int scrollOffset = 0;
 	int rem = 0;
@@ -253,6 +255,8 @@ int main(int argc, char* argv[])
 	double timestep = 0;
 	SDL_Rect attackRect = {0, 0, 80, 20};
 	SDL_Rect attackCam = {SCREEN_WIDTH+80, SCREEN_HEIGHT/2+51/2, 80, 20};
+    SDL_Rect blackholeRect = {SCREEN_WIDTH, 0, 900, 150};
+    SDL_Rect blackholeCam = {SCREEN_WIDTH,SCREEN_HEIGHT, 900, 150};
 	Player ply(10, loadImage("resources/imgs/starman.png"), 1);
 	attack hit(gRenderer,gAttack,&attackRect,attackCam);
 	SDL_Event e;
@@ -332,6 +336,23 @@ int main(int argc, char* argv[])
 
 		SDL_Rect pRect = ply.getPlayerRect();
 		SDL_Rect pCam = ply.getPlayerCam();
+        Uint32 currTime = SDL_GetTicks();
+        
+        if(currTime >= 7000)
+        {
+            if(currTime % 7000 == 0)
+            {
+                SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
+                //blackhole vacuum(gRenderer,gBlackhole,&blackholeRect,blackholeCam);
+            }
+            else
+            {
+                blackholeCam.x = blackholeCam.x - 1;
+                SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
+            }
+        }
+        
+        
 		if(keyState[SDL_SCANCODE_SPACE] && up == true)
 		{
 			up = false;

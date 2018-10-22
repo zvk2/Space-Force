@@ -2,7 +2,13 @@
 #include<stdlib.h>
 #include "INC_SDL.h"
 
-//        void blackhole::spawnBlackhole(SDL_Renderer* Renderer, SDL_Texture* gBlackhole, SDL_Rect* rectBlackhole,SDL_Rect cam)
-//        {
-//            SDL_RenderCopy(gRenderer, gAttack, attackBox, &end->attackCam);
-//        }
+        blackhole::blackhole(SDL_Renderer* Renderer, SDL_Texture* gBlackhole, SDL_Rect* blackholeRect,SDL_Rect blackholeCam)
+        {
+            
+        }
+
+        void blackhole::showBlackhole(SDL_Rect blackholeCam)
+        {
+            SDL_RenderCopy(gRenderer, gBlackhole, blackholeRect, &blackholeCam);
+        }
+
