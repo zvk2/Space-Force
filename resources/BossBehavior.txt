@@ -1,0 +1,26 @@
+
+Extreme virtual Peaceful king
+
+Weaponry:
+1) Black hole generator
+2) Laser cannon
+3) Peace missile
+
+
+Behavior:
+1) Blink to random location on the right half of the screen for every 3 seconds
+2) Able to fire missiles alongside with the generation of the black hole
+3) Multiple Laser cannon will fire separately
+
+
+
+
+
+
+
+
+
+
+
+
+Welcome to add/modify more bosses or their behaviors.
