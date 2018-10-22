@@ -342,17 +342,14 @@ int main(int argc, char* argv[])
         if(currTime >= 5000)
         {
             int bFrames;
-            int bItem;
             if(currTime % 5000 == 0)
             {
-                bItem = SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
+                SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
                 bFrames = 0;
                 //blackhole vacuum(gRenderer,gBlackhole,&blackholeRect,blackholeCam);
             }
             else
             {
-                // Why the divide by 6 and check if > 3?
-                // Why not just mod 4?
                 bFrames++;
 
                 if (bFrames / 12 > 5)
@@ -368,20 +365,49 @@ int main(int argc, char* argv[])
 //                std::cout << "\n";
 //                std::cout << "\n";
 
-
                 blackholeCam.x = blackholeCam.x - 1;
-                bItem = SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
+                SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
+                
+                if(blackholeCam.x < SCREEN_WIDTH && blackholeCam.x > 0)
+                {
+                    std::cout << "\n";
+                    std::cout << "pCam.x = " << pCam.x;
+                    if(blackholeCam.x > pCam.x)
+                    {
+                        pCam.x = pCam.x + 20;
+                    }
+                    else if(blackholeCam.x < pCam.x)
+                    {
+                        pCam.x = pCam.x - 20;
+                    }
+                    if(blackholeCam.y > pCam.y)
+                    {
+                        pCam.y = pCam.y + 20;
+                    }
+                    else if(blackholeCam.y < pCam.y)
+                    {
+                        pCam.y = pCam.y - 20;
+                    }
+                    std::cout << "\n";
+                    std::cout << "changed pCam.x = " << pCam.x;
+
+                    ply.setPosition(pCam.x, pCam.y);
+                }
+                
             }
             
             if(blackholeCam.x == -300)
             {
-                
                 blackholeCam = {SCREEN_WIDTH,rand() % (SCREEN_HEIGHT-300), 300, 300};
+                SDL_Delay(4000);
                 bFrames = 0;
             }
 
         }
-        
+//        
+//        std::cout << "\n";
+//        std::cout << "ply.x = " << ply.getPlayerCam().x;
+//        std::cout << "\n";
         
 		if(keyState[SDL_SCANCODE_SPACE] && up == true)
 		{
