@@ -6,7 +6,7 @@
 #include "INC_SDL.h"
 #include "Player.h"
 #include "attack.h"
-
+#include "blackhole.h"
 
 
 // Used for file walk (somewhat crudely)
