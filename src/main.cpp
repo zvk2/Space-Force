@@ -7,6 +7,7 @@
 #include "Player.h"
 #include "attack.h"
 #include "blackhole.h"
+#include <cstdlib>
 
 
 // Used for file walk (somewhat crudely)
@@ -374,7 +375,9 @@ int main(int argc, char* argv[])
             
             if(blackholeCam.x == -300)
             {
-                delete &bItem;
+                
+                blackholeCam = {SCREEN_WIDTH,rand() % (SCREEN_HEIGHT-300), 300, 300};
+                bFrames = 0;
             }
 
         }
