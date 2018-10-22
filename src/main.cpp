@@ -255,8 +255,8 @@ int main(int argc, char* argv[])
 	double timestep = 0;
 	SDL_Rect attackRect = {0, 0, 80, 20};
 	SDL_Rect attackCam = {SCREEN_WIDTH+80, SCREEN_HEIGHT/2+51/2, 80, 20};
-    SDL_Rect blackholeRect = {SCREEN_WIDTH, 0, 900, 150};
-    SDL_Rect blackholeCam = {SCREEN_WIDTH,SCREEN_HEIGHT, 900, 150};
+    SDL_Rect blackholeRect = {0, 0, 300, 300};
+    SDL_Rect blackholeCam = {SCREEN_WIDTH,SCREEN_HEIGHT/2, 300, 300};
 	Player ply(10, loadImage("resources/imgs/starman.png"), 1);
 	attack hit(gRenderer,gAttack,&attackRect,attackCam);
 	SDL_Event e;
@@ -338,18 +338,45 @@ int main(int argc, char* argv[])
 		SDL_Rect pCam = ply.getPlayerCam();
         Uint32 currTime = SDL_GetTicks();
         
-        if(currTime >= 7000)
+        if(currTime >= 5000)
         {
-            if(currTime % 7000 == 0)
+            int bFrames;
+            int bItem;
+            if(currTime % 5000 == 0)
             {
-                SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
+                bItem = SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
+                bFrames = 0;
                 //blackhole vacuum(gRenderer,gBlackhole,&blackholeRect,blackholeCam);
             }
             else
             {
+                // Why the divide by 6 and check if > 3?
+                // Why not just mod 4?
+                bFrames++;
+
+                if (bFrames / 12 > 5)
+                    bFrames = 0;
+                
+                blackholeRect.x = (bFrames / 12) * 300;
+                
+//                std::cout << "\n";
+//                std::cout << "\n";
+//                std::cout << "bFrames = " << bFrames;
+//                std::cout << "\n";
+//                std::cout << "bFrames / 12 = " << bFrames/12;
+//                std::cout << "\n";
+//                std::cout << "\n";
+
+
                 blackholeCam.x = blackholeCam.x - 1;
-                SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
+                bItem = SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
             }
+            
+            if(blackholeCam.x == -300)
+            {
+                delete &bItem;
+            }
+
         }
         
         
