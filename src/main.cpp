@@ -320,22 +320,6 @@ int main(int argc, char* argv[])
 		SDL_Rect eRect = emy.getEnemyRect();
 		SDL_Rect eCam = emy.getEnemyCam();
 		
-		if (SDL_HasIntersection(&eRect, &pRect))
-		{
-			ply.move(-ply.getxVel(), -ply.getyVel(), timestep);
-			pRect = ply.getPlayerRect();
-			pCam = ply.getPlayerCam();
-		}
-		
-		
-		
-		if (SDL_HasIntersection(&eRect, &pRect))
-		{
-			emy.move(-emy.getxVel(), -emy.getyVel(), timestep);
-			eRect = emy.getEnemyRect();
-			eCam = emy.getEnemyCam();
-		}
-	
 		moveLasttime = SDL_GetTicks();
 		
 		// Scrolling background
