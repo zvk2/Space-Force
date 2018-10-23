@@ -370,28 +370,32 @@ int main(int argc, char* argv[])
                 
                 if(blackholeCam.x < SCREEN_WIDTH && blackholeCam.x > 0)
                 {
-                    std::cout << "\n";
-                    std::cout << "pCam.x = " << pCam.x;
-                    if(blackholeCam.x > pCam.x)
+                    if(blackholeCam.x + 150 > pCam.x)
                     {
-                        pCam.x = pCam.x + 20;
+                        if(blackholeCam.y + 150 > pCam.y)
+                        {
+                            yDeltav = yDeltav + 20;
+                        }
+                        if(blackholeCam.y + 150 < pCam.y)
+                        {
+                            yDeltav = yDeltav - 20;
+                        }
+                        xDeltav = xDeltav + 20;
+                        ply.move(xDeltav, yDeltav, timestep);
                     }
-                    else if(blackholeCam.x < pCam.x)
+                    else if(blackholeCam.x + 150 < pCam.x)
                     {
-                        pCam.x = pCam.x - 20;
+                        if(blackholeCam.y + 150 > pCam.y)
+                        {
+                            yDeltav = yDeltav + 20;
+                        }
+                        if(blackholeCam.y + 150 < pCam.y)
+                        {
+                            yDeltav = yDeltav - 20;
+                        }
+                        xDeltav = xDeltav - 20;
+                        ply.move(xDeltav, yDeltav, timestep);
                     }
-                    if(blackholeCam.y > pCam.y)
-                    {
-                        pCam.y = pCam.y + 20;
-                    }
-                    else if(blackholeCam.y < pCam.y)
-                    {
-                        pCam.y = pCam.y - 20;
-                    }
-                    std::cout << "\n";
-                    std::cout << "changed pCam.x = " << pCam.x;
-
-                    ply.setPosition(pCam.x, pCam.y);
                 }
                 
             }
@@ -399,7 +403,6 @@ int main(int argc, char* argv[])
             if(blackholeCam.x == -300)
             {
                 blackholeCam = {SCREEN_WIDTH,rand() % (SCREEN_HEIGHT-300), 300, 300};
-                SDL_Delay(4000);
                 bFrames = 0;
             }
 
