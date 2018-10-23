@@ -3,7 +3,7 @@
 #define ENEMY_H
 #endif
 #include "INC_SDL.h"
-#include "physics.hpp"
+#include "physics.h"
 #define MAX_SPEED 50
 
 class Enemy
@@ -32,7 +32,10 @@ class Enemy
 		int GetSpeed();
 
 		//Set the position of the enemy on screen
-		void setPosition(int x, int y);
+		void setPosition(double x, double y);
+		
+		//Sets the current velocity of the enemy
+		void setVelocity(double x, double y);	
 			
 		//Methods that can be called from model class
 		void move(double xdvel, double ydvel, double tstep);

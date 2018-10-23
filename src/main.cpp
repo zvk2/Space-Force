@@ -4,6 +4,7 @@
 #include <string>
 #include <cstring>
 #include "INC_SDL.h"
+#include "physics.h"
 #include "Player.h"
 #include "Enemy.h"
 #include "attack.h"
@@ -252,14 +253,14 @@ int main(int argc, char* argv[])
 	SDL_Rect attackRect = {0, 0, 80, 20};
 	SDL_Rect attackCam = {SCREEN_WIDTH, SCREEN_HEIGHT/2+51/2, 80, 20};
 	Player ply(10, loadImage("resources/imgs/starman.png"), 1);
-	Enemy emy(10, loadImage("resources/Credit_Image/KevinW_credit.png"), 1);
-	emy.setPosition(960, 0);
+	Enemy emy(10, loadImage("resources/imgs/faxanaduitis.png"), 1);
+	emy.setPosition(860, 0);
+	emy.setVelocity(0, 50);
 	attack hit(gRenderer,gAttack,&attackRect,attackCam);
 	SDL_Event e;
 	bool gameOn = true;
 	bool up = true;
-	
-	int emyDeltav = 1;
+	double emyDelta = 1;
 	
 	while(gameOn) 
 	{
@@ -299,16 +300,19 @@ int main(int argc, char* argv[])
 		if (keyState[SDL_SCANCODE_S])
 			yDeltav += (ACCEL * timestep);
 		
-		if (emy.getEnemyCam().y + 200 == SCREEN_HEIGHT)
+		if (emy.getEnemyCam().y + emy.getEnemyCam().h == SCREEN_HEIGHT)
 		{
-			emyDeltav = -1;
+			emyDelta = -1;
+			emy.setVelocity(0, -10);
 		}
 		if (emy.getEnemyCam().y == 0)
 		{
-			emyDeltav = 1;
+			emyDelta = 1;
+			emy.setVelocity(0, 10);
 		}
 		
 		ply.move(xDeltav, yDeltav, timestep);
+		emy.move(0, emyDelta, timestep);
 		
 		SDL_Rect pRect = ply.getPlayerRect();
 		SDL_Rect pCam = ply.getPlayerCam();
@@ -323,7 +327,7 @@ int main(int argc, char* argv[])
 			pCam = ply.getPlayerCam();
 		}
 		
-		emy.move(0, emyDeltav, timestep);
+		
 		
 		if (SDL_HasIntersection(&eRect, &pRect))
 		{
@@ -350,7 +354,7 @@ int main(int argc, char* argv[])
 		bgRect.x += SCREEN_WIDTH;
 		SDL_RenderCopy(gRenderer, gBackground, nullptr, &bgRect);
 		
-		frames = (frames + 1) % 6;
+		frames += 1 % 1000000000;
 
 		ply.animate(frames);
 		emy.animate(frames);

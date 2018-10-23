@@ -1,3 +1,4 @@
+#pragma once
 
 #ifdef __APPLE__
 #include <SDL2/SDL.h>
@@ -6,6 +7,11 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #endif
+
+#ifndef PHYSICS_H
+#define PHYSICS_H
+#endif
+#include "INC_SDL.h"
 
 class Physics
 {
@@ -19,6 +25,11 @@ public:
 //What to do when no buttons are pressed
 	void Neutral(double timestep);
 	void ChangeVelocity(double x_del, double y_del, double timestep);
+	
+	//Set the current x velocity
+	double setxVelocity(double x);
+	//Set the current y velocity
+	double setyVelocity(double y);
 	
 	//Return the current x velocity
 	double getxVelocity();

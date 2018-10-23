@@ -8,8 +8,8 @@ Enemy::Enemy(int startingHealth, SDL_Texture* characterImages, int attack):
 	hitPoints(startingHealth), enemySheet(characterImages),
 	attackPower(attack), phys(0, 0, 300.0, 3600.0), xCoord(1280/8), yCoord(720/2)
 	{
-		enemyRect = {0, 400, 200, 200};
-		enemyCam = {1280/2, 720/2, 200, 200};
+		enemyRect = {0, 0, 336, 203};
+		enemyCam = {1280/2, 720/2, 336, 203};
 	}
 
 void Enemy::LostHealth(int damage)
@@ -48,12 +48,24 @@ int Enemy::GetSpeed()
 }
 
 //Set the position of the enemy on screen
-void Enemy::setPosition(int x, int y)
+void Enemy::setPosition(double x, double y)
 {
-	enemyCam.x = x;
-	enemyCam.y = y;
-}
+	xCoord = x;
+	yCoord = y;
 	
+	CheckBoundaries();
+	
+	enemyCam.x = (int) xCoord;
+	enemyCam.y = (int) yCoord;
+}
+
+//Sets the current velocity of the enemy
+void Enemy::setVelocity(double x, double y)
+{
+	phys.setxVelocity(x);
+	phys.setyVelocity(y);
+}
+
 //Methods that can be called from model class
 void Enemy::move(double xdvel, double ydvel, double tstep)
 {
@@ -71,7 +83,7 @@ void Enemy::move(double xdvel, double ydvel, double tstep)
 // Animate jet propulsion
 void Enemy::animate(int frames)
 {
-	enemyRect.x = frames * 300;
+	enemyRect.x = ((frames / 10) % 4) * 336;
 }
 
 //Return the current x velocity
@@ -89,6 +101,8 @@ double Enemy::getyVel()
 //Get the enemy camera rectangle
 SDL_Rect Enemy::getEnemyCam()
 {
+	enemyCam.x = (int) xCoord;
+	enemyCam.y = (int) yCoord;
 	return enemyCam;
 }
 
@@ -121,12 +135,12 @@ void Enemy::CheckBoundaries()
 	// Boundary checks against the window
 	if (xCoord < 0)
 		xCoord = 0;
-	if (xCoord + 300 > SCREEN_WIDTH)
-		xCoord = SCREEN_WIDTH - 300;
+	if (xCoord + enemyCam.w > SCREEN_WIDTH)
+		xCoord = SCREEN_WIDTH - enemyCam.w;
 	if (yCoord < 0)
 		yCoord = 0;
-	if (yCoord + 51 > SCREEN_HEIGHT)
-		yCoord = SCREEN_HEIGHT - 51;
+	if (yCoord + enemyCam.h > SCREEN_HEIGHT)
+		yCoord = SCREEN_HEIGHT - enemyCam.h;
 }
 
 void Enemy::IncrementSpeed(int addedSpeed)

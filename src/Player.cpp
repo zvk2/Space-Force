@@ -16,10 +16,15 @@ Player::Player(int startingHealth, SDL_Texture* characterImages, int attack):
 	}
 
 //Set the position of the player on screen
-void Player::setPosition(int x, int y)
+void Player::setPosition(double x, double y)
 {
-	playerCam.x = x;
-	playerCam.y = y;
+	xCoord = x;
+	yCoord = y;
+	
+	CheckBoundaries();
+	
+	playerCam.x = (int) xCoord;
+	playerCam.y = (int) yCoord;
 }
 	
 //Methods that can be called from model class
@@ -40,7 +45,7 @@ void Player::move(double xdvel, double ydvel, double tstep)
 // Animate jet propulsion
 void Player::animate(int frames)
 {
-	playerRect.x = frames * 300;
+	playerRect.x = (frames % 6) * 300;
 }
 
 //Return the current x velocity
@@ -58,6 +63,8 @@ double Player::getyVel()
 //Get the player camera rectangle
 SDL_Rect Player::getPlayerCam()
 {
+	playerCam.x = (int) xCoord;
+	playerCam.y = (int) yCoord;
 	return playerCam;
 }
 
@@ -118,12 +125,12 @@ void Player::CheckBoundaries()
 	// Boundary checks against the window
 	if (xCoord < 0)
 		xCoord = 0;
-	if (xCoord + 300 > SCREEN_WIDTH)
-		xCoord = SCREEN_WIDTH - 300;
+	if (xCoord + playerCam.w > SCREEN_WIDTH)
+		xCoord = SCREEN_WIDTH - playerCam.w;
 	if (yCoord < 0)
 		yCoord = 0;
-	if (yCoord + 51 > SCREEN_HEIGHT)
-		yCoord = SCREEN_HEIGHT - 51;
+	if (yCoord + playerCam.h > SCREEN_HEIGHT)
+		yCoord = SCREEN_HEIGHT - playerCam.h;
 }
 
 //Private method to decrease player health
