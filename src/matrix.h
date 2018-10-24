@@ -1,10 +1,8 @@
+#ifndef MATRIX_H
+#define MATRIX_H
+
 #include <stdio.h>
-#ifdef __APPLE__  // include Mac OS X verions of headers
-#include <OpenGL/OpenGL.h>
-#include <OpenGL/gl3.h>
-#else // non-Mac OS X operating systems
-#include <GL/glew.h>
-#endif
+#include "INC_SDL.h"
 
 // For textures
 typedef struct vec2 {
@@ -62,3 +60,4 @@ mat4 transpose(mat4 a); // matrix transposition
 int inverse(mat4 a, mat4* rmat); // matrix inversion
 
 vec4 mat_vec_mult(mat4 m, vec4 n); // matrix * vector multiplication
+#endif
