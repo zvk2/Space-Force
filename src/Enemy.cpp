@@ -8,8 +8,8 @@ Enemy::Enemy(int startingHealth, SDL_Texture* characterImages, int attack):
 	hitPoints(startingHealth), enemySheet(characterImages),
 	attackPower(attack), phys(0, 0, 300.0, 3600.0), xCoord(1280/8), yCoord(720/2)
 	{
-		enemyRect = {0, 0, 336, 203};
-		enemyCam = {1280/2, 720/2, 336, 203};
+		enemyRect = {0, 0, 144, 87};
+		enemyCam = {1280/2, 720/2, 144, 87};
 	}
 
 void Enemy::LostHealth(int damage)
@@ -83,7 +83,7 @@ void Enemy::move(double xdvel, double ydvel, double tstep)
 // Animate jet propulsion
 void Enemy::animate(int frames)
 {
-	enemyRect.x = ((frames / 10) % 4) * 336;
+	enemyRect.x = ((frames / 10) % 4) * enemyRect.w;
 }
 
 //Return the current x velocity
