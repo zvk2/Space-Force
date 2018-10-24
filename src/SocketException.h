@@ -1,3 +1,6 @@
+#ifndef SOCKETEXCEPTION_H
+#define SOCKETEXCEPTION_H
+
 #include <string>
 
 // Custom simple exception class, we need this because to compile successfully
@@ -19,3 +22,4 @@ class SocketException
 			return msg;
 		}
 };
+#endif

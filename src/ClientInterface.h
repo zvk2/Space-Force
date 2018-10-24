@@ -1,3 +1,5 @@
+#ifndef CLIENTINTERFACE_H
+#define CLIENTINTERFACE_H
 
 #include <iostream>
 #include <string>
@@ -29,3 +31,4 @@ class ClientInterface
 		
 		SDL_Rect GetPlayerInfo(string playerInfo);
 };
+#endif
