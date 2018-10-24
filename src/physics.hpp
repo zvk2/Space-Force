@@ -1,11 +1,7 @@
+#ifndef PHYSICS_HPP
+#define PHYSICS_HPP
 
-#ifdef __APPLE__
-#include <SDL2/SDL.h>
-#include <SDL2_image/SDL_image.h>
-#else
-#include <SDL.h>
-#include <SDL_image.h>
-#endif
+#include "INC_SDL.h"
 
 class Physics
 {
@@ -39,3 +35,4 @@ public:
 	// Check speed limits
 	void Speed_Limit();
 };
+#endif
