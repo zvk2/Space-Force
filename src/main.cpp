@@ -59,15 +59,33 @@ bool init()
 		std::cout << "Warning: Linear texture filtering not enabled!" << std::endl;
 	}
 
+	// tell SDL we want a forward compatible opengl 3.2 context
+	// create stencil buffer
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
+	// create our window and OpenGL context
 	gWindow = SDL_CreateWindow(
-		"Space Force",
-		SDL_WINDOWPOS_UNDEFINED,
-		SDL_WINDOWPOS_UNDEFINED,
-		SCREEN_WIDTH,
-		SCREEN_HEIGHT,
-		SDL_WINDOW_SHOWN
+		"OpenGL", 
+		SDL_WINDOWPOS_UNDEFINED, 
+		SDL_WINDOWPOS_UNDEFINED, 
+		SCREEN_WIDTH, 
+		SCREEN_HEIGHT, 
+		SDL_WINDOW_OPENGL
 	);
+	SDL_GLContext context = SDL_GL_CreateContext(gWindow);
+
+	// initiate glew, and force modern OpenGL with experimental
+	glewExperimental = GL_TRUE;
+	glewInit();
+
+	// just checking if glew worked. this can be removed.
+	GLuint vertexBuffer;
+	glGenBuffers(1, &vertexBuffer);
+	//printf("%u\n", vertexBuffer);
+
 	if (gWindow == nullptr)
 	{
 		std::cout << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
