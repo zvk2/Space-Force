@@ -37,6 +37,7 @@ void close();
 // Globals
 SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
+SDL_GLContext gContext;
 SDL_Texture* gBackground;
 SDL_Texture* gAttack;
 SDL_Texture* gBlackhole;
@@ -75,15 +76,15 @@ bool init()
 		SCREEN_HEIGHT, 
 		SDL_WINDOW_OPENGL
 	);
-	SDL_GLContext context = SDL_GL_CreateContext(gWindow);
+	gContext = SDL_GL_CreateContext(gWindow);
 
 	// initiate glew, and force modern OpenGL with experimental
 	glewExperimental = GL_TRUE;
 	glewInit();
 
 	// just checking if glew worked. this can be removed.
-	GLuint vertexBuffer;
-	glGenBuffers(1, &vertexBuffer);
+	//GLuint vertexBuffer;
+	//glGenBuffers(1, &vertexBuffer);
 	//printf("%u\n", vertexBuffer);
 
 	if (gWindow == nullptr)
@@ -151,6 +152,7 @@ void close()
 
 	SDL_DestroyRenderer(gRenderer);
 	SDL_DestroyWindow(gWindow);
+	SDL_GL_DeleteContext(gContext);
 	gWindow = nullptr;
 	gRenderer = nullptr;
 
