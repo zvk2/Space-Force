@@ -11,13 +11,15 @@ class attack
 			struct Node *next;
 		};
 	public:
-		attack(SDL_Renderer* Renderer, SDL_Texture* gAtt, SDL_Rect* attac,SDL_Rect cam);
-		void addAttack(SDL_Rect cam);
+		attack(SDL_Renderer* Renderer);
+		void addAttack(int x, int y);
 		void renderAttack(double timestep);
+		void setAttack(SDL_Texture* gAtt, SDL_Rect* attac);
 	private:
 		struct Node* head;
 		struct Node* end;
 		struct Node* curr;
+		SDL_Rect cam;
 		SDL_Rect* attackBox;
 		SDL_Renderer* gRenderer;
 		SDL_Texture* gAttack;
