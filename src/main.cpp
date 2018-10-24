@@ -283,6 +283,7 @@ int main(int argc, char* argv[])
 	SDL_Event e;
 	bool gameOn = true;
 	bool up = true;
+	bool credits = true;
 	while(gameOn)
 	{
 		while(SDL_PollEvent(&e))
@@ -294,6 +295,11 @@ int main(int argc, char* argv[])
 			if (e.type == SDL_KEYDOWN)
 			{
 				if (e.key.keysym.sym == SDLK_ESCAPE)
+				{
+					gameOn = false;
+					credits = false;
+				}
+				if (e.key.keysym.sym == SDLK_q)
 				{
 					gameOn = false;
 				}
@@ -444,5 +450,5 @@ int main(int argc, char* argv[])
 		SDL_RenderPresent(gRenderer);
 	}
 
-	return playCredits();
+	return credits ? playCredits() : 0;
 }
