@@ -11,7 +11,8 @@ public:
 	Physics(double* x_v, double *y_v, double* x_d, double* y_d,double max_speed, double accel);
 	Physics(double x_v, double y_v, double max_speed, double accel);
 	
-	
+	double changeAccel(double ac);
+	double getACCEL();
 //What to do when no buttons are pressed
 	void Neutral(double timestep);
 	void ChangeVelocity(double x_del, double y_del, double timestep);

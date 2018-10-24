@@ -104,7 +104,14 @@
 	
 		Speed_Limit();
 	}
-	
+	double Physics::changeAccel(double ac)
+	{
+		ACCEL = ac;
+	}
+	double Physics::getACCEL()
+	{
+		return ACCEL;
+	}
 	//Return the current x velocity
 	double Physics::getxVelocity()
 	{

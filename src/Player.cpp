@@ -9,10 +9,11 @@
 		Player::Player(int startingHealth, SDL_Texture* characterImages, int attack, SDL_Renderer* gRend): 
 			hitPoints(startingHealth), playerSheet(characterImages),
 			attackPower(attack), attackModifier(1), defenseModifier(1),
-			phys(0, 0, 300.0, 3600.0), xCoord(1280/8), yCoord(720/2), gRenderer(gRend),hit(gRend)
+			phys(0, 0, 300.0, 3600.0), xCoord(1280/8), yCoord(720/2), hit(gRend)
 			{
 				playerRect = {0, 0, 300, 51};
 				playerCam = {1280/2, 720/2, 300, 51};	
+				gRenderer = gRend;
 			}
 		void Player::setAttack(SDL_Texture* gAttack, SDL_Rect* attackRect)
 		{
@@ -24,7 +25,10 @@
 			playerCam.x = x;
 			playerCam.y = y;
 		}
-			
+		SDL_Renderer* Player::getRend()
+		{
+			return gRenderer;
+		}
 		//Methods that can be called from model class
 		void Player::move(double xdvel, double ydvel, double tstep)
 		{
@@ -57,6 +61,18 @@
 			return playerCam;
 		}
 		
+		SDL_Rect* Player::getPlayerCamLoc()
+		{
+			return &playerCam;
+		}
+		double Player::getACCEL()
+		{
+			return phys.getACCEL();
+		}
+		void Player::changeAccel(double Accel)
+		{
+			phys.changeAccel(Accel);
+		}
 		//Get the current rectangle from the sprite sheet
 		SDL_Rect Player::getPlayerRect()
 		{

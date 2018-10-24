@@ -4,6 +4,7 @@
 #include <string>
 #include <cstring>
 #include "INC_SDL.h"
+#include "Magnetar.h"
 #include "Player.h"
 #include "blackhole.h"
 #include <cstdlib>
@@ -22,7 +23,7 @@ const int LEVEL_LEN = 5120;
 const int TILE_SIZE = 100;
 
 // Constant for acceleration
-const double ACCEL = 3600.0;
+//const double ACCEL = 3600.0;
 
 // Parent folder for credit images
 // Not const due to contrivance (can pass immediately if not const)
@@ -241,7 +242,8 @@ int main(int argc, char* argv[])
 	int rem = 0;
 	double xDeltav = 0.0;
 	double yDeltav = 0.0;
-
+	bool create;
+	
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
 
 	int frames = 0;
@@ -258,6 +260,8 @@ int main(int argc, char* argv[])
     SDL_Rect blackholeRect = {0, 0, 300, 300};
     SDL_Rect blackholeCam = {SCREEN_WIDTH,SCREEN_HEIGHT/2, 300, 300};
 	Player ply(10, loadImage("resources/imgs/starman.png"), 1,gRenderer);
+	Magnetar mag(&ply, loadImage("resources/imgs/Magnetars.png"));
+	double ACCEL = ply.getACCEL();
 	//the beginning/default image and attack box
 	ply.hit.setAttack(gAttack,&attackRect);
 	SDL_Event e;
@@ -286,6 +290,7 @@ int main(int argc, char* argv[])
 				}
 			}
 		}
+		ACCEL = ply.getACCEL();
 		timestep = (SDL_GetTicks() - moveLasttime) / 1000.0;
 		xDeltav = 0.0;
 		yDeltav = 0.0;
@@ -317,6 +322,8 @@ int main(int argc, char* argv[])
 
 		rem = scrollOffset % SCREEN_WIDTH;
 		bgRect.x = -rem;
+		
+		
 		SDL_RenderCopy(gRenderer, gBackground, nullptr, &bgRect);
 		bgRect.x += SCREEN_WIDTH;
 		SDL_RenderCopy(gRenderer, gBackground, nullptr, &bgRect);
@@ -338,7 +345,13 @@ int main(int argc, char* argv[])
 		SDL_Rect pRect = ply.getPlayerRect();
 		SDL_Rect pCam = ply.getPlayerCam();
         Uint32 currTime = SDL_GetTicks();
-        
+        if(currTime>=3000)
+		{
+			if((currTime % 3000 == 0 && !mag.seen()) ||mag.seen())
+			{
+				mag.Render();
+			}
+		}
         if(currTime >= 5000)
         {
             int bFrames;
