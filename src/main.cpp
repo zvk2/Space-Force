@@ -69,11 +69,11 @@ bool init()
 
 	// create our window and OpenGL context
 	gWindow = SDL_CreateWindow(
-		"Space Force", 
-		SDL_WINDOWPOS_UNDEFINED, 
-		SDL_WINDOWPOS_UNDEFINED, 
-		SCREEN_WIDTH, 
-		SCREEN_HEIGHT, 
+		"Space Force",
+		SDL_WINDOWPOS_UNDEFINED,
+		SDL_WINDOWPOS_UNDEFINED,
+		SCREEN_WIDTH,
+		SCREEN_HEIGHT,
 		SDL_WINDOW_OPENGL
 	);
 	gContext = SDL_GL_CreateContext(gWindow);
