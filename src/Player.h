@@ -2,15 +2,16 @@
 #define PLAYER_H
 #include "INC_SDL.h"
 #include "physics.hpp"
+#include "attack.h"
 #define MAX_SPEED 50
 
 
 class Player
 {
 	public:
-		
+		attack hit;
 		//Constructor: takes health, character sheet, and attack value and sets all member vars
-		Player(int startingHealth, SDL_Texture* characterImages, int attack);
+		Player(int startingHealth, SDL_Texture* characterImages, int attack, SDL_Renderer* gRend);
 
 
 		//Set the position of the player on screen
@@ -28,7 +29,7 @@ class Player
 		//Return the current x velocity
 		double getxVel();
 
-		
+		void setAttack(SDL_Texture* gAtt, SDL_Rect* attac);
 		//Get the player camera rectangle
 		SDL_Rect getPlayerCam();
 
@@ -84,6 +85,7 @@ class Player
 		//Not perm obviously but here as a reminder to store player texture here
 		SDL_Texture* playerSheet;
 		Physics phys;
+		SDL_Renderer* gRenderer;
 
 		SDL_Rect playerCam;
 		SDL_Rect playerRect;
