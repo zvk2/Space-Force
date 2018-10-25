@@ -347,7 +347,7 @@ int main(int argc, char* argv[])
         Uint32 currTime = SDL_GetTicks();
         if(currTime>=3000)
 		{
-			if((currTime % 3000 == 0 && !mag.seen()) ||mag.seen())
+			if((currTime % 3000 == 0 && !mag.Seen()) ||mag.Seen())
 			{
 				mag.Render();
 			}

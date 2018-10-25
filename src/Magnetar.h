@@ -5,7 +5,7 @@ class Magnetar
 	public:
 		Magnetar(Player* main, SDL_Texture* gIm);
 		void Render();
-		bool seen();
+		bool Seen();
 		
 		
 	private:
