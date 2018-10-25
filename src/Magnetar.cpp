@@ -19,6 +19,7 @@ void Magnetar::Render()
 	//places object to screen
 	SDL_RenderCopy(gRenderer, im, &collBox, &camBox);
 	double ACCEL = ply->getACCEL();
+	//gets players current ACCEL
 	bool inter = SDL_HasIntersection(&camBox,playerCam);
 	if ((inter && ACCEL > 0) || (!inter && ACCEL < 0))
 	//if player has intersected with the object and move is postive it
