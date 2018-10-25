@@ -11,6 +11,7 @@
 	BACK_LIMIT{-max_speed}, FOR_LIMIT{max_speed},ACCEL{accel}, x_vel{x_v},y_vel{y_v}
 
 	{
+		move = ACCEL;
 	}
 	
 	
@@ -106,11 +107,11 @@
 	}
 	double Physics::changeAccel(double ac)
 	{
-		ACCEL = ac;
+		move = ac;
 	}
 	double Physics::getACCEL()
 	{
-		return ACCEL;
+		return move;
 	}
 	//Return the current x velocity
 	double Physics::getxVelocity()

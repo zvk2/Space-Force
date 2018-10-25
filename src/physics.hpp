@@ -32,6 +32,7 @@ public:
 	double *y_velp;
 	double *x_delp;
 	double *y_delp;
+	double move;
 	
 	// Check speed limits
 	void Speed_Limit();
