@@ -21,7 +21,7 @@ void Magnetar::Render()
 	{
 		ply->changeAccel(-ACCEL);
 	}
-	camBox.x = camBox.x - 5;
+	camBox.x = camBox.x - 1;
 	if(camBox.x + 1280> 0)
 	{
 		onScreen = true;
