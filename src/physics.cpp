@@ -105,15 +105,17 @@
 	}
 	
 	//Set the current x velocity
-	double Physics::setxVelocity(double x)
+	void Physics::setxVelocity(double x)
 	{
 		x_vel = x;
+       
 	}
 	
 	//Set the current y velocity
-	double Physics::setyVelocity(double y)
+	void Physics::setyVelocity(double y)
 	{
 		y_vel = y;
+        
 	}
 	
 	//Return the current x velocity

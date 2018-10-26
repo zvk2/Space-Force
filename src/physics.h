@@ -27,9 +27,9 @@ public:
 	void ChangeVelocity(double x_del, double y_del, double timestep);
 	
 	//Set the current x velocity
-	double setxVelocity(double x);
+	void setxVelocity(double x);
 	//Set the current y velocity
-	double setyVelocity(double y);
+	void setyVelocity(double y);
 	
 	//Return the current x velocity
 	double getxVelocity();

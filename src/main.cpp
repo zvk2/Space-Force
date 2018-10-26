@@ -361,8 +361,8 @@ int main(int argc, char* argv[])
 		else if (ply.getxVel() < 0 && flip == SDL_FLIP_NONE)
 			flip = SDL_FLIP_HORIZONTAL;*/
 
-		SDL_Rect pRect = ply.getPlayerRect();
-		SDL_Rect pCam = ply.getPlayerCam();
+		pRect = ply.getPlayerRect();
+		pCam = ply.getPlayerCam();
         Uint32 currTime = SDL_GetTicks();
         
         if(currTime >= 5000)
