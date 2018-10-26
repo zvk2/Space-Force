@@ -1,7 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 #include "INC_SDL.h"
-#include "physics.hpp"
+#include "physics.h"
 #include "attack.h"
 #define MAX_SPEED 50
 
@@ -15,7 +15,7 @@ class Player
 
 
 		//Set the position of the player on screen
-		void setPosition(int x, int y);
+		void setPosition(double x, double y);
 
 			
 		//Methods that can be called from model class
@@ -29,7 +29,11 @@ class Player
 		//Return the current x velocity
 		double getxVel();
 
+		//Return the current y velocity
+		double getyVel();
+		
 		void setAttack(SDL_Texture* gAtt, SDL_Rect* attac);
+
 		//Get the player camera rectangle
 		SDL_Rect getPlayerCam();
 

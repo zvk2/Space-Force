@@ -1,5 +1,4 @@
-#include "physics.hpp"
-
+#include "physics.h"
 
 //the max speed the player can go
 
@@ -103,6 +102,18 @@
 		}
 	
 		Speed_Limit();
+	}
+	
+	//Set the current x velocity
+	double Physics::setxVelocity(double x)
+	{
+		x_vel = x;
+	}
+	
+	//Set the current y velocity
+	double Physics::setyVelocity(double y)
+	{
+		y_vel = y;
 	}
 	
 	//Return the current x velocity
