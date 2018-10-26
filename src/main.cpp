@@ -5,7 +5,6 @@
 #include <cstring>
 #include "INC_SDL.h"
 #include "Player.h"
-#include "attack.h"
 #include "blackhole.h"
 #include <cstdlib>
 
@@ -255,11 +254,12 @@ int main(int argc, char* argv[])
 	Uint32 moveLasttime = SDL_GetTicks();
 	double timestep = 0;
 	SDL_Rect attackRect = {0, 0, 80, 20};
-	SDL_Rect attackCam = {SCREEN_WIDTH+80, SCREEN_HEIGHT/2+51/2, 80, 20};
+	//SDL_Rect attackCam = {SCREEN_WIDTH+80, SCREEN_HEIGHT/2+51/2, 80, 20};
     SDL_Rect blackholeRect = {0, 0, 300, 300};
     SDL_Rect blackholeCam = {SCREEN_WIDTH,SCREEN_HEIGHT/2, 300, 300};
-	Player ply(10, loadImage("resources/imgs/starman.png"), 1);
-	attack hit(gRenderer,gAttack,&attackRect,attackCam);
+	Player ply(10, loadImage("resources/imgs/starman.png"), 1,gRenderer);
+	//the beginning/default image and attack box
+	ply.hit.setAttack(gAttack,&attackRect);
 	SDL_Event e;
 	bool gameOn = true;
 	bool up = true;
@@ -411,15 +411,14 @@ int main(int argc, char* argv[])
 //        std::cout << "\n";
 //        std::cout << "ply.x = " << ply.getPlayerCam().x;
 //        std::cout << "\n";
-        
+        //attack button 
 		if(keyState[SDL_SCANCODE_SPACE] && up == true)
 		{
 			up = false;
-			attackCam.x = pCam.x + 300;
-			attackCam.y = pCam.y + 51/2;
-			hit.addAttack(attackCam);
+			ply.hit.addAttack(pCam.x + 300,pCam.y + 51/2);
 		}
-		hit.renderAttack(timestep);
+		//lets the attack move across the screen
+		ply.hit.renderAttack(timestep);
 		SDL_RenderCopyEx(gRenderer, ply.getPlayerSheet(), &pRect, &pCam, 0.0, nullptr, flip);
 		SDL_RenderPresent(gRenderer);
 	}

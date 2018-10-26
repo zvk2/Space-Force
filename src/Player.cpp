@@ -6,16 +6,18 @@
 
 		
 		//Constructor: takes health, character sheet, and attack value and sets all member vars
-		Player::Player(int startingHealth, SDL_Texture* characterImages, int attack): 
+		Player::Player(int startingHealth, SDL_Texture* characterImages, int attack, SDL_Renderer* gRend): 
 			hitPoints(startingHealth), playerSheet(characterImages),
 			attackPower(attack), attackModifier(1), defenseModifier(1),
-			phys(0, 0, 300.0, 3600.0), xCoord(1280/8), yCoord(720/2)
+			phys(0, 0, 300.0, 3600.0), xCoord(1280/8), yCoord(720/2), gRenderer(gRend),hit(gRend)
 			{
 				playerRect = {0, 0, 300, 51};
-				playerCam = {1280/2, 720/2, 300, 51};
-				
+				playerCam = {1280/2, 720/2, 300, 51};	
 			}
-
+		void Player::setAttack(SDL_Texture* gAttack, SDL_Rect* attackRect)
+		{
+			hit.setAttack(gAttack,attackRect);
+		}
 		//Set the position of the player on screen
 		void Player::setPosition(int x, int y)
 		{
