@@ -329,7 +329,7 @@ int main(int argc, char* argv[])
 		SDL_Rect eCam = emy.getEnemyCam();
 		
 		moveLasttime = SDL_GetTicks();
-
+        
 		// Scrolling background
 		++scrollOffset;
 		if (scrollOffset > bgRect.w)
