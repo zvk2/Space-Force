@@ -1,6 +1,5 @@
 #include "physics.h"
 
-
 //the max speed the player can go
 
 	Physics::Physics(double* x_v, double *y_v, double* x_d, double* y_d,double max_speed, double accel):

@@ -3,7 +3,6 @@
 #include <SDL2_image/SDL_image.h>
 #include <SDL2_net/SDL_net.h>
 #include <OpenGL/OpenGL.h>
-#include <GLUT/glut.h>
 #include <OpenGL/gl3.h>
 #else
 #include <SDL.h>

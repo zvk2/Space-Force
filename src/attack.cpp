@@ -1,15 +1,25 @@
 #include "attack.h"
 		//will keep track of all attacks on screen
-		attack::attack(SDL_Renderer* Renderer, SDL_Texture* gAtt, SDL_Rect* attac,SDL_Rect cam):attackBox{attac}, gRenderer{Renderer}, gAttack{gAtt}
+
+		attack::attack(SDL_Renderer* Renderer):gRenderer{Renderer}
 		{
 			head = (struct Node*)malloc(sizeof(struct Node));
-			head->attackCam = cam;
+			cam = {0,0,0,0};
 			end = head;
 			end->next = nullptr;
 		}
-		//new attacks are added to the end of the list
-		void attack::addAttack(SDL_Rect cam)
+		void attack::setAttack(SDL_Texture* gAtt, SDL_Rect* attac)
 		{
+			attackBox = attac;
+			gAttack = gAtt;
+			cam.w = attac->w;
+			cam.h = attac->h;
+		}
+		//new attacks are added to the end of the list
+		void attack::addAttack(int x, int y)
+		{
+			cam.x = x;
+			cam.y = y;
 			end->next = (struct Node*)malloc(sizeof(struct Node));
 			end ->next->attackCam = cam;
 			end = end->next;
@@ -22,17 +32,21 @@
 		void attack::renderAttack(double timestep)
 		{
 			curr = head->next;
-			if(curr != nullptr && head -> attackCam.x + 80 >= 1280)
-			{
-				curr = head->next;
-				free(head);
-				head = curr;
-			}
-		
 			while(curr != nullptr)
 			{
 				curr->attackCam.x +=(int) (3000 * timestep);
 				SDL_RenderCopy(gRenderer, gAttack, attackBox, &curr->attackCam);
 				curr = curr->next;
+			}
+			curr = head->next;
+			if(curr != nullptr && curr -> attackCam.x + 80 >= 1280)
+			{
+				
+				head->next = curr->next;
+				if(curr == end)
+				{
+					end = head;
+				}
+				free(curr);
 			}
 		}

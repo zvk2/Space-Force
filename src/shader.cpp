@@ -67,6 +67,26 @@ GLuint Shader::createShader(const std::string source, GLenum type)
 	return shader;
 }
 
+std::string Shader::getShaderType(GLuint _shader)
+{
+	std::string name = "";
+	GLint type;
+	glGetShaderiv(_shader, GL_SHADER_TYPE, &type);
+	switch (type)
+	{
+		case (GL_VERTEX_SHADER):
+			name += "Vertex";
+			break;
+		case (GL_FRAGMENT_SHADER):
+			name += "Fragment";
+			break;
+		default:
+			name += "Unsupported shader type";
+			break;
+	}
+	return name;
+}
+
 void Shader::checkCompileError(GLuint _shader)
 {
     GLint status;
@@ -74,9 +94,11 @@ void Shader::checkCompileError(GLuint _shader)
 
     if (status != GL_TRUE)
     {
-        char buffer[512];
+        GLint length;
+        glGetShaderiv(_shader, GL_INFO_LOG_LENGTH, &length);
+        char buffer[length];
         glGetShaderInfoLog(_shader, sizeof(buffer), NULL, buffer);
-        std::cerr << status << " Shader compilation error: " << buffer << std::endl;
+        std::cerr << "\n" << getShaderType(_shader) << " shader compilation error:\n" << buffer << std::endl;
     }
 }
 
@@ -87,9 +109,12 @@ void Shader::checkLinkError()
     
     if (status != GL_TRUE)
     {
-        char buffer[512];
+        GLint length;
+        glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length);
+        char buffer[length];
         glGetProgramInfoLog(program, sizeof(buffer), NULL, buffer);
-        std::cerr << status << " Shader link error: " << buffer << std::endl;
+        if (buffer[0])
+        	std::cerr << "Shader link error:\n" << buffer << std::endl;
     }
 }
 

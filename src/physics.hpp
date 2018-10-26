@@ -1,129 +1,25 @@
-#ifdef __APPLE__
-#include <SDL2/SDL.h>
-#include <SDL2_image/SDL_image.h>
-#else
-#include <SDL.h>
-#include <SDL_image.h>
-#endif
+#ifndef PHYSICS_HPP
+#define PHYSICS_HPP
+
+#include "INC_SDL.h"
 
 class Physics
 {
 
 //the max speed the player can go
 public:
-	Physics(double* x_v, double *y_v, double* x_d, double* y_d,double max_speed, double accel):
-	BACK_LIMIT{-max_speed}, FOR_LIMIT{max_speed},ACCEL{accel}, x_velp{x_v},y_velp{y_v},x_delp{x_d}, y_delp{y_d}
-	{
-	}
-	Physics(double x_v, double y_v, double max_speed, double accel):
-	BACK_LIMIT{-max_speed}, FOR_LIMIT{max_speed},ACCEL{accel}, x_vel{x_v},y_vel{y_v}
-
-	{
-	}
+	Physics(double* x_v, double *y_v, double* x_d, double* y_d,double max_speed, double accel);
+	Physics(double x_v, double y_v, double max_speed, double accel);
 	
 	
 //What to do when no buttons are pressed
-	void Neutral(double timestep)
-	{
-		if (*x_delp == 0) 
-		{
-			if (*x_velp > 0) 
-			{
-				if (*x_velp < (ACCEL * timestep))
-					*x_velp = 0;
-				else
-					*x_velp -= (ACCEL * timestep);
-			}
-			else if (*x_velp < 0) 
-			{
-				if (-(*x_velp) < (ACCEL * timestep))
-					*x_velp = 0;
-				else
-					*x_velp += (ACCEL * timestep);
-			}
-		}
-		else
-			*x_velp += *x_delp;
-		
-		if (*y_delp == 0)
-		{
-			if (*y_velp > 0)
-			{
-				if (*y_velp < (ACCEL * timestep))
-					*y_velp = 0;
-				else
-					*y_velp -= (ACCEL * timestep);
-			}
-			else if (*y_velp < 0)
-			{
-				if (-(*y_velp) < (ACCEL * timestep))
-					*y_velp = 0;
-				else
-					*y_velp += (ACCEL * timestep);
-			}
-		}
-		else
-			*y_velp += *y_delp;
-
-	}
-	void ChangeVelocity(double x_del, double y_del, double timestep)
-	{
-		if (x_del == 0.0) 
-		{
-			if (x_vel > 0) 
-			{
-				if (x_vel < (ACCEL * timestep))
-					x_vel = 0;
-				else
-					x_vel -= (ACCEL * timestep);
-			}
-			else if (x_vel < 0) 
-			{
-				if (-(x_vel) < (ACCEL * timestep))
-					x_vel = 0;
-				else
-					x_vel += (ACCEL * timestep);
-			}
-		}
-		else
-			x_vel += x_del;
-		
-		if (y_del == 0.0)
-		{
-			if (y_vel > 0)
-			{
-				if (y_vel < (ACCEL * timestep))
-					y_vel = 0;
-				else
-					y_vel -= (ACCEL * timestep);
-			}
-			else if (y_vel < 0)
-			{
-				if (-(y_vel) < (ACCEL * timestep))
-					y_vel = 0;
-				else
-					y_vel += (ACCEL * timestep);
-			}
-		}
-		else
-		{
-			y_vel += y_del;
-		}
-	
-		Speed_Limit();
-	}
+	void Neutral(double timestep);
+	void ChangeVelocity(double x_del, double y_del, double timestep);
 	
 	//Return the current x velocity
-	double getxVelocity()
-	{
-		return x_vel;
-	}
-	
+	double getxVelocity();
 	//Return the current y velocity
-	double getyVelocity()
-	{
-		return y_vel;
-	}
+	double getyVelocity();
 	
 	private:
 	double FOR_LIMIT;
@@ -137,23 +33,6 @@ public:
 	double *y_delp;
 	
 	// Check speed limits
-	void Speed_Limit()
-	{
-			if (x_vel < BACK_LIMIT)
-			{
-				x_vel = BACK_LIMIT;
-			}
-			else if (x_vel > FOR_LIMIT)
-			{
-				x_vel = FOR_LIMIT;
-			}
-			if (y_vel < BACK_LIMIT)
-			{
-				y_vel = BACK_LIMIT;
-			}
-			else if (y_vel > FOR_LIMIT)
-			{
-				y_vel = FOR_LIMIT;
-			}
-	}
+	void Speed_Limit();
 };
+#endif

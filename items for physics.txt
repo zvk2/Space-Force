@@ -1,0 +1,7 @@
+things to add to physics
+1.magnter
+	will inverse controls when player is there
+2.Coronal cloud
+	fast winds and small damage over time
+3.Alcohol cloud
+	slows the player down because of lower reaction time

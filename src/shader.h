@@ -3,13 +3,7 @@
 
 #include <iostream>
 #include <fstream>
-#ifdef __APPLE__  // include Mac OS X verions of headers
-#include <OpenGL/OpenGL.h>
-#include <GLUT/glut.h>
-#include <OpenGL/gl3.h>
-#else // non-Mac OS X operating systems
-#include <GL/glew.h>
-#endif
+#include "INC_SDL.h"
 
 class Shader
 {
@@ -21,7 +15,8 @@ class Shader
     private:
     	const std::string readShaderSource(const std::string);
     	GLuint createShader(const std::string, GLenum);
-        void checkCompileError(GLuint shader);
+        std::string getShaderType(GLuint);
+        void checkCompileError(GLuint);
         void checkLinkError();
 
     	GLuint program;
