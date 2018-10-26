@@ -98,7 +98,7 @@ void Shader::checkCompileError(GLuint _shader)
         glGetShaderiv(_shader, GL_INFO_LOG_LENGTH, &length);
         char buffer[length];
         glGetShaderInfoLog(_shader, sizeof(buffer), NULL, buffer);
-        std::cerr << "\n" << getShaderType(_shader) << " shader compilation error:\n" << buffer << std::endl;
+        std::cerr << "\n" << getShaderType(_shader) << " shader compilation error:\n" << buffer << std::flush;
     }
 }
 
@@ -114,7 +114,7 @@ void Shader::checkLinkError()
         char buffer[length];
         glGetProgramInfoLog(program, sizeof(buffer), NULL, buffer);
         if (buffer[0])
-        	std::cerr << "Shader link error:\n" << buffer << std::endl;
+        	std::cerr << "Shader link error:\n" << buffer << std::flush;
     }
 }
 
