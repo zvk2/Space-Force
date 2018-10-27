@@ -31,7 +31,7 @@ char CREDITS_FOLDER[] = "resources/Credit_Image/";
 // Function declarations
 bool init();
 SDL_Texture* loadImage(std::string fname);
-void close();
+int close();
 
 // Globals
 SDL_Window* gWindow = nullptr;
@@ -141,7 +141,7 @@ SDL_Texture* loadImage(std::string fname)
 	return newText;
 }
 
-void close()
+int close()
 {
 	for (auto i : gTex)
 	{
@@ -158,6 +158,8 @@ void close()
 	// Quit SDL subsystems
 	IMG_Quit();
 	SDL_Quit();
+
+	return 0;
 }
 
 // CREDITS
@@ -449,5 +451,5 @@ int main(int argc, char* argv[])
 		SDL_RenderPresent(gRenderer);
 	}
 
-	return credits ? playCredits() : 0;
+	return credits ? playCredits() : close();
 }
