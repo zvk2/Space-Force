@@ -25,6 +25,8 @@ class Player
 		// Animate jet propulsion
 		void animate(int frames);
 
+		//Check for collision with an enemy
+		void checkEnemyCollision(SDL_Rect eRect, double tstep);
 		
 		//Return the current x velocity
 		double getxVel();

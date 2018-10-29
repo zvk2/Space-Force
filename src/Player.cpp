@@ -50,6 +50,21 @@ void Player::animate(int frames)
   playerRect.x = (frames % 6) * 300;
 }
 
+//Check for collision with an enemy
+void Player::checkEnemyCollision(SDL_Rect eRect, double tstep)
+{
+	SDL_Rect result;
+	
+	if (SDL_IntersectRect(&eRect, &playerCam, &result))
+	{
+		xCoord -= (phys.getxVelocity() * tstep);
+		yCoord -= (phys.getyVelocity() * tstep);
+		
+		playerCam.x = (int) xCoord;
+		playerCam.y = (int) yCoord;
+	}
+}
+
 //Return the current x velocity
 double Player::getxVel()
 {
@@ -121,7 +136,7 @@ int Player::GetAttack()
 }	
 
 
-
+//Private methods
 void Player::CheckBoundaries()
 {
   // Boundary checks against the window

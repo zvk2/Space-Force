@@ -2,6 +2,7 @@
 #ifndef ENEMY_H
 #define ENEMY_H
 #endif
+#include "Player.h"
 #include "INC_SDL.h"
 #include "physics.h"
 #define MAX_SPEED 50
@@ -42,6 +43,9 @@ class Enemy
 		
 		// Animate jet propulsion
 		void animate(int frames);
+		
+		//Check for collision with the player
+		void checkPlayerCollision(Player* p, double tstep);
 		
 		//Return the current x velocity
 		double getxVel();

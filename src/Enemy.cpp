@@ -86,6 +86,22 @@ void Enemy::animate(int frames)
 	enemyRect.x = ((frames / 10) % 4) * enemyRect.w;
 }
 
+//Check for collision with an enemy
+void Enemy::checkPlayerCollision(Player* p, double tstep)
+{
+	SDL_Rect result;
+	SDL_Rect pRect = p->getPlayerCam();
+	
+	if (SDL_IntersectRect(&pRect, &enemyCam, &result))
+	{
+		xCoord -= (phys.getxVelocity() * tstep);
+		yCoord -= (phys.getyVelocity() * tstep);
+		
+		enemyCam.x = (int) xCoord;
+		enemyCam.y = (int) yCoord;
+	}
+}
+
 //Return the current x velocity
 double Enemy::getxVel()
 {

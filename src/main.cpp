@@ -320,7 +320,9 @@ int main(int argc, char* argv[])
 		}
 		
 		ply.move(xDeltav, yDeltav, timestep);
+		ply.checkEnemyCollision(emy.getEnemyCam(), timestep);
 		emy.move(0, emyDelta, timestep);
+		emy.checkPlayerCollision(&ply, timestep);
 		
 		SDL_Rect pRect = ply.getPlayerRect();
 		SDL_Rect pCam = ply.getPlayerCam();
@@ -365,7 +367,7 @@ int main(int argc, char* argv[])
 		pCam = ply.getPlayerCam();
         Uint32 currTime = SDL_GetTicks();
         
-        if(currTime >= 5000)
+        /*if(currTime >= 5000)
         {
             int bFrames;
             if(currTime % 5000 == 0)
@@ -382,15 +384,6 @@ int main(int argc, char* argv[])
                     bFrames = 0;
                 
                 blackholeRect.x = (bFrames / 12) * 300;
-                
-//                std::cout << "\n";
-//                std::cout << "\n";
-//                std::cout << "bFrames = " << bFrames;
-//                std::cout << "\n";
-//                std::cout << "bFrames / 12 = " << bFrames/12;
-//                std::cout << "\n";
-//                std::cout << "\n";
-
                 blackholeCam.x = blackholeCam.x - 1;
                 SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
                 
@@ -432,11 +425,8 @@ int main(int argc, char* argv[])
                 bFrames = 0;
             }
 
-        }
-//        
-//        std::cout << "\n";
-//        std::cout << "ply.x = " << ply.getPlayerCam().x;
-//        std::cout << "\n";
+        }*/
+
         //attack button 
 
 		if(keyState[SDL_SCANCODE_SPACE] && up == true)
