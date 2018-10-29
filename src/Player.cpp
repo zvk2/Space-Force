@@ -65,13 +65,13 @@
 		{
 			return &playerCam;
 		}
-		double Player::getACCEL()
+		double Player::GetMove()
 		{
-			return phys.getACCEL();
+			return phys.GetMove();
 		}
-		void Player::changeAccel(double Accel)
+		void Player::ChangeMove(double Accel)
 		{
-			phys.changeAccel(Accel);
+			phys.ChangeMove(Accel);
 		}
 		//Get the current rectangle from the sprite sheet
 		SDL_Rect Player::getPlayerRect()

@@ -261,7 +261,7 @@ int main(int argc, char* argv[])
     SDL_Rect blackholeCam = {SCREEN_WIDTH,SCREEN_HEIGHT/2, 300, 300};
 	Player ply(10, loadImage("resources/imgs/starman.png"), 1,gRenderer);
 	Magnetar mag(&ply, loadImage("resources/imgs/Magnetars.png"));
-	double ACCEL = ply.getACCEL();
+	double ACCEL = ply.GetMove();
 	//the beginning/default image and attack box
 	ply.hit.setAttack(gAttack,&attackRect);
 	SDL_Event e;
@@ -290,7 +290,7 @@ int main(int argc, char* argv[])
 				}
 			}
 		}
-		ACCEL = ply.getACCEL();
+		ACCEL = ply.GetMove();
 		timestep = (SDL_GetTicks() - moveLasttime) / 1000.0;
 		xDeltav = 0.0;
 		yDeltav = 0.0;
@@ -345,10 +345,12 @@ int main(int argc, char* argv[])
 		SDL_Rect pRect = ply.getPlayerRect();
 		SDL_Rect pCam = ply.getPlayerCam();
         Uint32 currTime = SDL_GetTicks();
-        if(currTime>=3000)
+        if(currTime>=6000)
 		{
+			
 			if((currTime % 3000 == 0 && !mag.Seen()) ||mag.Seen())
 			{
+				
 				mag.Render();
 			}
 		}

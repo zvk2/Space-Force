@@ -64,8 +64,8 @@ class Player
 		int GetAttack();
 		SDL_Renderer* getRend();
 		SDL_Rect* getPlayerCamLoc();
-		double getACCEL();
-		void changeAccel(double Accel);
+		double GetMove();
+		void ChangeMove(double Accel);
 	private:
 
 		/* Member variables:

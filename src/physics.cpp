@@ -105,11 +105,11 @@
 	
 		Speed_Limit();
 	}
-	double Physics::changeAccel(double ac)
+	double Physics::ChangeMove(double ac)
 	{
 		move = ac;
 	}
-	double Physics::getACCEL()
+	double Physics::GetMove()
 	{
 		return move;
 	}

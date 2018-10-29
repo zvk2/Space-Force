@@ -1,4 +1,5 @@
 #include "Magnetar.h"
+#include <iostream>
 Magnetar::Magnetar(Player* main, SDL_Texture* gIm):ply(main), im(gIm)
 {
 	gRenderer = ply->getRend();
@@ -22,9 +23,8 @@ void Magnetar::Render()
 	
 	//places object to screen
 	SDL_RenderCopy(gRenderer, im, &collBox, &camBox);
-	
 	//gets players current ACCEL
-	double ACCEL = ply->getACCEL();
+	double ACCEL = ply->GetMove();
 	bool inter = SDL_HasIntersection(&camBox,playerCam);
 	
 	//if player has intersected with the object and move is postive it
@@ -32,7 +32,7 @@ void Magnetar::Render()
 	//but if the intersection breaks will make ACCEL postive again
 	if ((inter && ACCEL > 0) || (!inter && ACCEL < 0))
 	{
-		ply->changeAccel(-ACCEL);
+		ply->ChangeMove(-ACCEL);
 	}
 	camBox.x = camBox.x - 1;
 	
