@@ -34,7 +34,7 @@ char CREDITS_FOLDER[] = "resources/Credit_Image/";
 // Function declarations
 bool init();
 SDL_Texture* loadImage(std::string fname);
-void close();
+int close();
 
 // Globals
 SDL_Window* gWindow = nullptr;
@@ -125,7 +125,7 @@ SDL_Texture* loadImage(std::string fname)
 	return newText;
 }
 
-void close()
+int close()
 {
 	for (auto i : gTex)
 	{
@@ -141,6 +141,8 @@ void close()
 	// Quit SDL subsystems
 	IMG_Quit();
 	SDL_Quit();
+
+	return 0;
 }
 
 // CREDITS
@@ -274,7 +276,8 @@ int main(int argc, char* argv[])
 	SDL_Event e;
 	bool gameOn = true;
 	bool up = true;
-  double emyDelta = 1;
+	bool credits = true;
+    double emyDelta = 1;
   
 	while(gameOn)
 	{
@@ -287,6 +290,11 @@ int main(int argc, char* argv[])
 			if (e.type == SDL_KEYDOWN)
 			{
 				if (e.key.keysym.sym == SDLK_ESCAPE)
+				{
+					gameOn = false;
+					credits = false;
+				}
+				if (e.key.keysym.sym == SDLK_q)
 				{
 					gameOn = false;
 				}
@@ -468,5 +476,5 @@ int main(int argc, char* argv[])
 		SDL_RenderPresent(gRenderer);
 	}
 
-	return playCredits();
+	return credits ? playCredits() : close();
 }
