@@ -1,4 +1,5 @@
 
+
 #include "Player.h"
 #define MAX_SPEED 50
 
@@ -149,6 +150,7 @@
 		{
 			hitPoints += incAmount;
 		}
+
 
 
 

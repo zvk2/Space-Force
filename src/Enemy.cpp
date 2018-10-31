@@ -1,92 +1,162 @@
 
 #include "INC_SDL.h"
-
+#include "Enemy.h"
 #define MAX_SPEED 50
-   
+ 
+//Public methods 
+Enemy::Enemy(int startingHealth, SDL_Texture* characterImages, int attack): 
+	hitPoints(startingHealth), enemySheet(characterImages),
+	attackPower(attack), phys(0, 0, 300.0, 3600.0), xCoord(1280/8), yCoord(720/2)
+	{
+		enemyRect = {0, 0, 144, 87};
+		enemyCam = {1280/2, 720/2, 144, 87};
+	}
 
-class Enemy
+void Enemy::LostHealth(int damage)
 {
-	public:
+	DecrementHealth(damage);
+}
 
-		Enemy(int startingHealth, SDL_Texture* characterImages, int attack): 
-			hitPoints(startingHealth), enemySheet(characterImages), attackPower(attack)
-			{}
+void Enemy::GainedHealth(int heal)
+{
+	IncrementHealth(heal);
+}
 
-		void LostHealth(int damage)
-		{
-			DecrementHealth(damage);
-		}
+int Enemy::GetHealth()
+{
+	return hitPoints;
+}
 
-		void GainedHealth(int heal)
-		{
-			IncrementHealth(heal);
-		}
+int Enemy::GetAttack()
+{
+	return attackPower;
+}
 
-		int GetHealth()
-		{
-			return hitPoints;
-		}
+void Enemy::IncEnemySpeed(int addedSpeed)
+{
+	IncrementSpeed(addedSpeed);
+}
 
-		int GetAttack()
-		{
-			return attackPower;
-		}
+void Enemy::DecEnemySpeed(int lostSpeed)
+{
+	DecrementSpeed(lostSpeed);
+}
 
-		void IncEnemySpeed(int addedSpeed)
-		{
-			IncrementSpeed(addedSpeed);
-		}
+int Enemy::GetSpeed()
+{
+	return speed;
+}
 
-		void DecEnemySpeed(int lostSpeed)
-		{
-			DecrementSpeed(lostSpeed);
-		}
+//Set the position of the enemy on screen
+void Enemy::setPosition(double x, double y)
+{
+	xCoord = x;
+	yCoord = y;
+	
+	CheckBoundaries();
+	
+	enemyCam.x = (int) xCoord;
+	enemyCam.y = (int) yCoord;
+}
 
-		int GetSpeed()
-		{
-			return speed;
-		}
+//Sets the current velocity of the enemy
+void Enemy::setVelocity(double x, double y)
+{
+	phys.setxVelocity(x);
+	phys.setyVelocity(y);
+}
 
+//Methods that can be called from model class
+void Enemy::move(double xdvel, double ydvel, double tstep)
+{
+	phys.ChangeVelocity(xdvel, ydvel, tstep);
+	
+	xCoord += (phys.getxVelocity() * tstep);
+	yCoord += (phys.getyVelocity() * tstep);
+	
+	CheckBoundaries();
+	
+	enemyCam.x = (int) xCoord;
+	enemyCam.y = (int) yCoord;
+}
 
-	private:
+// Animate jet propulsion
+void Enemy::animate(int frames)
+{
+	enemyRect.x = ((frames / 10) % 4) * enemyRect.w;
+}
 
-		/* Member variables:
-		 * health, attack
-		 * currently a character sheet but can be updated to
-		 * OpenGL later
-		 */
-		int hitPoints;
-		int attackPower;
-		int speed;
-		//Not perm obviously but here as a reminder to store player texture here
-		const SDL_Texture* enemySheet;
+//Return the current x velocity
+double Enemy::getxVel()
+{
+	return phys.getxVelocity();
+}
 
-		void DecrementHealth(int decAmount)
-		{
-			hitPoints -= decAmount;
-		}
+//Return the current y velocity
+double Enemy::getyVel()
+{
+	return phys.getyVelocity();
+}
 
-		void IncrementHealth(int incAmount)
-		{
-			hitPoints += incAmount;
-		}
+//Get the enemy camera rectangle
+SDL_Rect Enemy::getEnemyCam()
+{
+	enemyCam.x = (int) xCoord;
+	enemyCam.y = (int) yCoord;
+	return enemyCam;
+}
 
+//Get the current rectangle from the sprite sheet
+SDL_Rect Enemy::getEnemyRect()
+{
+	return enemyRect;
+}
 
-		void IncrementSpeed(int addedSpeed)
-		{
-			if(speed != MAX_SPEED)
-			{
-				speed += addedSpeed;
-			}
-		}
+//Get the enemy sprite sheet
+SDL_Texture* Enemy::getEnemySheet()
+{
+	return enemySheet;
+}
 
-		void DecrementSpeed(int lostSpeed)
-		{
-			if(speed != -MAX_SPEED)
-			{
-				speed -= lostSpeed;
-			}
-		}
+//Private methods
 
-};
+void Enemy::DecrementHealth(int decAmount)
+{
+	hitPoints -= decAmount;
+}
+
+void Enemy::IncrementHealth(int incAmount)
+{
+	hitPoints += incAmount;
+}
+
+void Enemy::CheckBoundaries()
+{
+	// Boundary checks against the window
+	if (xCoord < 0)
+		xCoord = 0;
+	if (xCoord + enemyCam.w > SCREEN_WIDTH)
+		xCoord = SCREEN_WIDTH - enemyCam.w;
+	if (yCoord < 0)
+		yCoord = 0;
+	if (yCoord + enemyCam.h > SCREEN_HEIGHT)
+		yCoord = SCREEN_HEIGHT - enemyCam.h;
+}
+
+void Enemy::IncrementSpeed(int addedSpeed)
+{
+	if(speed != MAX_SPEED)
+	{
+		speed += addedSpeed;
+	}
+}
+
+void Enemy::DecrementSpeed(int lostSpeed)
+{
+	if(speed != -MAX_SPEED)
+	{
+		speed -= lostSpeed;
+	}
+}
+
 
