@@ -1,7 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 #include "INC_SDL.h"
-#include "physics.h"
+#include "physics.hpp"
 #include "attack.h"
 #define MAX_SPEED 50
 
@@ -16,6 +16,9 @@ class Player
 
 		//Set the position of the player on screen
 		void setPosition(double x, double y);
+    
+        //Int version
+        void setPosition(int x, int y);
 
 			
 		//Methods that can be called from model class

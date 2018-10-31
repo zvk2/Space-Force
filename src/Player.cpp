@@ -47,7 +47,7 @@
 		// Animate jet propulsion
 		void Player::animate(int frames)
 		{
-			playerRect.x = frames * 300;
+			playerRect.x = (frames % 4) * 300;
 		}
 		
 		//Return the current x velocity

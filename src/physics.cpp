@@ -1,4 +1,4 @@
-#include "physics.h"
+#include "physics.hpp"
 
 //the max speed the player can go
 
@@ -106,7 +106,7 @@
 	}
 
   //move is the accelerate in the main.cpp
-	double Physics::ChangeMove(double ac)
+	void Physics::ChangeMove(double ac)
 	{
 		move = ac;
 	}
