@@ -52,7 +52,6 @@ class Player
 		//Add hit points to the player
 		void GainedHealth(int heal);
 
-
 		//send in double modifiers to increase attack or defense by percentages
 		void GainedPowerup(double extraAttack, double extraDefense);
 
@@ -67,8 +66,10 @@ class Player
 
 		//Return the player's current attack
 		int GetAttack();
-
-
+		SDL_Renderer* getRend();
+		SDL_Rect* getPlayerCamLoc();
+		double GetMove();
+		void ChangeMove(double Accel);
 	private:
 
 		/* Member variables:
@@ -77,8 +78,8 @@ class Player
 		 * OpenGL later
 		 */
 
-		double ACCEL = 3600.0;
-		double SPEED_LIMIT = 300.0;
+		double ACCEL;
+		double SPEED_LIMIT;
 		const int SCREEN_WIDTH = 1280;
 		const int SCREEN_HEIGHT = 720;
 		int hitPoints;
