@@ -1,4 +1,4 @@
-#include "physics.h"
+#include "physics.hpp"
 
 //the max speed the player can go
 
@@ -10,6 +10,7 @@
 	BACK_LIMIT{-max_speed}, FOR_LIMIT{max_speed},ACCEL{accel}, x_vel{x_v},y_vel{y_v}
 
 	{
+		move = ACCEL;
 	}
 	
 	
@@ -103,6 +104,17 @@
 	
 		Speed_Limit();
 	}
+
+  //move is the accelerate in the main.cpp
+	void Physics::ChangeMove(double ac)
+	{
+		move = ac;
+	}
+	double Physics::GetMove()
+	{
+		return move;
+	}
+
 	
 	//Set the current x velocity
 	void Physics::setxVelocity(double x)
@@ -118,6 +130,7 @@
         
 	}
 	
+
 	//Return the current x velocity
 	double Physics::getxVelocity()
 	{

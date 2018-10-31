@@ -8,8 +8,8 @@
 #include <SDL_image.h>
 #endif
 
-#ifndef PHYSICS_H
-#define PHYSICS_H
+#ifndef PHYSICS_HPP
+#define PHYSICS_HPP
 #endif
 #include "INC_SDL.h"
 

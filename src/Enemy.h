@@ -3,7 +3,7 @@
 #define ENEMY_H
 #endif
 #include "INC_SDL.h"
-#include "physics.h"
+#include "physics.hpp"
 #define MAX_SPEED 50
 
 class Enemy

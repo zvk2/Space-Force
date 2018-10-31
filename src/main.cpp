@@ -4,7 +4,7 @@
 #include <string>
 #include <cstring>
 #include "INC_SDL.h"
-#include "physics.h"
+#include "Magnetar.h"
 #include "Player.h"
 #include "Enemy.h"
 #include "attack.h"
@@ -25,7 +25,7 @@ const int LEVEL_LEN = 5120;
 const int TILE_SIZE = 100;
 
 // Constant for acceleration
-const double ACCEL = 3600.0;
+//const double ACCEL = 3600.0;
 
 // Parent folder for credit images
 // Not const due to contrivance (can pass immediately if not const)
@@ -243,7 +243,8 @@ int main(int argc, char* argv[])
 	int rem = 0;
 	double xDeltav = 0.0;
 	double yDeltav = 0.0;
-
+	bool create;
+	
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
 
 	int frames = 0;
@@ -260,9 +261,14 @@ int main(int argc, char* argv[])
   SDL_Rect blackholeRect = {0, 0, 300, 300};
   SDL_Rect blackholeCam = {SCREEN_WIDTH,SCREEN_HEIGHT/2, 300, 300};
 	Player ply(10, loadImage("resources/imgs/starman.png"), 1,gRenderer);
+
+	Magnetar mag(&ply, loadImage("resources/imgs/Magnetars.png"));
+	double ACCEL = ply.GetMove();
+
   Enemy emy(10, loadImage("resources/imgs/faxanaduitis.png"), 1);
   emy.setPosition(860, 0);
 	emy.setVelocity(0, 50);
+
 	//the beginning/default image and attack box
 	ply.hit.setAttack(gAttack,&attackRect);
 	SDL_Event e;
@@ -293,6 +299,7 @@ int main(int argc, char* argv[])
 				}
 			}
 		}
+		ACCEL = ply.GetMove();
 		timestep = (SDL_GetTicks() - moveLasttime) / 1000.0;
 		xDeltav = 0.0;
 		yDeltav = 0.0;
@@ -342,6 +349,8 @@ int main(int argc, char* argv[])
 
 		rem = scrollOffset % SCREEN_WIDTH;
 		bgRect.x = -rem;
+		
+		
 		SDL_RenderCopy(gRenderer, gBackground, nullptr, &bgRect);
 		bgRect.x += SCREEN_WIDTH;
 		SDL_RenderCopy(gRenderer, gBackground, nullptr, &bgRect);
@@ -364,7 +373,15 @@ int main(int argc, char* argv[])
 		pRect = ply.getPlayerRect();
 		pCam = ply.getPlayerCam();
         Uint32 currTime = SDL_GetTicks();
-        
+        if(currTime>=6000)
+		{
+            std::cout << currTime % 3000 << std::endl;
+			if((currTime % 3000 <= 50 && !mag.Seen()) ||mag.Seen())
+			{
+				
+				mag.Render();
+			}
+		}
         if(currTime >= 5000)
         {
             int bFrames;
