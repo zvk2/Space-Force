@@ -375,7 +375,7 @@ int main(int argc, char* argv[])
         Uint32 currTime = SDL_GetTicks();
         if(currTime>=6000)
 		{
-            std::cout << currTime % 3000 << std::endl;
+            //std::cout << currTime % 3000 << std::endl;
 			if((currTime % 3000 <= 50 && !mag.Seen()) ||mag.Seen())
 			{
 				
