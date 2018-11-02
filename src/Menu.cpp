@@ -114,14 +114,7 @@ void Menu::runMenu(SDL_Window* window)
 			int y = event.motion.y;
 			if (event.type == SDL_QUIT)
 				running = false;
-			if (event.type == SDL_KEYUP)
-			{
-				if (event.key.keysym.sym == SDLK_ESCAPE)
-				{
-					running = false;
-					break;
-				}
-			}			
+		
 			if (event.type == SDL_MOUSEMOTION)
 			{
 				// 'Start' button animation using coordinates
