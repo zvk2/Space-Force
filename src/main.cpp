@@ -9,6 +9,11 @@
 #include "Enemy.h"
 #include "attack.h"
 #include "blackhole.h"
+
+#include "GL/glew.h"
+//#include "matrix.h"
+#include "shader.h"
+
 #include <cstdlib>
 
 
@@ -23,6 +28,35 @@ const int SCREEN_HEIGHT = 720;
 // Constants for level
 const int LEVEL_LEN = 5120;
 const int TILE_SIZE = 100;
+
+
+#define BUFFER_OFFSET( offset )   ((GLvoid*) (offset))
+
+typedef struct
+{
+    GLfloat x;
+    GLfloat y;
+    GLfloat z;
+    GLfloat w;
+} vec4;
+
+vec4 vertices[6] =
+{{ 0.0,  0.5,  0.0, 1.0},	// top
+ {-0.5, -0.5,  0.0, 1.0},	// bottom left
+ { 0.5, -0.5,  0.0, 1.0},	// bottom right
+ { 0.5,  0.8, -0.5, 1.0},	// top
+ { 0.9,  0.0, -0.5, 1.0},	// bottom right
+ { 0.1,  0.0, -0.5, 1.0}};	// bottom left
+
+vec4 colors[6] =
+{{1.0, 0.0, 0.0, 1.0},	// red   (for top)
+ {0.0, 1.0, 0.0, 1.0},	// green (for bottom left)
+ {0.0, 0.0, 1.0, 1.0},	// blue  (for bottom right)
+ {0.0, 1.0, 0.0, 1.0},	// green (for bottom right)
+ {0.0, 1.0, 0.0, 1.0},	// green (for bottom right)
+ {0.0, 1.0, 0.0, 1.0}};	// green (for bottom right)
+
+int num_vertices = 6;
 
 // Constant for acceleration
 //const double ACCEL = 3600.0;
@@ -43,7 +77,48 @@ SDL_Texture* gBackground;
 SDL_Texture* gAttack;
 SDL_Texture* gBlackhole;
 SDL_Texture* gPlayerSheet;
+SDL_GLContext gContext;
 std::vector<SDL_Texture*> gTex;
+
+void glInit(void)
+{
+    Shader shader("tritest");
+    GLuint program = shader.getProgram();
+
+    GLuint vao;
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+
+    GLuint buffer;
+    glGenBuffers(1, &buffer);
+    glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices) + sizeof(colors), NULL, GL_STATIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+    glBufferSubData(GL_ARRAY_BUFFER, sizeof(vertices), sizeof(colors), colors);
+
+    GLuint vPosition = glGetAttribLocation(program, "vPosition");
+    glEnableVertexAttribArray(vPosition);
+    glVertexAttribPointer(vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+
+    GLuint vColor = glGetAttribLocation(program, "vColor");
+    glEnableVertexAttribArray(vColor);
+    glVertexAttribPointer(vColor, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid *) sizeof(vertices));
+
+    glEnable(GL_DEPTH_TEST);
+    glClearColor(0.0, 0.0, 0.0, 1.0);
+    glDepthRange(1,0);
+}
+
+void display(void)
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glPolygonMode(GL_FRONT, GL_FILL);
+    glPolygonMode(GL_BACK, GL_LINE);
+    glDrawArrays(GL_TRIANGLES, 0, num_vertices);
+
+    SDL_GL_SwapWindow(gWindow);
+}
 
 bool init()
 {
@@ -62,20 +137,25 @@ bool init()
 	}
 
 
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+
+	// create our window and OpenGL context
 	gWindow = SDL_CreateWindow(
 		"Space Force",
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
 		SCREEN_WIDTH,
 		SCREEN_HEIGHT,
-		SDL_WINDOW_SHOWN
+		SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN
 	);
-	if (gWindow == nullptr)
-	{
-		std::cout << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
-		return  false;
-	}
+	gContext = SDL_GL_CreateContext(gWindow);
 
+	// initiate glew, and force modern OpenGL with experimental
+	glewExperimental = GL_TRUE;
+	glewInit();
 	/* Create a renderer for our window
 	 * Use hardware acceleration (last arg)
 	 * Choose first driver that can provide hardware acceleration
@@ -227,6 +307,8 @@ int main(int argc, char* argv[])
 		close();
 		return 1;
 	}
+
+	glInit();
 
 	// GAME
 	/*
@@ -471,6 +553,7 @@ int main(int argc, char* argv[])
 		}
 		//lets the attack move across the screen
 		ply.hit.renderAttack(timestep);
+		display();
 		SDL_RenderCopyEx(gRenderer, ply.getPlayerSheet(), &pRect, &pCam, 0.0, nullptr, flip);
 		SDL_RenderCopyEx(gRenderer, emy.getEnemySheet(), &eRect, &eCam, 0.0, nullptr, flip);
 		SDL_RenderPresent(gRenderer);
