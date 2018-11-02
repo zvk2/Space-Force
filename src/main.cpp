@@ -9,6 +9,7 @@
 #include "Enemy.h"
 #include "attack.h"
 #include "blackhole.h"
+#include "Menu.h"
 #include <cstdlib>
 
 
@@ -227,6 +228,11 @@ int main(int argc, char* argv[])
 		close();
 		return 1;
 	}
+	// MENU
+	Menu menu;
+	menu.displayMenu(gWindow);
+	menu.runMenu(gWindow);
+	menu.closeMenu();
 
 	// GAME
 	/*
