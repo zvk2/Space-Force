@@ -13,7 +13,7 @@
 #include "GL/glew.h"
 //#include "matrix.h"
 #include "shader.h"
-
+#include "Menu.h"
 #include <cstdlib>
 
 
@@ -149,7 +149,7 @@ bool init()
 		SDL_WINDOWPOS_UNDEFINED,
 		SCREEN_WIDTH,
 		SCREEN_HEIGHT,
-		SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN
+		SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL
 	);
 	gContext = SDL_GL_CreateContext(gWindow);
 
@@ -307,6 +307,11 @@ int main(int argc, char* argv[])
 		close();
 		return 1;
 	}
+	// MENU
+	Menu menu;
+	menu.displayMenu(gWindow);
+	menu.runMenu(gWindow);
+	menu.closeMenu();
 
 	glInit();
 
