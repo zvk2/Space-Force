@@ -10,6 +10,9 @@ class Menu
 {
 	public:
 
+		// Constructor
+		Menu();
+
 		// Create GLuint object from SDL_Surface
 		int load(const char* filename);
 
@@ -35,12 +38,13 @@ class Menu
 		const int BUTTON_WIDTH = 128;
 		const int BUTTON_HEIGHT = 32;
 
-		//SDL_Window* gWindow;
+		SDL_Window* gWindow;
 		SDL_GLContext gContext;
 		GLuint texture; // Background
 		GLuint start_button; // Start button
 		GLuint multi_button; // Multiplayer button
 		int mouse_x, mouse_y;
+		GLfloat start_clip_begin, start_clip_end, multi_clip_begin, multi_clip_end;
 
 };
 
