@@ -9,12 +9,14 @@
 		- Kevin
 */
 
+Menu::Menu(): start_clip_begin(0), start_clip_end(0.5), multi_clip_begin(0), multi_clip_end(0.5) {}
+
 int Menu::load(const char* filename)
 {
 	SDL_Surface* image = IMG_Load(filename);
 	if (image == nullptr)
 	{
-		std::cout << "Unable to load image " << filename << "! SDL Error: " << SDL_GetError() << std::endl;
+		std::cout << "Unable to load image " << filename << "! SDL_IMG Error: " << IMG_GetError() << std::endl;
 		return -1;
 	}
 	GLuint object;
@@ -32,6 +34,7 @@ int Menu::load(const char* filename)
 
 void Menu::displayMenu(SDL_Window* window)
 {
+	gWindow = window;
 	gContext = SDL_GL_CreateContext(window);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -65,10 +68,10 @@ void Menu::displayMenu(SDL_Window* window)
 	glOrtho(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 1);
  	
 	glBegin(GL_QUADS);
- 	glTexCoord2f(0, 0); glVertex2f((SCREEN_WIDTH/2 - BUTTON_WIDTH/2), SCREEN_HEIGHT/5);
- 	glTexCoord2f(0.5, 0); glVertex2f((SCREEN_WIDTH/2 + BUTTON_WIDTH/2), SCREEN_HEIGHT/5);
- 	glTexCoord2f(0.5, 1); glVertex2f((SCREEN_WIDTH/2 + BUTTON_WIDTH/2), (SCREEN_HEIGHT/5 + BUTTON_HEIGHT));
-	glTexCoord2f(0, 1); glVertex2f((SCREEN_WIDTH/2 - BUTTON_WIDTH/2), (SCREEN_HEIGHT/5 + BUTTON_HEIGHT));
+ 	glTexCoord2f(start_clip_begin, 0); glVertex2f((SCREEN_WIDTH/2 - BUTTON_WIDTH/2), SCREEN_HEIGHT/5);
+ 	glTexCoord2f(start_clip_end, 0); glVertex2f((SCREEN_WIDTH/2 + BUTTON_WIDTH/2), SCREEN_HEIGHT/5);
+ 	glTexCoord2f(start_clip_end, 1); glVertex2f((SCREEN_WIDTH/2 + BUTTON_WIDTH/2), (SCREEN_HEIGHT/5 + BUTTON_HEIGHT));
+	glTexCoord2f(start_clip_begin, 1); glVertex2f((SCREEN_WIDTH/2 - BUTTON_WIDTH/2), (SCREEN_HEIGHT/5 + BUTTON_HEIGHT));
 	glEnd();
 	
 	// Draw multiplayer button
@@ -83,10 +86,10 @@ void Menu::displayMenu(SDL_Window* window)
 	glOrtho(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 1);
  	
 	glBegin(GL_QUADS);
- 	glTexCoord2f(0, 0); glVertex2f((SCREEN_WIDTH/2 - BUTTON_WIDTH/2), SCREEN_HEIGHT/5 + 50);
- 	glTexCoord2f(0.5, 0); glVertex2f((SCREEN_WIDTH/2 + BUTTON_WIDTH/2), SCREEN_HEIGHT/5 + 50);
- 	glTexCoord2f(0.5, 1); glVertex2f((SCREEN_WIDTH/2 + BUTTON_WIDTH/2), (SCREEN_HEIGHT/5 + BUTTON_HEIGHT + 50));
-	glTexCoord2f(0, 1); glVertex2f((SCREEN_WIDTH/2 - BUTTON_WIDTH/2), (SCREEN_HEIGHT/5 + BUTTON_HEIGHT + 50));
+ 	glTexCoord2f(multi_clip_begin, 0); glVertex2f((SCREEN_WIDTH/2 - BUTTON_WIDTH/2), SCREEN_HEIGHT/5 + 50);
+ 	glTexCoord2f(multi_clip_end, 0); glVertex2f((SCREEN_WIDTH/2 + BUTTON_WIDTH/2), SCREEN_HEIGHT/5 + 50);
+ 	glTexCoord2f(multi_clip_end, 1); glVertex2f((SCREEN_WIDTH/2 + BUTTON_WIDTH/2), (SCREEN_HEIGHT/5 + BUTTON_HEIGHT + 50));
+	glTexCoord2f(multi_clip_begin, 1); glVertex2f((SCREEN_WIDTH/2 - BUTTON_WIDTH/2), (SCREEN_HEIGHT/5 + BUTTON_HEIGHT + 50));
 	glEnd();
 	
 	glFlush();
@@ -103,10 +106,12 @@ void Menu::closeMenu()
 void Menu::runMenu(SDL_Window* window)
 {
 	bool running = true;
-	bool highlight = false;
+	bool s_highlight = false;
+	bool m_highlight = false;
 	SDL_Event event;
 	while (running)
 	{
+
 		while (SDL_PollEvent(&event))
 		{
 			SDL_GetMouseState(&mouse_x, &mouse_y);
@@ -117,65 +122,37 @@ void Menu::runMenu(SDL_Window* window)
 		
 			if (event.type == SDL_MOUSEMOTION)
 			{
+				std::cout << "x: " << x << " y: " << y << std::endl;
+				printf("x %d > %d, x %d < %d, y %d > %d, y %d < %d\n", 
+					x, SCREEN_WIDTH/2 - BUTTON_WIDTH/2, 
+					x, SCREEN_WIDTH/2 + BUTTON_WIDTH/2, 
+					y, SCREEN_HEIGHT/5, 
+					y, SCREEN_HEIGHT/5 + BUTTON_HEIGHT);
 				// 'Start' button animation using coordinates
 				if (x > SCREEN_WIDTH/2 - BUTTON_WIDTH/2 && x < SCREEN_WIDTH/2 + BUTTON_WIDTH/2 && y > SCREEN_HEIGHT/5 && y < SCREEN_HEIGHT/5 + BUTTON_HEIGHT)
 				{
-					glBindTexture(GL_TEXTURE_2D, start_button);
-					glDepthMask(GL_TRUE);
- 					glLoadIdentity();
- 					glMatrixMode(GL_MODELVIEW);
-					glOrtho(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 1);
- 	
-					glBegin(GL_QUADS);
- 					glTexCoord2f(0.5, 0); glVertex2f((SCREEN_WIDTH/2 - BUTTON_WIDTH/2), SCREEN_HEIGHT/5);
- 					glTexCoord2f(1, 0); glVertex2f((SCREEN_WIDTH/2 + BUTTON_WIDTH/2), SCREEN_HEIGHT/5);
- 					glTexCoord2f(1, 1); glVertex2f((SCREEN_WIDTH/2 + BUTTON_WIDTH/2), (SCREEN_HEIGHT/5 + BUTTON_HEIGHT));
-					glTexCoord2f(0.5, 1); glVertex2f((SCREEN_WIDTH/2 - BUTTON_WIDTH/2), (SCREEN_HEIGHT/5 + BUTTON_HEIGHT));
-					glEnd();	
-					SDL_GL_SwapWindow(window);
-					highlight = true;
+					start_clip_begin = 0.5;
+					start_clip_end = 1;
+					s_highlight = true;
 				}	
-				if (highlight && (x < SCREEN_WIDTH/2 - BUTTON_WIDTH/2 || x > SCREEN_WIDTH/2 + BUTTON_WIDTH/2 || y < SCREEN_HEIGHT/5 || y > SCREEN_HEIGHT/5 + BUTTON_HEIGHT))
+				else if (s_highlight)
 				{
-					glBindTexture(GL_TEXTURE_2D, start_button);
-					glBegin(GL_QUADS);
- 					glTexCoord2f(0, 0); glVertex2f((SCREEN_WIDTH/2 - BUTTON_WIDTH/2), SCREEN_HEIGHT/5);
-					glTexCoord2f(0.5, 0); glVertex2f((SCREEN_WIDTH/2 + BUTTON_WIDTH/2), SCREEN_HEIGHT/5);
-				 	glTexCoord2f(0.5, 1); glVertex2f((SCREEN_WIDTH/2 + BUTTON_WIDTH/2), (SCREEN_HEIGHT/5 + BUTTON_HEIGHT));
-					glTexCoord2f(0, 1); glVertex2f((SCREEN_WIDTH/2 - BUTTON_WIDTH/2), (SCREEN_HEIGHT/5 + BUTTON_HEIGHT));
-					glEnd();
-					SDL_GL_SwapWindow(window);	
-					highlight = false;	
+					start_clip_begin = 0;
+					start_clip_end = 0.5;
+					s_highlight = false;	
 				}
 				// 'Multiplayer' button animation using coordinates
 				if (x > SCREEN_WIDTH/2 - BUTTON_WIDTH/2 && x < SCREEN_WIDTH/2 + BUTTON_WIDTH/2 && y > SCREEN_HEIGHT/5 + 50 && y < SCREEN_HEIGHT/5 + BUTTON_HEIGHT + 50)
 				{
-					glBindTexture(GL_TEXTURE_2D, multi_button);
-					glDepthMask(GL_TRUE);
- 					glLoadIdentity();
- 					glMatrixMode(GL_MODELVIEW);
-					glOrtho(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 1);
- 	
-					glBegin(GL_QUADS);
- 					glTexCoord2f(0.5, 0); glVertex2f((SCREEN_WIDTH/2 - BUTTON_WIDTH/2), SCREEN_HEIGHT/5 + 50);
- 					glTexCoord2f(1, 0); glVertex2f((SCREEN_WIDTH/2 + BUTTON_WIDTH/2), SCREEN_HEIGHT/5 + 50);
- 					glTexCoord2f(1, 1); glVertex2f((SCREEN_WIDTH/2 + BUTTON_WIDTH/2), (SCREEN_HEIGHT/5 + BUTTON_HEIGHT + 50));
-					glTexCoord2f(0.5, 1); glVertex2f((SCREEN_WIDTH/2 - BUTTON_WIDTH/2), (SCREEN_HEIGHT/5 + BUTTON_HEIGHT + 50));
-					glEnd();	
-					SDL_GL_SwapWindow(window);
-					highlight = true;
+					multi_clip_begin = 0.5;
+					multi_clip_end = 1;
+					m_highlight = true;
 				}	
-				if (highlight && (x < SCREEN_WIDTH/2 - BUTTON_WIDTH/2 || x > SCREEN_WIDTH/2 + BUTTON_WIDTH/2 || y < SCREEN_HEIGHT/5 + 50 || y > SCREEN_HEIGHT/5 + BUTTON_HEIGHT + 50))
+				else if (m_highlight)
 				{
-					glBindTexture(GL_TEXTURE_2D, multi_button);
-					glBegin(GL_QUADS);
- 					glTexCoord2f(0, 0); glVertex2f((SCREEN_WIDTH/2 - BUTTON_WIDTH/2), SCREEN_HEIGHT/5 + 50);
-					glTexCoord2f(0.5, 0); glVertex2f((SCREEN_WIDTH/2 + BUTTON_WIDTH/2), SCREEN_HEIGHT/5 + 50);
-				 	glTexCoord2f(0.5, 1); glVertex2f((SCREEN_WIDTH/2 + BUTTON_WIDTH/2), (SCREEN_HEIGHT/5 + BUTTON_HEIGHT + 50));
-					glTexCoord2f(0, 1); glVertex2f((SCREEN_WIDTH/2 - BUTTON_WIDTH/2), (SCREEN_HEIGHT/5 + BUTTON_HEIGHT + 50));
-					glEnd();
-					SDL_GL_SwapWindow(window);	
-					highlight = false;	
+					multi_clip_begin = 0;
+					multi_clip_end = 0.5;
+					m_highlight = false;	
 				}
 				
 			}
@@ -190,7 +167,8 @@ void Menu::runMenu(SDL_Window* window)
 				//}
 			}
 			
-		}
-	}
+		} // end event loop
+		displayMenu(gWindow);
+	} // end running
 }
 

@@ -69,7 +69,7 @@ bool init()
 		SDL_WINDOWPOS_UNDEFINED,
 		SCREEN_WIDTH,
 		SCREEN_HEIGHT,
-		SDL_WINDOW_SHOWN
+		SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL
 	);
 	if (gWindow == nullptr)
 	{
