@@ -106,7 +106,8 @@ void Menu::closeMenu()
 void Menu::runMenu(SDL_Window* window)
 {
 	bool running = true;
-	bool highlight = false;
+	bool s_highlight = false;
+	bool m_highlight = false;
 	SDL_Event event;
 	while (running)
 	{
@@ -130,29 +131,28 @@ void Menu::runMenu(SDL_Window* window)
 				// 'Start' button animation using coordinates
 				if (x > SCREEN_WIDTH/2 - BUTTON_WIDTH/2 && x < SCREEN_WIDTH/2 + BUTTON_WIDTH/2 && y > SCREEN_HEIGHT/5 && y < SCREEN_HEIGHT/5 + BUTTON_HEIGHT)
 				{
-				
 					start_clip_begin = 0.5;
 					start_clip_end = 1;
-					highlight = true;
+					s_highlight = true;
 				}	
-				if (highlight && (x < SCREEN_WIDTH/2 - BUTTON_WIDTH/2 || x > SCREEN_WIDTH/2 + BUTTON_WIDTH/2 || y < SCREEN_HEIGHT/5 || y > SCREEN_HEIGHT/5 + BUTTON_HEIGHT))
+				else if (s_highlight)
 				{
 					start_clip_begin = 0;
 					start_clip_end = 0.5;
-					highlight = false;	
+					s_highlight = false;	
 				}
 				// 'Multiplayer' button animation using coordinates
 				if (x > SCREEN_WIDTH/2 - BUTTON_WIDTH/2 && x < SCREEN_WIDTH/2 + BUTTON_WIDTH/2 && y > SCREEN_HEIGHT/5 + 50 && y < SCREEN_HEIGHT/5 + BUTTON_HEIGHT + 50)
 				{
 					multi_clip_begin = 0.5;
 					multi_clip_end = 1;
-					highlight = true;
+					m_highlight = true;
 				}	
-				if (highlight && (x < SCREEN_WIDTH/2 - BUTTON_WIDTH/2 || x > SCREEN_WIDTH/2 + BUTTON_WIDTH/2 || y < SCREEN_HEIGHT/5 + 50 || y > SCREEN_HEIGHT/5 + BUTTON_HEIGHT + 50))
+				else if (m_highlight)
 				{
 					multi_clip_begin = 0;
 					multi_clip_end = 0.5;
-					highlight = false;	
+					m_highlight = false;	
 				}
 				
 			}
