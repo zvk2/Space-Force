@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <math.h>
-#include "GL/glew.h"
+#include "INC_SDL.h"
 // #include "INC_SDL.h" i comented this out because i don't think it does anything
 
 // For textures

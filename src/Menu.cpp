@@ -122,7 +122,7 @@ void Menu::runMenu(SDL_Window* window)
 		
 			if (event.type == SDL_MOUSEMOTION)
 			{
-				std::cout << "x: " << x << " y: " << y << std::endl;
+				//std::cout << "x: " << x << " y: " << y << std::endl;
 				printf("x %d > %d, x %d < %d, y %d > %d, y %d < %d\n", 
 					x, SCREEN_WIDTH/2 - BUTTON_WIDTH/2, 
 					x, SCREEN_WIDTH/2 + BUTTON_WIDTH/2, 
