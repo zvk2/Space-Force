@@ -216,7 +216,7 @@ int playCredits()
 	// Clear the renderer one last time
 	SDL_RenderClear(gRenderer);
 
-	close();
+	//close();
     return 0;
 }
 
@@ -231,18 +231,30 @@ int main(int argc, char* argv[])
 	// MENU
 	Menu menu;
 	menu.displayMenu(gWindow);
-	menu.runMenu(gWindow);
-	menu.closeMenu();
+	int selection = menu.runMenu(gWindow);
+	//std::cout << selection << std::endl;
+	while (selection == 2)
+	{
+		playCredits();
+		selection = menu.runMenu(gWindow);
+	}
+	if (selection == 0)
+	{
+		close();
+		return 0;
+	}
+	if (selection == 1)
+	{
+		menu.closeMenu();
+	}
+	
 
 	// GAME
 	/*
-	- Uses modified FINAL_sdl15_fps.cpp as basis
-	- Currently consists of Starman moving across a scrolling background repeated 4 times
 	- Controls: WASD for movement, Spacebar to shoot
 	- Can be terminated by x'ing out or pressing 'esc' to credits
-	- Starman sprite's dimensions are 240 x 51
+	- Starman sprite's dimensions are 300 x 51
 	*/
-	// Until we figure out gradients, we'll use space_2_background for now
 	gBackground = loadImage("resources/imgs/space_2_background.png");
 	gAttack = loadImage("resources/imgs/attack.png");
     gBlackhole = loadImage("resources/imgs/blackhole.png");
@@ -292,13 +304,14 @@ int main(int argc, char* argv[])
 			if (e.type == SDL_QUIT)
 			{
 				gameOn = false;
+				credits = false;
 			}
 			if (e.type == SDL_KEYDOWN)
 			{
 				if (e.key.keysym.sym == SDLK_ESCAPE)
 				{
 					gameOn = false;
-					credits = false;
+					//credits = false;
 				}
 				if (e.key.keysym.sym == SDLK_q)
 				{
@@ -481,6 +494,10 @@ int main(int argc, char* argv[])
 		SDL_RenderCopyEx(gRenderer, emy.getEnemySheet(), &eRect, &eCam, 0.0, nullptr, flip);
 		SDL_RenderPresent(gRenderer);
 	}
-
-	return credits ? playCredits() : close();
+	if (credits)
+	{	
+		return playCredits();
+	}
+	close();
+	//return credits ? playCredits() : close();
 }

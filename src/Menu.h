@@ -20,7 +20,7 @@ class Menu
 		void displayMenu(SDL_Window* window);
 
 		// Run menu loop that responds to mouse/keyboard input
-		void runMenu(SDL_Window* window);
+		int runMenu(SDL_Window* window);
 
 		// Close the menu
 		void closeMenu();
@@ -43,8 +43,9 @@ class Menu
 		GLuint texture; // Background
 		GLuint start_button; // Start button
 		GLuint multi_button; // Multiplayer button
+		GLuint credits_button; // Credits button
 		int mouse_x, mouse_y;
-		GLfloat start_clip_begin, start_clip_end, multi_clip_begin, multi_clip_end;
+		GLfloat start_clip_begin, start_clip_end, multi_clip_begin, multi_clip_end, credits_clip_begin, credits_clip_end;
 
 };
 
