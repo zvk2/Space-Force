@@ -32,6 +32,9 @@ const int TILE_SIZE = 100;
 // Not const due to contrivance (can pass immediately if not const)
 char CREDITS_FOLDER[] = "resources/Credit_Image/";
 
+
+SDL_GLContext gContext;
+
 // Function declarations
 bool init();
 SDL_Texture* loadImage(std::string fname);
@@ -135,6 +138,7 @@ int close()
 	}
 
 	SDL_DestroyRenderer(gRenderer);
+    SDL_GL_DeleteContext(gContext);
 	SDL_DestroyWindow(gWindow);
 	gWindow = nullptr;
 	gRenderer = nullptr;
@@ -229,8 +233,9 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 	// MENU
+    
 	Menu menu;
-	menu.displayMenu(gWindow);
+	gContext = menu.displayMenu(gWindow);
 	int selection = menu.runMenu(gWindow);
 	//std::cout << selection << std::endl;
 	while (selection == 2)
@@ -247,8 +252,8 @@ int main(int argc, char* argv[])
 	{
 		menu.closeMenu();
 	}
-	
-
+     
+    
 	// GAME
 	/*
 	- Controls: WASD for movement, Spacebar to shoot
@@ -258,7 +263,9 @@ int main(int argc, char* argv[])
 	gBackground = loadImage("resources/imgs/space_2_background.png");
 	gAttack = loadImage("resources/imgs/attack.png");
     gBlackhole = loadImage("resources/imgs/blackhole.png");
-
+    
+    
+    
 	int scrollOffset = 0;
 	int rem = 0;
 	double xDeltav = 0.0;
@@ -299,6 +306,7 @@ int main(int argc, char* argv[])
   
 	while(gameOn)
 	{
+        
 		while(SDL_PollEvent(&e))
 		{
 			if (e.type == SDL_QUIT)
@@ -493,6 +501,7 @@ int main(int argc, char* argv[])
 		SDL_RenderCopyEx(gRenderer, ply.getPlayerSheet(), &pRect, &pCam, 0.0, nullptr, flip);
 		SDL_RenderCopyEx(gRenderer, emy.getEnemySheet(), &eRect, &eCam, 0.0, nullptr, flip);
 		SDL_RenderPresent(gRenderer);
+        
 	}
 	if (credits)
 	{	

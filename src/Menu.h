@@ -17,7 +17,7 @@ class Menu
 		int load(const char* filename);
 
 		// Display menu background and buttons 
-		void displayMenu(SDL_Window* window);
+		SDL_GLContext displayMenu(SDL_Window* window);
 
 		// Run menu loop that responds to mouse/keyboard input
 		int runMenu(SDL_Window* window);
