@@ -6,9 +6,9 @@
 //  Copyright © 2018 XuZhisheng. All rights reserved.
 //
 
-#ifndef BOSS_h
-#define BOSS_h
-#endif /* BOSS_h */
+#ifndef KING_h
+#define KING_h
+#endif /* KING_h */
 
 #include "INC_SDL.h"
 #include "physics.hpp"

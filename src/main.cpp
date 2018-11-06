@@ -32,7 +32,7 @@ const int TILE_SIZE = 100;
 // Not const due to contrivance (can pass immediately if not const)
 char CREDITS_FOLDER[] = "resources/Credit_Image/";
 
-
+//The context that is used to render OpenGL to the SDL Window
 SDL_GLContext gContext;
 
 // Function declarations
@@ -235,7 +235,7 @@ int main(int argc, char* argv[])
 	// MENU
     
 	Menu menu;
-	gContext = menu.displayMenu(gWindow);
+	menu.displayMenu(gWindow);
 	int selection = menu.runMenu(gWindow);
 	//std::cout << selection << std::endl;
 	while (selection == 2)
@@ -250,7 +250,7 @@ int main(int argc, char* argv[])
 	}
 	if (selection == 1)
 	{
-		menu.closeMenu();
+        gContext = menu.closeMenu();
 	}
      
     

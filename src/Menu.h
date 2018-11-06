@@ -17,13 +17,13 @@ class Menu
 		int load(const char* filename);
 
 		// Display menu background and buttons 
-		SDL_GLContext displayMenu(SDL_Window* window);
+		void displayMenu(SDL_Window* window);
 
 		// Run menu loop that responds to mouse/keyboard input
 		int runMenu(SDL_Window* window);
 
 		// Close the menu
-		void closeMenu();
+		SDL_GLContext closeMenu();
 	
 		/* To be added later(?) 
 		

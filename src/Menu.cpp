@@ -31,7 +31,7 @@ int Menu::load(const char* filename)
 	return object;
 }
 
-SDL_GLContext Menu::displayMenu(SDL_Window* window)
+void Menu::displayMenu(SDL_Window* window)
 {
 	gWindow = window;
 	gContext = SDL_GL_CreateContext(window);
@@ -112,11 +112,14 @@ SDL_GLContext Menu::displayMenu(SDL_Window* window)
 	
 	glFlush();
 	SDL_GL_SwapWindow(window);
-    return gContext;
+    
 }
 
-void Menu::closeMenu()
+SDL_GLContext Menu::closeMenu()
 {
+    //Return the gContext to the main function
+    return gContext;
+    
 	//SDL_GL_DeleteContext(gContext);
 	//SDL_DestroyWindow(gWindow);
 	//SDL_Quit();

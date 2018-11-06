@@ -7,7 +7,7 @@
 //
 
 #include <stdio.h>
-#include "Boss.h"
+#include "VirtualPeacefulKing.h"
 
 //Public methods
 
