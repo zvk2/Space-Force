@@ -1,7 +1,7 @@
+#pragma once
 
 #ifndef ENEMY_H
 #define ENEMY_H
-#endif
 #include "Player.h"
 #include "INC_SDL.h"
 #include "physics.h"
@@ -45,7 +45,7 @@ class Enemy
 		void animate(int frames);
 		
 		//Check for collision with the player
-		void checkPlayerCollision(Player* p, double tstep);
+		void checkPlayerCollision(class Player* p, double tstep);
 		
 		//Return the current x velocity
 		double getxVel();
@@ -101,3 +101,5 @@ class Enemy
 		void DecrementSpeed(int lostSpeed);
 
 };
+
+#endif

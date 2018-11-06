@@ -1,10 +1,12 @@
+#pragma once
+
 #ifndef PLAYER_H
 #define PLAYER_H
 #include "INC_SDL.h"
+#include "Enemy.h"
 #include "physics.h"
 #include "attack.h"
 #define MAX_SPEED 50
-
 
 class Player
 {
@@ -17,6 +19,8 @@ class Player
 		//Set the position of the player on screen
 		void setPosition(double x, double y);
 
+		//Sets the current velocity of the player
+		void setVelocity(double x, double y);
 			
 		//Methods that can be called from model class
 		void move(double xdvel, double ydvel, double tstep);
@@ -26,7 +30,7 @@ class Player
 		void animate(int frames);
 
 		//Check for collision with an enemy
-		void checkEnemyCollision(SDL_Rect eRect, double tstep);
+		void checkEnemyCollision(class Enemy* e, double tstep);
 		
 		//Return the current x velocity
 		double getxVel();

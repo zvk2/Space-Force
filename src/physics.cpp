@@ -77,7 +77,9 @@
 			}
 		}
 		else
+		{
 			x_vel += x_del;
+		}
 		
 		if (y_del == 0.0)
 		{
@@ -108,14 +110,12 @@
 	void Physics::setxVelocity(double x)
 	{
 		x_vel = x;
-       
 	}
 	
 	//Set the current y velocity
 	void Physics::setyVelocity(double y)
 	{
 		y_vel = y;
-        
 	}
 	
 	//Return the current x velocity

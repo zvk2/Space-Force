@@ -257,18 +257,18 @@ int main(int argc, char* argv[])
 	double timestep = 0;
 	SDL_Rect attackRect = {0, 0, 80, 20};
 	//SDL_Rect attackCam = {SCREEN_WIDTH+80, SCREEN_HEIGHT/2+51/2, 80, 20};
-  SDL_Rect blackholeRect = {0, 0, 300, 300};
-  SDL_Rect blackholeCam = {SCREEN_WIDTH,SCREEN_HEIGHT/2, 300, 300};
+	SDL_Rect blackholeRect = {0, 0, 300, 300};
+	SDL_Rect blackholeCam = {SCREEN_WIDTH,SCREEN_HEIGHT/2, 300, 300};
 	Player ply(10, loadImage("resources/imgs/starman.png"), 1,gRenderer);
-  Enemy emy(10, loadImage("resources/imgs/faxanaduitis.png"), 1);
-  emy.setPosition(860, 0);
+	Enemy emy(10, loadImage("resources/imgs/faxanaduitis.png"), 1);
+	emy.setPosition(860, 0);
 	emy.setVelocity(0, 50);
 	//the beginning/default image and attack box
 	ply.hit.setAttack(gAttack,&attackRect);
 	SDL_Event e;
 	bool gameOn = true;
 	bool up = true;
-  double emyDelta = 1;
+	double emyDelta = 1;
   
 	while(gameOn)
 	{
@@ -320,7 +320,7 @@ int main(int argc, char* argv[])
 		}
 		
 		ply.move(xDeltav, yDeltav, timestep);
-		ply.checkEnemyCollision(emy.getEnemyCam(), timestep);
+		ply.checkEnemyCollision(&emy, timestep);
 		emy.move(0, emyDelta, timestep);
 		emy.checkPlayerCollision(&ply, timestep);
 		
@@ -413,7 +413,7 @@ int main(int argc, char* argv[])
                             yDeltav = yDeltav - 20;
                         }
                         xDeltav = xDeltav - 20;
-                        ply.move(xDeltav, yDeltav, timestep);
+                        //ply.move(xDeltav, yDeltav, timestep);
                     }
                 }
                 
@@ -426,7 +426,7 @@ int main(int argc, char* argv[])
             }
 
         }*/
-
+		
         //attack button 
 
 		if(keyState[SDL_SCANCODE_SPACE] && up == true)

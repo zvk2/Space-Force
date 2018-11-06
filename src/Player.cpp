@@ -1,5 +1,6 @@
 
 #include "Player.h"
+#include <cmath> 
 #define MAX_SPEED 50
 
 //Public methods	
@@ -29,8 +30,14 @@ void Player::setPosition(double x, double y)
   playerCam.y = (int) yCoord;
 }
 
+//Sets the current velocity of the player
+void Player::setVelocity(double x, double y)
+{
+	phys.setxVelocity(x);
+	phys.setyVelocity(y);
+}
+
 //Methods that can be called from model class
-//TODO: Add CheckCollision(SDL_Rect r)
 void Player::move(double xdvel, double ydvel, double tstep)
 {
   phys.ChangeVelocity(xdvel, ydvel, tstep);
@@ -51,14 +58,55 @@ void Player::animate(int frames)
 }
 
 //Check for collision with an enemy
-void Player::checkEnemyCollision(SDL_Rect eRect, double tstep)
-{
-	SDL_Rect result;
-	
-	if (SDL_IntersectRect(&eRect, &playerCam, &result))
+void Player::checkEnemyCollision(Enemy* e, double tstep)
+{	
+	SDL_Rect eRect = e->getEnemyCam();
+
+	if (SDL_HasIntersection(&eRect, &playerCam))
 	{
-		xCoord -= (phys.getxVelocity() * tstep);
-		yCoord -= (phys.getyVelocity() * tstep);
+		double newPVelocityx = phys.getxVelocity();
+		double newPVelocityy = phys.getyVelocity();
+		double newEVelocityx = e->getxVel();
+		double newEVelocityy = e->getyVel();
+		
+		xCoord -= (newPVelocityx * tstep);
+		yCoord -= (newPVelocityy * tstep);
+		
+		if (std::abs(newPVelocityx) > std::abs(newEVelocityx))
+		{
+			newEVelocityx = newEVelocityx + newPVelocityx;
+			newPVelocityx = 0;
+		}
+		else if (std::abs(newPVelocityx) < std::abs(newEVelocityx))
+		{
+			newPVelocityx = newPVelocityx + newEVelocityx;
+			newEVelocityx = 0;
+		}
+		else if (newPVelocityx == -newEVelocityx)
+		{
+			newPVelocityx = 0;
+			newEVelocityx = 0;
+		}
+		
+		if (std::abs(newPVelocityy) > std::abs(newEVelocityy))
+		{
+			newEVelocityy = newEVelocityy + newPVelocityy;
+			newPVelocityy = 0;
+		}
+		else if (std::abs(newPVelocityy) < std::abs(newEVelocityy))
+		{
+			newPVelocityy = newPVelocityy + newEVelocityy;
+			newEVelocityy = 0;
+		}
+		else if (newPVelocityy == -newEVelocityy)
+		{
+			newPVelocityy = 0;
+			newEVelocityy = 0;
+		}
+		
+		phys.setxVelocity(newPVelocityx);
+		phys.setyVelocity(newPVelocityy);
+		e->setVelocity(newEVelocityx, newEVelocityy);
 		
 		playerCam.x = (int) xCoord;
 		playerCam.y = (int) yCoord;
