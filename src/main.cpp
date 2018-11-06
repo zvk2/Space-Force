@@ -319,7 +319,7 @@ int main(int argc, char* argv[])
 				if (e.key.keysym.sym == SDLK_ESCAPE)
 				{
 					gameOn = false;
-					//credits = false;
+					credits = false;
 				}
 				if (e.key.keysym.sym == SDLK_q)
 				{
