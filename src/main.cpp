@@ -319,11 +319,6 @@ int main(int argc, char* argv[])
 			emy.setVelocity(0, 10);
 		}
 		
-		ply.move(xDeltav, yDeltav, timestep);
-		ply.checkEnemyCollision(&emy, timestep);
-		emy.move(0, emyDelta, timestep);
-		emy.checkPlayerCollision(&ply, timestep);
-		
 		SDL_Rect pRect = ply.getPlayerRect();
 		SDL_Rect pCam = ply.getPlayerCam();
 		
@@ -367,7 +362,7 @@ int main(int argc, char* argv[])
 		pCam = ply.getPlayerCam();
         Uint32 currTime = SDL_GetTicks();
         
-        /*if(currTime >= 5000)
+        if(currTime >= 5000)
         {
             int bFrames;
             if(currTime % 5000 == 0)
@@ -400,7 +395,6 @@ int main(int argc, char* argv[])
                             yDeltav = yDeltav - 20;
                         }
                         xDeltav = xDeltav + 20;
-                        ply.move(xDeltav, yDeltav, timestep);
                     }
                     else if(blackholeCam.x + 150 < pCam.x)
                     {
@@ -413,7 +407,6 @@ int main(int argc, char* argv[])
                             yDeltav = yDeltav - 20;
                         }
                         xDeltav = xDeltav - 20;
-                        //ply.move(xDeltav, yDeltav, timestep);
                     }
                 }
                 
@@ -425,7 +418,15 @@ int main(int argc, char* argv[])
                 bFrames = 0;
             }
 
-        }*/
+        }
+		
+		ply.move(xDeltav, yDeltav, timestep);
+		ply.checkEnemyCollision(&emy, timestep);
+		emy.move(0, emyDelta, timestep);
+		emy.checkPlayerCollision(&ply, timestep);
+		
+		pCam = ply.getPlayerCam();
+		eCam = emy.getEnemyCam();
 		
         //attack button 
 
