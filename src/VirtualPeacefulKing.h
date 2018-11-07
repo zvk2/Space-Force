@@ -1,5 +1,5 @@
 //
-//  Boss.h
+//  VirtualPeacefulKing.h
 //  CS1666_SpaceForce
 //
 //  Created by XuZhisheng on 11/5/18.
