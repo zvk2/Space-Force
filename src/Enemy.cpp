@@ -1,6 +1,7 @@
 
 #include "INC_SDL.h"
 #include "Enemy.h"
+#include <cmath> 
 #define MAX_SPEED 50
  
 //Public methods 
@@ -84,6 +85,62 @@ void Enemy::move(double xdvel, double ydvel, double tstep)
 void Enemy::animate(int frames)
 {
 	enemyRect.x = ((frames / 10) % 4) * enemyRect.w;
+}
+
+//Check for collision with the player
+void Enemy::checkPlayerCollision(Player* p, double tstep)
+{
+	SDL_Rect pRect = p->getPlayerCam();
+
+	if (SDL_HasIntersection(&pRect, &enemyCam))
+	{
+		double newPVelocityx = p->getxVel();
+		double newPVelocityy = p->getyVel();
+		double newEVelocityx = phys.getxVelocity();
+		double newEVelocityy = phys.getyVelocity();
+		
+		xCoord -= (newEVelocityx * tstep);
+		yCoord -= (newEVelocityy * tstep);
+		
+		if (std::abs(newPVelocityx) > std::abs(newEVelocityx))
+		{
+			newEVelocityx = newEVelocityx + newPVelocityx;
+			newPVelocityx = 0;
+		}
+		else if (std::abs(newPVelocityx) < std::abs(newEVelocityx))
+		{
+			newPVelocityx = newPVelocityx + newEVelocityx;
+			newEVelocityx = 0;
+		}
+		else if (newPVelocityx == -newEVelocityx)
+		{
+			newPVelocityx = 0;
+			newEVelocityx = 0;
+		}
+		
+		if (std::abs(newPVelocityy) > std::abs(newEVelocityy))
+		{
+			newEVelocityy = newEVelocityy + newPVelocityy;
+			newPVelocityy = 0;
+		}
+		else if (std::abs(newPVelocityy) < std::abs(newEVelocityy))
+		{
+			newPVelocityy = newPVelocityy + newEVelocityy;
+			newEVelocityy = 0;
+		}
+		else if (newPVelocityy == -newEVelocityy)
+		{
+			newPVelocityy = 0;
+			newEVelocityy = 0;
+		}
+		
+		phys.setxVelocity(newEVelocityx);
+		phys.setyVelocity(newEVelocityy);
+		p->setVelocity(newPVelocityx, newPVelocityy);
+		
+		enemyCam.x = (int) xCoord;
+		enemyCam.y = (int) yCoord;
+	}
 }
 
 //Return the current x velocity

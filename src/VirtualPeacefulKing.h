@@ -11,7 +11,7 @@
 #endif /* KING_h */
 
 #include "INC_SDL.h"
-#include "physics.hpp"
+#include "physics.h"
 
 //Our first boss class
 class VirtualPeacefulKing
@@ -22,19 +22,19 @@ public:
     //Shield will generate itself throughout the time
     //This boss will also have a special skill to generate blackhole in a given Time interval
     VirtualPeacefulKing(int initialHealth, SDL_Texture* sheet, int attack, int shieldHealth, int skillCD);
-    
+
     //Damage to the shield
     void LostShield(int damage);
-    
+
     //Shield self recoveray
     void RecoveryShield(int recoveryRate);
-    
+
     //Damage to boss's health
     void LostHealth(int damage);
-    
+
 private:
-    
-    
+
+
 };//end of VirtualPeacefulKing class
 
 

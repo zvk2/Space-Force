@@ -1,10 +1,12 @@
+#pragma once
+
 #ifndef PLAYER_H
 #define PLAYER_H
 #include "INC_SDL.h"
-#include "physics.hpp"
+#include "Enemy.h"
+#include "physics.h"
 #include "attack.h"
 #define MAX_SPEED 50
-
 
 class Player
 {
@@ -16,25 +18,29 @@ class Player
 
 		//Set the position of the player on screen
 		void setPosition(double x, double y);
-    
+
         //Int version
         void setPosition(int x, int y);
 
-			
+		//Sets the current velocity of the player
+		void setVelocity(double x, double y);
+
 		//Methods that can be called from model class
 		void move(double xdvel, double ydvel, double tstep);
 
-		
+
 		// Animate jet propulsion
 		void animate(int frames);
 
-		
+		//Check for collision with an enemy
+		void checkEnemyCollision(class Enemy* e, double tstep);
+
 		//Return the current x velocity
 		double getxVel();
 
 		//Return the current y velocity
 		double getyVel();
-		
+
 		void setAttack(SDL_Texture* gAtt, SDL_Rect* attac);
 
 		//Get the player camera rectangle
@@ -42,12 +48,12 @@ class Player
 
 		//Get the current rectangle from the sprite sheet
 		SDL_Rect getPlayerRect();
-	
-		
+
+
 		//Get the player sprite sheet
 		SDL_Texture* getPlayerSheet();
 
-		
+
 		//Subract hit points from the player
 		void LostHealth(int damage);
 
@@ -97,12 +103,12 @@ class Player
 
 		SDL_Rect playerCam;
 		SDL_Rect playerRect;
-		
+
 		double xCoord;
 		double yCoord;
-		
+
 		void CheckBoundaries();
-		
+
 		//Private method to decrease player health
 		void DecrementHealth(int decAmount);
 

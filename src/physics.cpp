@@ -1,4 +1,4 @@
-#include "physics.hpp"
+#include "physics.h"
 
 //the max speed the player can go
 
@@ -12,21 +12,21 @@
 	{
 		move = ACCEL;
 	}
-	
-	
+
+
 //What to do when no buttons are pressed
 	void Physics::Neutral(double timestep)
 	{
-		if (*x_delp == 0) 
+		if (*x_delp == 0)
 		{
-			if (*x_velp > 0) 
+			if (*x_velp > 0)
 			{
 				if (*x_velp < (ACCEL * timestep))
 					*x_velp = 0;
 				else
 					*x_velp -= (ACCEL * timestep);
 			}
-			else if (*x_velp < 0) 
+			else if (*x_velp < 0)
 			{
 				if (-(*x_velp) < (ACCEL * timestep))
 					*x_velp = 0;
@@ -36,7 +36,7 @@
 		}
 		else
 			*x_velp += *x_delp;
-		
+
 		if (*y_delp == 0)
 		{
 			if (*y_velp > 0)
@@ -60,16 +60,16 @@
 	}
 	void Physics::ChangeVelocity(double x_del, double y_del, double timestep)
 	{
-		if (x_del == 0.0) 
+		if (x_del == 0.0)
 		{
-			if (x_vel > 0) 
+			if (x_vel > 0)
 			{
 				if (x_vel < (ACCEL * timestep))
 					x_vel = 0;
 				else
 					x_vel -= (ACCEL * timestep);
 			}
-			else if (x_vel < 0) 
+			else if (x_vel < 0)
 			{
 				if (-(x_vel) < (ACCEL * timestep))
 					x_vel = 0;
@@ -78,8 +78,10 @@
 			}
 		}
 		else
+		{
 			x_vel += x_del;
-		
+		}
+
 		if (y_del == 0.0)
 		{
 			if (y_vel > 0)
@@ -101,7 +103,7 @@
 		{
 			y_vel += y_del;
 		}
-	
+
 		Speed_Limit();
 	}
 
@@ -115,28 +117,26 @@
 		return move;
 	}
 
-	
+
 	//Set the current x velocity
 	void Physics::setxVelocity(double x)
 	{
 		x_vel = x;
-       
 	}
-	
+
 	//Set the current y velocity
 	void Physics::setyVelocity(double y)
 	{
 		y_vel = y;
-        
 	}
-	
+
 
 	//Return the current x velocity
 	double Physics::getxVelocity()
 	{
 		return x_vel;
 	}
-	
+
 	//Return the current y velocity
 	double Physics::getyVelocity()
 	{
@@ -144,7 +144,7 @@
 	}
 	void Physics::Speed_Limit()
 	{
-	
+
 		if (x_vel < BACK_LIMIT)
 		{
 			x_vel = BACK_LIMIT;

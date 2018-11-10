@@ -5,15 +5,15 @@
 
 
 
-		
+
 		//Constructor: takes health, character sheet, and attack value and sets all member vars
-		Player::Player(int startingHealth, SDL_Texture* characterImages, int attack, SDL_Renderer* gRend): 
+		Player::Player(int startingHealth, SDL_Texture* characterImages, int attack, SDL_Renderer* gRend):
 			hitPoints(startingHealth), playerSheet(characterImages),
 			attackPower(attack), attackModifier(1), defenseModifier(1),
 			phys(0, 0, 300.0, 3600.0), xCoord(1280/8), yCoord(720/2), hit(gRend)
 			{
 				playerRect = {0, 0, 300, 51};
-				playerCam = {1280/2, 720/2, 300, 51};	
+				playerCam = {1280/2, 720/2, 300, 51};
 				gRenderer = gRend;
 			}
 		void Player::setAttack(SDL_Texture* gAttack, SDL_Rect* attackRect)
@@ -34,34 +34,46 @@
 		void Player::move(double xdvel, double ydvel, double tstep)
 		{
 			phys.ChangeVelocity(xdvel, ydvel, tstep);
-			
+
 			xCoord += (phys.getxVelocity() * tstep);
 			yCoord += (phys.getyVelocity() * tstep);
-			
+
 			CheckBoundaries();
-			
+
 			playerCam.x = (int) xCoord;
 			playerCam.y = (int) yCoord;
 		}
-		
+
 		// Animate jet propulsion
 		void Player::animate(int frames)
 		{
 			playerRect.x = (frames % 4) * 300;
 		}
-		
+
+		//Sets the current velocity of the player
+		void Player::setVelocity(double x, double y)
+		{
+			phys.setxVelocity(x);
+			phys.setyVelocity(y);
+		}
+
 		//Return the current x velocity
 		double Player::getxVel()
 		{
 			return phys.getxVelocity();
 		}
-		
+
+		double Player::getyVel()
+		{
+			return phys.getyVelocity();
+		}
+
 		//Get the player camera rectangle
 		SDL_Rect Player::getPlayerCam()
 		{
 			return playerCam;
 		}
-		
+
 		SDL_Rect* Player::getPlayerCamLoc()
 		{
 			return &playerCam;
@@ -79,13 +91,13 @@
 		{
 			return playerRect;
 		}
-		
+
 		//Get the player sprite sheet
 		SDL_Texture* Player::getPlayerSheet()
 		{
 			return playerSheet;
 		}
-		
+
 		//Subract hit points from the player
 		void Player::LostHealth(int damage)
 		{
@@ -122,10 +134,10 @@
 		int Player::GetAttack()
 		{
 			return (attackPower*attackModifier);
-		}	
+		}
 
 
-		
+
 		void Player::CheckBoundaries()
 		{
 			// Boundary checks against the window
@@ -138,7 +150,7 @@
 			if (yCoord + 51 > SCREEN_HEIGHT)
 				yCoord = SCREEN_HEIGHT - 51;
 		}
-		
+
 		//Private method to decrease player health
 		void Player::DecrementHealth(int decAmount)
 		{
@@ -151,7 +163,60 @@
 			hitPoints += incAmount;
 		}
 
+	//Check for collision with an enemy
+void Player::checkEnemyCollision(Enemy* e, double tstep)
+{
+	SDL_Rect eRect = e->getEnemyCam();
 
+	if (SDL_HasIntersection(&eRect, &playerCam))
+	{
+		double newPVelocityx = phys.getxVelocity();
+		double newPVelocityy = phys.getyVelocity();
+		double newEVelocityx = e->getxVel();
+		double newEVelocityy = e->getyVel();
 
+		xCoord -= (newPVelocityx * tstep);
+		yCoord -= (newPVelocityy * tstep);
+
+		if (std::abs(newPVelocityx) > std::abs(newEVelocityx))
+		{
+			newEVelocityx = newEVelocityx + newPVelocityx;
+			newPVelocityx = 0;
+		}
+		else if (std::abs(newPVelocityx) < std::abs(newEVelocityx))
+		{
+			newPVelocityx = newPVelocityx + newEVelocityx;
+			newEVelocityx = 0;
+		}
+		else if (newPVelocityx == -newEVelocityx)
+		{
+			newPVelocityx = 0;
+			newEVelocityx = 0;
+		}
+
+		if (std::abs(newPVelocityy) > std::abs(newEVelocityy))
+		{
+			newEVelocityy = newEVelocityy + newPVelocityy;
+			newPVelocityy = 0;
+		}
+		else if (std::abs(newPVelocityy) < std::abs(newEVelocityy))
+		{
+			newPVelocityy = newPVelocityy + newEVelocityy;
+			newEVelocityy = 0;
+		}
+		else if (newPVelocityy == -newEVelocityy)
+		{
+			newPVelocityy = 0;
+			newEVelocityy = 0;
+		}
+
+		phys.setxVelocity(newPVelocityx);
+		phys.setyVelocity(newPVelocityy);
+		e->setVelocity(newEVelocityx, newEVelocityy);
+
+		playerCam.x = (int) xCoord;
+		playerCam.y = (int) yCoord;
+	}
+}
 
 
