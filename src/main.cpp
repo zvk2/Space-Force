@@ -4,11 +4,12 @@
 #include <string>
 #include <cstring>
 #include "INC_SDL.h"
-#include "physics.h"
+#include "Magnetar.h"
 #include "Player.h"
 #include "Enemy.h"
 #include "attack.h"
 #include "blackhole.h"
+#include "Menu.h"
 #include <cstdlib>
 
 
@@ -25,16 +26,19 @@ const int LEVEL_LEN = 5120;
 const int TILE_SIZE = 100;
 
 // Constant for acceleration
-const double ACCEL = 3600.0;
+//const double ACCEL = 3600.0;
 
 // Parent folder for credit images
 // Not const due to contrivance (can pass immediately if not const)
 char CREDITS_FOLDER[] = "resources/Credit_Image/";
 
+//The context that is used to render OpenGL to the SDL Window
+SDL_GLContext gContext;
+
 // Function declarations
 bool init();
 SDL_Texture* loadImage(std::string fname);
-void close();
+int close();
 
 // Globals
 SDL_Window* gWindow = nullptr;
@@ -68,7 +72,7 @@ bool init()
 		SDL_WINDOWPOS_UNDEFINED,
 		SCREEN_WIDTH,
 		SCREEN_HEIGHT,
-		SDL_WINDOW_SHOWN
+		SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL
 	);
 	if (gWindow == nullptr)
 	{
@@ -125,7 +129,7 @@ SDL_Texture* loadImage(std::string fname)
 	return newText;
 }
 
-void close()
+int close()
 {
 	for (auto i : gTex)
 	{
@@ -134,6 +138,7 @@ void close()
 	}
 
 	SDL_DestroyRenderer(gRenderer);
+    SDL_GL_DeleteContext(gContext);
 	SDL_DestroyWindow(gWindow);
 	gWindow = nullptr;
 	gRenderer = nullptr;
@@ -141,6 +146,8 @@ void close()
 	// Quit SDL subsystems
 	IMG_Quit();
 	SDL_Quit();
+
+	return 0;
 }
 
 // CREDITS
@@ -213,7 +220,7 @@ int playCredits()
 	// Clear the renderer one last time
 	SDL_RenderClear(gRenderer);
 
-	close();
+	//close();
     return 0;
 }
 
@@ -225,24 +232,45 @@ int main(int argc, char* argv[])
 		close();
 		return 1;
 	}
+	// MENU
+
+	Menu menu;
+	menu.displayMenu(gWindow);
+	int selection = menu.runMenu(gWindow);
+	//std::cout << selection << std::endl;
+	while (selection == 2)
+	{
+		playCredits();
+		selection = menu.runMenu(gWindow);
+	}
+	if (selection == 0)
+	{
+		close();
+		return 0;
+	}
+	if (selection == 1)
+	{
+        gContext = menu.closeMenu();
+	}
+
 
 	// GAME
 	/*
-	- Uses modified FINAL_sdl15_fps.cpp as basis
-	- Currently consists of Starman moving across a scrolling background repeated 4 times
 	- Controls: WASD for movement, Spacebar to shoot
 	- Can be terminated by x'ing out or pressing 'esc' to credits
-	- Starman sprite's dimensions are 240 x 51
+	- Starman sprite's dimensions are 300 x 51
 	*/
-	// Until we figure out gradients, we'll use space_2_background for now
 	gBackground = loadImage("resources/imgs/space_2_background.png");
 	gAttack = loadImage("resources/imgs/attack.png");
     gBlackhole = loadImage("resources/imgs/blackhole.png");
+
+
 
 	int scrollOffset = 0;
 	int rem = 0;
 	double xDeltav = 0.0;
 	double yDeltav = 0.0;
+	bool create;
 
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
 
@@ -260,27 +288,40 @@ int main(int argc, char* argv[])
 	SDL_Rect blackholeRect = {0, 0, 300, 300};
 	SDL_Rect blackholeCam = {SCREEN_WIDTH,SCREEN_HEIGHT/2, 300, 300};
 	Player ply(10, loadImage("resources/imgs/starman.png"), 1,gRenderer);
-	Enemy emy(10, loadImage("resources/imgs/faxanaduitis.png"), 1);
-	emy.setPosition(860, 0);
+
+	Magnetar mag(&ply, loadImage("resources/imgs/Magnetars.png"));
+	double ACCEL = ply.GetMove();
+
+  Enemy emy(10, loadImage("resources/imgs/faxanaduitis.png"), 1);
+  emy.setPosition(860, 0);
 	emy.setVelocity(0, 50);
+
 	//the beginning/default image and attack box
 	ply.hit.setAttack(gAttack,&attackRect);
 	SDL_Event e;
 	bool gameOn = true;
 	bool up = true;
-	double emyDelta = 1;
-  
+	bool credits = true;
+    double emyDelta = 1;
+
 	while(gameOn)
 	{
+
 		while(SDL_PollEvent(&e))
 		{
 			if (e.type == SDL_QUIT)
 			{
 				gameOn = false;
+				credits = false;
 			}
 			if (e.type == SDL_KEYDOWN)
 			{
 				if (e.key.keysym.sym == SDLK_ESCAPE)
+				{
+					gameOn = false;
+					credits = false;
+				}
+				if (e.key.keysym.sym == SDLK_q)
 				{
 					gameOn = false;
 				}
@@ -293,6 +334,7 @@ int main(int argc, char* argv[])
 				}
 			}
 		}
+		ACCEL = ply.GetMove();
 		timestep = (SDL_GetTicks() - moveLasttime) / 1000.0;
 		xDeltav = 0.0;
 		yDeltav = 0.0;
@@ -307,7 +349,7 @@ int main(int argc, char* argv[])
 			yDeltav -= (ACCEL * timestep);
 		if (keyState[SDL_SCANCODE_S])
 			yDeltav += (ACCEL * timestep);
-		
+
 		if (emy.getEnemyCam().y + emy.getEnemyCam().h == SCREEN_HEIGHT)
 		{
 			emyDelta = -1;
@@ -318,15 +360,15 @@ int main(int argc, char* argv[])
 			emyDelta = 1;
 			emy.setVelocity(0, 10);
 		}
-		
+
 		SDL_Rect pRect = ply.getPlayerRect();
 		SDL_Rect pCam = ply.getPlayerCam();
-		
+
 		SDL_Rect eRect = emy.getEnemyRect();
 		SDL_Rect eCam = emy.getEnemyCam();
-		
+
 		moveLasttime = SDL_GetTicks();
-        
+
 		// Scrolling background
 		++scrollOffset;
 		if (scrollOffset > bgRect.w)
@@ -339,16 +381,18 @@ int main(int argc, char* argv[])
 
 		rem = scrollOffset % SCREEN_WIDTH;
 		bgRect.x = -rem;
+
+
 		SDL_RenderCopy(gRenderer, gBackground, nullptr, &bgRect);
 		bgRect.x += SCREEN_WIDTH;
 		SDL_RenderCopy(gRenderer, gBackground, nullptr, &bgRect);
-		
+
 		frames += 1 % 1000000000;
 
 		ply.animate(frames);
 		emy.animate(frames);
-		
-	
+
+
 		// Since game levels progress from L to R, no need for sprite to flip
 		// Code for flipping remains here if theres a change of plan
 
@@ -361,7 +405,15 @@ int main(int argc, char* argv[])
 		pRect = ply.getPlayerRect();
 		pCam = ply.getPlayerCam();
         Uint32 currTime = SDL_GetTicks();
-        
+        if(currTime>=6000)
+		{
+            //std::cout << currTime % 3000 << std::endl;
+			if((currTime % 3000 <= 50 && !mag.Seen()) ||mag.Seen())
+			{
+
+				mag.Render();
+			}
+		}
         if(currTime >= 5000)
         {
             int bFrames;
@@ -377,11 +429,11 @@ int main(int argc, char* argv[])
 
                 if (bFrames / 12 > 5)
                     bFrames = 0;
-                
+
                 blackholeRect.x = (bFrames / 12) * 300;
                 blackholeCam.x = blackholeCam.x - 1;
                 SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
-                
+
                 if(blackholeCam.x < SCREEN_WIDTH && blackholeCam.x > 0)
                 {
                     if(blackholeCam.x + 150 > pCam.x)
@@ -409,9 +461,9 @@ int main(int argc, char* argv[])
                         xDeltav = xDeltav - 20;
                     }
                 }
-                
+
             }
-            
+
             if(blackholeCam.x == -300)
             {
                 blackholeCam = {SCREEN_WIDTH,rand() % (SCREEN_HEIGHT-300), 300, 300};
@@ -419,16 +471,16 @@ int main(int argc, char* argv[])
             }
 
         }
-		
+
 		ply.move(xDeltav, yDeltav, timestep);
 		ply.checkEnemyCollision(&emy, timestep);
 		emy.move(0, emyDelta, timestep);
 		emy.checkPlayerCollision(&ply, timestep);
-		
+
 		pCam = ply.getPlayerCam();
 		eCam = emy.getEnemyCam();
-		
-        //attack button 
+
+        //attack button
 
 		if(keyState[SDL_SCANCODE_SPACE] && up == true)
 		{
@@ -440,7 +492,12 @@ int main(int argc, char* argv[])
 		SDL_RenderCopyEx(gRenderer, ply.getPlayerSheet(), &pRect, &pCam, 0.0, nullptr, flip);
 		SDL_RenderCopyEx(gRenderer, emy.getEnemySheet(), &eRect, &eCam, 0.0, nullptr, flip);
 		SDL_RenderPresent(gRenderer);
-	}
 
-	return playCredits();
+	}
+	if (credits)
+	{
+		return playCredits();
+	}
+	close();
+	//return credits ? playCredits() : close();
 }

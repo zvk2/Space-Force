@@ -19,9 +19,6 @@
 #define GL3_PROTOTYPES 1
 #include <GL/glew.h>
 
-// Physics
-//~ #include "physics.hpp"
-
 // For type definitions etc.
 #include "matrix.h"
 
