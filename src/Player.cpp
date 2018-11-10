@@ -2,7 +2,9 @@
 
 #include "Player.h"
 #define MAX_SPEED 50
-
+#include <iostream>
+#include <cstdlib>
+#include <climits>
 
 
 

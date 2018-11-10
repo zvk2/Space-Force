@@ -31,7 +31,7 @@ public:
 
     //Damage to boss's health
     void LostHealth(int damage);
-
+    
 private:
 
 
