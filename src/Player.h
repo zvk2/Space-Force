@@ -6,6 +6,7 @@
 #include "Enemy.h"
 #include "physics.h"
 #include "attack.h"
+#include <cmath>
 #define MAX_SPEED 50
 
 class Player

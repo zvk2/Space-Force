@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef ATTACK_H
 #define ATTACK_H
 #include<stdio.h> 
