@@ -5,6 +5,7 @@
 #include <cstring>
 #include "INC_SDL.h"
 #include "Magnetar.h"
+#include "AlcoholCloud.h"
 #include "Player.h"
 #include "Enemy.h"
 #include "attack.h"
@@ -290,10 +291,11 @@ int main(int argc, char* argv[])
 	Player ply(10, loadImage("resources/imgs/starman.png"), 1,gRenderer);
 
 	Magnetar mag(&ply, loadImage("resources/imgs/Magnetars.png"));
+	AlcoholCloud ac(&ply, loadImage("resources/imgs/Alcohol_Cloud.png"));
 	double ACCEL = ply.GetMove();
 
-  Enemy emy(10, loadImage("resources/imgs/faxanaduitis.png"), 1);
-  emy.setPosition(860, 0);
+	Enemy emy(10, loadImage("resources/imgs/faxanaduitis.png"), 1);
+	emy.setPosition(860, 0);
 	emy.setVelocity(0, 50);
 
 	//the beginning/default image and attack box
@@ -306,7 +308,6 @@ int main(int argc, char* argv[])
 
 	while(gameOn)
 	{
-
 		while(SDL_PollEvent(&e))
 		{
 			if (e.type == SDL_QUIT)
@@ -334,6 +335,7 @@ int main(int argc, char* argv[])
 				}
 			}
 		}
+		
 		ACCEL = ply.GetMove();
 		timestep = (SDL_GetTicks() - moveLasttime) / 1000.0;
 		xDeltav = 0.0;
@@ -405,7 +407,8 @@ int main(int argc, char* argv[])
 		pRect = ply.getPlayerRect();
 		pCam = ply.getPlayerCam();
         Uint32 currTime = SDL_GetTicks();
-        if(currTime>=6000)
+		
+        /*if(currTime>=6000)
 		{
             //std::cout << currTime % 3000 << std::endl;
 			if((currTime % 3000 <= 50 && !mag.Seen()) ||mag.Seen())
@@ -470,7 +473,7 @@ int main(int argc, char* argv[])
                 bFrames = 0;
             }
 
-        }
+        }*/
 
 		ply.move(xDeltav, yDeltav, timestep);
 		ply.checkEnemyCollision(&emy, timestep);
@@ -491,6 +494,19 @@ int main(int argc, char* argv[])
 		ply.hit.renderAttack(timestep);
 		SDL_RenderCopyEx(gRenderer, ply.getPlayerSheet(), &pRect, &pCam, 0.0, nullptr, flip);
 		SDL_RenderCopyEx(gRenderer, emy.getEnemySheet(), &eRect, &eCam, 0.0, nullptr, flip);
+		
+		ac.setDelay((rand() % 3000) + 5000);
+		
+		if (currTime >= ac.getDelay())
+		{
+			if (!ac.Seen())
+			{
+				ac.setYPosition(rand() % 421);
+			}
+			
+			ac.Render();
+		}
+		
 		SDL_RenderPresent(gRenderer);
 
 	}
