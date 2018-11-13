@@ -94,6 +94,3 @@ rebuild: clean all
 
 os:
 	@echo $(DETECTED_OS)
-
-netobj:
-	@echo $(NETOBJ)
