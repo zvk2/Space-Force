@@ -107,17 +107,23 @@
 		Speed_Limit();
 	}
 
-  //move is the accelerate in the main.cpp
+	//move is the accelerate in the main.cpp
 	void Physics::ChangeMove(double ac)
 	{
 		move = ac;
 	}
+	
 	double Physics::GetMove()
 	{
 		return move;
 	}
 
-
+	void Physics::ChangeMaxSpeed(double speed)
+	{
+		BACK_LIMIT = -speed;
+		FOR_LIMIT = speed;
+	}
+	
 	//Set the current x velocity
 	void Physics::setxVelocity(double x)
 	{
@@ -129,7 +135,6 @@
 	{
 		y_vel = y;
 	}
-
 
 	//Return the current x velocity
 	double Physics::getxVelocity()

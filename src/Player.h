@@ -80,6 +80,7 @@ class Player
 		SDL_Rect* getPlayerCamLoc();
 		double GetMove();
 		void ChangeMove(double Accel);
+		void ChangeMaxVelocity(double Speed);
 	private:
 
 		/* Member variables:

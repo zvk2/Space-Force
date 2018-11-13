@@ -17,7 +17,7 @@ AlcoholCloud::AlcoholCloud(Player* p, SDL_Texture* i):ply(p), sprite(i)
 void AlcoholCloud::Render()
 {
 	//animation
-	if((frame/10) >= 4)
+	if((frame / 10) >= 4)
 	{
 		frame = 0;
 	}
@@ -27,8 +27,138 @@ void AlcoholCloud::Render()
 	
 	//Places object to screen
 	SDL_RenderCopy(gRenderer, sprite, &spriteBox, &alcoholCam);
+	SDL_Rect result;
 	
-	//bool inter = SDL_HasIntersection(&camBox,playerCam);
+	if (SDL_IntersectRect(&surroundingAlcoholCam, playerCam, &result))
+	{
+		if (SDL_HasIntersection(&alcoholCam, playerCam))
+		{
+			ply->ChangeMaxVelocity((double) (rand() % 291) + 10);
+		}
+		else
+		{
+			int distance_x, distance_y, closest_x, closest_y, minVelocity;
+			double percent_distance;
+			
+			if ((result.x + result.w) <= alcoholCam.x)
+			{
+				distance_x = (result.x + result.w - 1) - alcoholCam.x;
+				closest_x = alcoholCam.x;
+			}
+			else if (result.x >= (alcoholCam.x + alcoholCam.w))
+			{
+				distance_x = result.x - (alcoholCam.x + alcoholCam.w - 1);
+				closest_x = (alcoholCam.x + alcoholCam.w - 1);
+			}
+			else
+			{
+				distance_x = 10000;
+			}
+
+			if ((result.y + result.h) <= alcoholCam.y)
+			{
+				distance_y = (result.y + result.h - 1) - alcoholCam.y;
+				closest_y = alcoholCam.y;
+			}
+			else if (result.y >= (alcoholCam.y + alcoholCam.h))
+			{
+				distance_y = result.y - (alcoholCam.y + alcoholCam.h - 1);
+				closest_y = (alcoholCam.y + alcoholCam.h - 1);
+			}
+			else
+			{
+				distance_y = 10000;
+			}
+			
+			if ((distance_x != 10000) && (distance_y != 10000))
+			{
+				double slope, alcoholSlope;
+				int point_x, point_y;
+				
+				alcoholSlope = (alcoholCam.y - surroundingAlcoholCam.y) / (alcoholCam.x - surroundingAlcoholCam.x);
+				slope = (alcoholCam.y - (result.y + result.h - 1)) / (alcoholCam.x - (result.x + result.w - 1));
+				
+				//Positive slope
+				if (slope > 0)
+				{	
+					if (slope < alcoholSlope)
+					{
+						point_x = surroundingAlcoholCam.x - 1;
+						point_y = slope * (surroundingAlcoholCam.x - 1);
+					}
+					else if (slope > alcoholSlope)
+					{
+						point_x = (surroundingAlcoholCam.y - 1) / slope;
+						point_y = surroundingAlcoholCam.y - 1;
+					}
+					else
+					{
+						if (distance_x < 0)
+						{
+							point_x = surroundingAlcoholCam.x - 1;
+							point_y = surroundingAlcoholCam.y - 1;
+						}
+						else
+						{
+							point_x = surroundingAlcoholCam.x + surroundingAlcoholCam.w;
+							point_y = surroundingAlcoholCam.y + surroundingAlcoholCam.h;
+						}
+					}
+				}
+				//Negative slope
+				else
+				{
+					if (slope < -alcoholSlope)
+					{
+						point_x = (surroundingAlcoholCam.y - 1) / slope;
+						point_y = surroundingAlcoholCam.y - 1;
+					}
+					else if (slope > -alcoholSlope)
+					{
+						point_x = surroundingAlcoholCam.x - 1;
+						point_y = slope * (surroundingAlcoholCam.x - 1);
+					}
+					else
+					{
+						if (distance_x < 0)
+						{
+							point_x = surroundingAlcoholCam.x - 1;
+							point_y = surroundingAlcoholCam.y + surroundingAlcoholCam.h;
+						}
+						else
+						{
+							point_x = surroundingAlcoholCam.x + surroundingAlcoholCam.w;
+							point_y = surroundingAlcoholCam.y - 1;
+						}
+					}
+				}
+				
+				percent_distance = (double) ((distance_x * distance_x) + (distance_y * distance_y)) / ((closest_x-point_x) * (closest_x-point_x) + (closest_y-point_y) * (closest_y-point_y));
+				
+			}
+			else
+			{
+				if (std::abs(distance_x) != 10000)
+				{
+					percent_distance =  (double) abs(distance_x) / 251;
+				}
+				else if (std::abs(distance_y) != 10000)
+				{
+					percent_distance =  (double) abs(distance_y) / 151;
+				}
+			}
+			
+			minVelocity = (int) ((291 * percent_distance) + 10);
+			
+			std::cout << "\nOur minVelocity: " << minVelocity << "\nOur distance percentage: " << percent_distance;
+			
+			ply->ChangeMaxVelocity((double) (rand() % (291-minVelocity+10)) + minVelocity);
+		}
+	}
+	else
+	{
+		ply->ChangeMaxVelocity(300);
+	}
 	
 	alcoholCam.x = alcoholCam.x - 1;
 	surroundingAlcoholCam.x = surroundingAlcoholCam.x - 1;
@@ -72,6 +202,6 @@ int AlcoholCloud::getDelay()
 
 void AlcoholCloud::setYPosition(int y)
 {
-	surroundingAlcoholCam.y = alcoholCam.y - 150;
 	alcoholCam.y = y;
+	surroundingAlcoholCam.y = alcoholCam.y - 150;
 }
