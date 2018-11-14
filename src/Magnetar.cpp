@@ -11,6 +11,7 @@ Magnetar::Magnetar(Player* main, SDL_Texture* gIm):ply(main), im(gIm)
 	onScreen = false;
 	frame = 0;
 }
+
 void Magnetar::Render()
 {	
 	//animation
@@ -27,6 +28,18 @@ void Magnetar::Render()
 	double ACCEL = ply->GetMove();
 	bool inter = SDL_HasIntersection(&camBox,playerCam);
 	
+	double ACCEL2;
+	bool inter2;
+	if(multiplayer)
+	{
+		ACCEL2 = ply2->GetMove();
+		inter2 = SDL_HasIntersection(&camBox, player2Cam);
+		
+		if((inter2 && ACCEL2 > 0) || (!inter2 && ACCEL < 0))
+		{
+			ply2->ChangeMove(-ACCEL2);
+		}
+	}
 	//if player has intersected with the object and move is postive it
 	//will make it negative to inverse controls
 	//but if the intersection breaks will make ACCEL postive again
@@ -51,4 +64,11 @@ void Magnetar::Render()
 bool Magnetar::Seen()
 {
 	return onScreen;
+}
+
+void Magnetar::Multiplayer(Player* player2)
+{
+	ply2 = player2;
+	player2Cam = ply2->getPlayerCamLoc();
+	multiplayer = true;
 }
