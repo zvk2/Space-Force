@@ -56,7 +56,7 @@ endif
 .PHONY: all client server clean mrclean os rebuild
 
 # our main build rules
-all: $(OUT) $(NETOUT)
+all: client server
 client: $(OUT)
 server: $(NETOUT)
 

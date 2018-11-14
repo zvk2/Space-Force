@@ -1,7 +1,4 @@
-// Re-written simple SDL_net socket server example | Nov 2011 | r3dux
 // Library dependencies: libSDL, libSDL_net
-
-// IMPORTANT: This project will only build successfully in Debug mode on Windows!
 
 #include <iostream>
 #include <string.h>
