@@ -34,7 +34,7 @@
 			curr = head->next;
 			while(curr != nullptr)
 			{
-				curr->attackCam.x +=(int) (3000 * timestep);
+				curr->attackCam.x +=(int) (1000 * timestep);
 				SDL_RenderCopy(gRenderer, gAttack, attackBox, &curr->attackCam);
 				curr = curr->next;
 			}

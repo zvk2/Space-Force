@@ -285,7 +285,7 @@ int main(int argc, char* argv[])
 	Uint32 fpsCurtime = 0;
 	Uint32 moveLasttime = SDL_GetTicks();
 	double timestep = 0;
-	SDL_Rect attackRect = {0, 0, 80, 20};
+	SDL_Rect attackRect = {0, 0, 60, 10};
 	//SDL_Rect attackCam = {SCREEN_WIDTH+80, SCREEN_HEIGHT/2+51/2, 80, 20};
 	SDL_Rect blackholeRect = {0, 0, 300, 300};
 	SDL_Rect blackholeCam = {SCREEN_WIDTH,SCREEN_HEIGHT/2, 300, 300};
