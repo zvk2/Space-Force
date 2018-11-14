@@ -166,7 +166,7 @@
 		}
 
 	//Check for collision with an enemy
-void Player::checkEnemyCollision(Enemy* e, double tstep)
+bool Player::checkEnemyCollision(Enemy* e, double tstep)
 {
 	SDL_Rect eRect = e->getEnemyCam();
 
@@ -218,7 +218,9 @@ void Player::checkEnemyCollision(Enemy* e, double tstep)
 
 		playerCam.x = (int) xCoord;
 		playerCam.y = (int) yCoord;
+		return true;
 	}
+	return false;
 }
 
 

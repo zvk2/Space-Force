@@ -34,7 +34,7 @@ class Player
 		void animate(int frames);
 
 		//Check for collision with an enemy
-		void checkEnemyCollision(class Enemy* e, double tstep);
+		bool checkEnemyCollision(class Enemy* e, double tstep);
 
 		//Return the current x velocity
 		double getxVel();

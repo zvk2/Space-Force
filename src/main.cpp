@@ -47,6 +47,7 @@ SDL_Texture* gBackground;
 SDL_Texture* gAttack;
 SDL_Texture* gBlackhole;
 SDL_Texture* gPlayerSheet;
+SDL_Texture* gHealthbar;
 std::vector<SDL_Texture*> gTex;
 
 bool init()
@@ -262,7 +263,8 @@ int main(int argc, char* argv[])
 	*/
 	gBackground = loadImage("resources/imgs/space_2_background.png");
 	gAttack = loadImage("resources/imgs/attack.png");
-    gBlackhole = loadImage("resources/imgs/blackhole.png");
+    	gBlackhole = loadImage("resources/imgs/blackhole.png");
+	gHealthbar = loadImage("resources/imgs/healthbar.png");
 
 
 
@@ -288,6 +290,9 @@ int main(int argc, char* argv[])
 	SDL_Rect blackholeRect = {0, 0, 300, 300};
 	SDL_Rect blackholeCam = {SCREEN_WIDTH,SCREEN_HEIGHT/2, 300, 300};
 	Player ply(10, loadImage("resources/imgs/starman.png"), 1,gRenderer);
+
+	SDL_Rect healthRect = {0, 0, 177, 33};
+	SDL_Rect healthCam = {30, 30, 177, 33};
 
 	Magnetar mag(&ply, loadImage("resources/imgs/Magnetars.png"));
 	double ACCEL = ply.GetMove();
@@ -471,12 +476,32 @@ int main(int argc, char* argv[])
             }
 
         }
-
+		
 		ply.move(xDeltav, yDeltav, timestep);
-		ply.checkEnemyCollision(&emy, timestep);
+		bool collision = ply.checkEnemyCollision(&emy, timestep);
+
+		if (collision)
+		{
+			//ply.LostHealth(1);
+			if (healthRect.x == 1770)
+			{
+				return playCredits();	
+			}
+			else
+			{
+				healthRect.x += 177;
+			}
+		}
+
 		emy.move(0, emyDelta, timestep);
 		emy.checkPlayerCollision(&ply, timestep);
-
+		/*		
+		collision = emy.checkPlayerCollision(&ply, timestep);		
+		if (collision)
+		{
+			//Minor enemies should be destroyed in event of collision
+		}
+		*/
 		pCam = ply.getPlayerCam();
 		eCam = emy.getEnemyCam();
 
@@ -491,6 +516,9 @@ int main(int argc, char* argv[])
 		ply.hit.renderAttack(timestep);
 		SDL_RenderCopyEx(gRenderer, ply.getPlayerSheet(), &pRect, &pCam, 0.0, nullptr, flip);
 		SDL_RenderCopyEx(gRenderer, emy.getEnemySheet(), &eRect, &eCam, 0.0, nullptr, flip);
+
+		SDL_RenderCopy(gRenderer, gHealthbar, &healthRect, &healthCam);
+
 		SDL_RenderPresent(gRenderer);
 
 	}
