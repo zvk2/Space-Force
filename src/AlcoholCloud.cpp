@@ -29,26 +29,34 @@ void AlcoholCloud::Render()
 	SDL_RenderCopy(gRenderer, sprite, &spriteBox, &alcoholCam);
 	SDL_Rect result;
 	
+	//Slow the player down upon entering the surrounding area of the alcohol cloud
 	if (SDL_IntersectRect(&surroundingAlcoholCam, playerCam, &result))
 	{
+		//Slow the player down if inside of the alcohol cloud
 		if (SDL_HasIntersection(&alcoholCam, playerCam))
 		{
 			ply->ChangeMaxVelocity((double) (rand() % 291) + 10);
 		}
+		//Slow the player down in proportion to the distance from the cloud
 		else
 		{
-			int distance_x, distance_y, closest_x, closest_y, minVelocity;
+			int distance_x, distance_y, closestA_x, closestA_y, closestPly_x, closestPly_y, closestS_x, closestS_y, minVelocity;
 			double percent_distance;
 			
+			//Find the closest points to the player
 			if ((result.x + result.w) <= alcoholCam.x)
 			{
 				distance_x = (result.x + result.w - 1) - alcoholCam.x;
-				closest_x = alcoholCam.x;
+				closestA_x = alcoholCam.x;
+				closestPly_x = result.x + result.w - 1;
+				closestS_x = surroundingAlcoholCam.x - 1;
 			}
 			else if (result.x >= (alcoholCam.x + alcoholCam.w))
 			{
 				distance_x = result.x - (alcoholCam.x + alcoholCam.w - 1);
-				closest_x = (alcoholCam.x + alcoholCam.w - 1);
+				closestA_x = (alcoholCam.x + alcoholCam.w - 1);
+				closestPly_x = result.x;
+				closestS_x = surroundingAlcoholCam.x + surroundingAlcoholCam.w;
 			}
 			else
 			{
@@ -58,83 +66,78 @@ void AlcoholCloud::Render()
 			if ((result.y + result.h) <= alcoholCam.y)
 			{
 				distance_y = (result.y + result.h - 1) - alcoholCam.y;
-				closest_y = alcoholCam.y;
+				closestA_y = alcoholCam.y;
+				closestPly_y = result.y + result.h - 1;
+				closestS_y = surroundingAlcoholCam.y - 1;
 			}
 			else if (result.y >= (alcoholCam.y + alcoholCam.h))
 			{
 				distance_y = result.y - (alcoholCam.y + alcoholCam.h - 1);
-				closest_y = (alcoholCam.y + alcoholCam.h - 1);
+				closestA_y = (alcoholCam.y + alcoholCam.h - 1);
+				closestPly_y = result.y;
+				closestS_y = surroundingAlcoholCam.y + surroundingAlcoholCam.h;
 			}
 			else
 			{
 				distance_y = 10000;
 			}
-			
+			//Calculate the percent distance by using algebra to determine
+			//a slope and a point on the border of the surrounding alcohol cam
 			if ((distance_x != 10000) && (distance_y != 10000))
 			{
 				double slope, alcoholSlope;
 				int point_x, point_y;
 				
-				alcoholSlope = (alcoholCam.y - surroundingAlcoholCam.y) / (alcoholCam.x - surroundingAlcoholCam.x);
-				slope = (alcoholCam.y - (result.y + result.h - 1)) / (alcoholCam.x - (result.x + result.w - 1));
+				alcoholSlope = (double) (alcoholCam.y - surroundingAlcoholCam.y - 1) / (alcoholCam.x - surroundingAlcoholCam.x - 1);
+				slope = (double) (distance_y) / (distance_x);
 				
 				//Positive slope
 				if (slope > 0)
 				{	
 					if (slope < alcoholSlope)
 					{
-						point_x = surroundingAlcoholCam.x - 1;
-						point_y = slope * (surroundingAlcoholCam.x - 1);
+						point_x = closestS_x;
+						point_y = (slope * ((closestS_x) - closestPly_x)) + closestPly_y;
 					}
 					else if (slope > alcoholSlope)
 					{
-						point_x = (surroundingAlcoholCam.y - 1) / slope;
-						point_y = surroundingAlcoholCam.y - 1;
+						point_x = (((closestS_y) - closestPly_y) + (slope * closestPly_x)) / slope;
+						point_y = closestS_y;
 					}
 					else
 					{
-						if (distance_x < 0)
-						{
-							point_x = surroundingAlcoholCam.x - 1;
-							point_y = surroundingAlcoholCam.y - 1;
-						}
-						else
-						{
-							point_x = surroundingAlcoholCam.x + surroundingAlcoholCam.w;
-							point_y = surroundingAlcoholCam.y + surroundingAlcoholCam.h;
-						}
+						point_x = closestS_x;
+						point_y = closestS_y;
 					}
 				}
 				//Negative slope
 				else
-				{
+				{	
 					if (slope < -alcoholSlope)
 					{
-						point_x = (surroundingAlcoholCam.y - 1) / slope;
-						point_y = surroundingAlcoholCam.y - 1;
+						point_x = (((closestS_y) - closestPly_y) + (slope * closestPly_x)) / slope;
+						point_y = closestS_y - 1;
 					}
 					else if (slope > -alcoholSlope)
 					{
-						point_x = surroundingAlcoholCam.x - 1;
-						point_y = slope * (surroundingAlcoholCam.x - 1);
+						point_x = closestS_x;
+						point_y = (slope * ((closestS_x) - closestPly_x)) + closestPly_y;
 					}
 					else
 					{
-						if (distance_x < 0)
-						{
-							point_x = surroundingAlcoholCam.x - 1;
-							point_y = surroundingAlcoholCam.y + surroundingAlcoholCam.h;
-						}
-						else
-						{
-							point_x = surroundingAlcoholCam.x + surroundingAlcoholCam.w;
-							point_y = surroundingAlcoholCam.y - 1;
-						}
+						point_x = closestS_x;
+						point_y = closestS_y;
 					}
 				}
 				
-				percent_distance = (double) ((distance_x * distance_x) + (distance_y * distance_y)) / ((closest_x-point_x) * (closest_x-point_x) + (closest_y-point_y) * (closest_y-point_y));
+				//Calculate the percent distance by using the Pythagorean theorem
+				percent_distance = (double) sqrt((distance_x * distance_x) + (distance_y * distance_y)) / sqrt(((closestA_x-point_x) * (closestA_x-point_x)) + ((closestA_y-point_y) * (closestA_y-point_y)));
 				
+				//Ensure the program doesn't crash by not dividing by zero
+				if (percent_distance > 1)
+				{
+					percent_distance = 1;
+				}
 			}
 			else
 			{
@@ -148,18 +151,17 @@ void AlcoholCloud::Render()
 				}
 			}
 			
-			minVelocity = (int) ((291 * percent_distance) + 10);
-			
-			std::cout << "\nOur minVelocity: " << minVelocity << "\nOur distance percentage: " << percent_distance;
-			
-			ply->ChangeMaxVelocity((double) (rand() % (291-minVelocity+10)) + minVelocity);
+			minVelocity = (int) ((290 * percent_distance) + 10);
+			ply->ChangeMaxVelocity((double) (rand() % (301-minVelocity) + minVelocity));
 		}
 	}
+	//If out of the cloud, reset the player's max speed to normal
 	else
 	{
 		ply->ChangeMaxVelocity(300);
 	}
 	
+	//Move the alcohol cloud the left by one pixel
 	alcoholCam.x = alcoholCam.x - 1;
 	surroundingAlcoholCam.x = surroundingAlcoholCam.x - 1;
 	
