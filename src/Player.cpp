@@ -78,6 +78,7 @@ SDL_Rect Player::getPlayerCam()
 	return playerCam;
 }
 
+//Get a pointer to the player cam
 SDL_Rect* Player::getPlayerCamLoc()
 {
 	return &playerCam;

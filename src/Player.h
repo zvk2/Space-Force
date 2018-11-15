@@ -77,6 +77,8 @@ class Player
 		//Return the player's current attack
 		int GetAttack();
 		SDL_Renderer* getRend();
+		
+		//Get a pointer to the player cam
 		SDL_Rect* getPlayerCamLoc();
 		double GetMove();
 		void ChangeMove(double Accel);

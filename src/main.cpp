@@ -289,12 +289,12 @@ int main(int argc, char* argv[])
 	SDL_Rect blackholeRect = {0, 0, 300, 300};
 	SDL_Rect blackholeCam = {SCREEN_WIDTH,SCREEN_HEIGHT/2, 300, 300};
 	Player ply(10, loadImage("resources/imgs/starman.png"), 1,gRenderer);
-
-	Magnetar mag(&ply, loadImage("resources/imgs/Magnetars.png"));
-	AlcoholCloud ac(&ply, loadImage("resources/imgs/Alcohol_Cloud.png"));
-	double ACCEL = ply.GetMove();
-
 	Enemy emy(10, loadImage("resources/imgs/faxanaduitis.png"), 1);
+	
+	Magnetar mag(&ply, loadImage("resources/imgs/Magnetars.png"));
+	AlcoholCloud ac(&ply, &emy, loadImage("resources/imgs/Alcohol_Cloud.png"), loadImage("resources/imgs/Alcohol_Cloud_Flare_Up.png"));
+	double ACCEL = ply.GetMove();
+	
 	emy.setPosition(860, 0);
 	emy.setVelocity(0, 50);
 

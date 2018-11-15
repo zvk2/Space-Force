@@ -15,10 +15,10 @@ class Enemy
 		//Constructor: takes health, character sheet, and attack value and sets all member vars
 		Enemy(int startingHealth, SDL_Texture* characterImages, int attack);
 
-		//Subract hit points from the player
+		//Subract hit points from the enemy
 		void LostHealth(int damage);
 
-		//Add hit points to the player
+		//Add hit points to the enemy
 		void GainedHealth(int heal);
 
 		//Return the enemy's current health points
@@ -63,8 +63,11 @@ class Enemy
 		//Get the enemy sprite sheet
 		SDL_Texture* getEnemySheet();
 
+		//Get a pointer to the enemy cam
+		SDL_Rect* getEnemyCamLoc();
 
-
+		void ChangeMaxVelocity(double Speed);
+		
 	private:
 
 		/* Member variables:
