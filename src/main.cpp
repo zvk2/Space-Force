@@ -287,7 +287,7 @@ int main(int argc, char* argv[])
 						{10, loadImage("resources/imgs/lightning.png"), 1, 32, 50}};
 
 	for(int i = 0; i < 10; i++){
-  		fighter[i].setPosition(SCREEN_WIDTH, SCREEN_HEIGHT/(rand()%(SCREEN_HEIGHT-50)));
+  		fighter[i].setPosition(SCREEN_WIDTH, SCREEN_HEIGHT/(rand()%(SCREEN_HEIGHT)));
 		fighter[i].setVelocity(0, 50);
 	}
 
@@ -325,7 +325,7 @@ int main(int argc, char* argv[])
 	bool up = true;
 	bool credits = true;
     double emyDelta = 1;
-    double fighterDelta[10] = {1};
+    double fighterDelta[10] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 	bool nextEnemy = false;
 
 	while(gameOn)
@@ -549,6 +549,7 @@ int main(int argc, char* argv[])
 		{
 			if(enemyExist[i])
 			{
+				printf("FD of %d: %d\n", i, fighterDelta[i]);
 				fighter[i].move(0, fighterDelta[i], timestep);
 			}
 		}
@@ -578,15 +579,12 @@ int main(int argc, char* argv[])
 			if(!enemyExist[i] && !nextEnemy && enemySpawn == 0)
 			{
 				nextEnemy = true;
-				enemySpawn = rand() % 200;
+				enemySpawn = rand() % 500;
 			}
 			else if(enemySpawn == 1 && !enemyExist[i]){
 				enemyExist[i] = true;
 				nextEnemy = false;
 				enemySpawn = 0;
-			}
-			else{
-				printf("EXISTS %d, nextEnemy %d, enemySpawn %d\n", enemyExist[i], nextEnemy, enemySpawn);
 			}
 			if(enemyExist[i]){
 				fighterCam[i] = fighter[i].getEnemyCam();
