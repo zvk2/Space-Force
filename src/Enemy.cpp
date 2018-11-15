@@ -5,11 +5,11 @@
 #define MAX_SPEED 50
  
 //Public methods 
-Enemy::Enemy(int startingHealth, SDL_Texture* characterImages, int attack): 
+Enemy::Enemy(int startingHealth, SDL_Texture* characterImages, int attack, int rectW, int rectH): 
 	hitPoints(startingHealth), enemySheet(characterImages),
 	attackPower(attack), phys(0, 0, 300.0, 3600.0), xCoord(1280/8), yCoord(720/2)
 	{
-		enemyRect = {0, 0, 144, 87};
+		enemyRect = {0, 0, rectW, rectH};
 		enemyCam = {1280/2, 720/2, 144, 87};
 	}
 

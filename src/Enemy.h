@@ -13,7 +13,7 @@ class Enemy
 	public:
 
 		//Constructor: takes health, character sheet, and attack value and sets all member vars
-		Enemy(int startingHealth, SDL_Texture* characterImages, int attack);
+		Enemy(int startingHealth, SDL_Texture* characterImages, int attack, int rectW, int rectH);
 
 		//Subract hit points from the player
 		void LostHealth(int damage);

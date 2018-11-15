@@ -44,6 +44,7 @@ int close();
 SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
 SDL_Texture* gBackground;
+SDL_Texture* gEnemySheet;
 SDL_Texture* gAttack;
 SDL_Texture* gBlackhole;
 SDL_Texture* gPlayerSheet;
@@ -263,16 +264,32 @@ int main(int argc, char* argv[])
 	*/
 	gBackground = loadImage("resources/imgs/space_2_background.png");
 	gAttack = loadImage("resources/imgs/attack.png");
-    	gBlackhole = loadImage("resources/imgs/blackhole.png");
+    gBlackhole = loadImage("resources/imgs/blackhole.png");
 	gHealthbar = loadImage("resources/imgs/healthbar.png");
-
-
 
 	int scrollOffset = 0;
 	int rem = 0;
 	double xDeltav = 0.0;
 	double yDeltav = 0.0;
 	bool create;
+	bool enemyExist[10] = {false};
+	int enemySpawn = 0;
+
+	Enemy fighter[10] = {{10, loadImage("resources/imgs/lightning.png"), 1, 32, 50},
+						{10, loadImage("resources/imgs/lightning.png"), 1, 32, 50},
+						{10, loadImage("resources/imgs/lightning.png"), 1, 32, 50},
+						{10, loadImage("resources/imgs/lightning.png"), 1, 32, 50},
+						{10, loadImage("resources/imgs/lightning.png"), 1, 32, 50},
+						{10, loadImage("resources/imgs/lightning.png"), 1, 32, 50},
+						{10, loadImage("resources/imgs/lightning.png"), 1, 32, 50},
+						{10, loadImage("resources/imgs/lightning.png"), 1, 32, 50},
+						{10, loadImage("resources/imgs/lightning.png"), 1, 32, 50},
+						{10, loadImage("resources/imgs/lightning.png"), 1, 32, 50}};
+
+	for(int i = 0; i < 10; i++){
+  		fighter[i].setPosition(SCREEN_WIDTH, SCREEN_HEIGHT/(rand()%(SCREEN_HEIGHT-50)));
+		fighter[i].setVelocity(0, 50);
+	}
 
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
 
@@ -297,8 +314,8 @@ int main(int argc, char* argv[])
 	Magnetar mag(&ply, loadImage("resources/imgs/Magnetars.png"));
 	double ACCEL = ply.GetMove();
 
-  Enemy emy(10, loadImage("resources/imgs/faxanaduitis.png"), 1);
-  emy.setPosition(860, 0);
+	Enemy emy(10, loadImage("resources/imgs/faxanaduitis.png"), 1, 144, 87);
+  	emy.setPosition(860, 0);
 	emy.setVelocity(0, 50);
 
 	//the beginning/default image and attack box
@@ -308,6 +325,8 @@ int main(int argc, char* argv[])
 	bool up = true;
 	bool credits = true;
     double emyDelta = 1;
+    double fighterDelta[10] = {1};
+	bool nextEnemy = false;
 
 	while(gameOn)
 	{
@@ -366,11 +385,36 @@ int main(int argc, char* argv[])
 			emy.setVelocity(0, 10);
 		}
 
+		for(int i = 0; i < 10; i++)
+		{
+			if(enemyExist[i])
+			{
+				if (fighter[i].getEnemyCam().y + fighter[i].getEnemyCam().h == SCREEN_HEIGHT)
+				{
+					fighterDelta[i] = -1;
+					fighter[i].setVelocity(0, -10);
+				}
+				if (fighter[i].getEnemyCam().y == 0)
+				{
+					fighterDelta[i] = 1;
+					fighter[i].setVelocity(0, 10);
+				}			
+			}
+		}
+
 		SDL_Rect pRect = ply.getPlayerRect();
 		SDL_Rect pCam = ply.getPlayerCam();
 
 		SDL_Rect eRect = emy.getEnemyRect();
 		SDL_Rect eCam = emy.getEnemyCam();
+		SDL_Rect fRect[10];
+		SDL_Rect fCam[10];
+		for(int i = 0; i < 10; i++){
+			if(enemyExist[i]){
+				fRect[i] = fighter[i].getEnemyRect();
+				fCam[i] = fighter[i].getEnemyCam();
+			}
+		}
 
 		moveLasttime = SDL_GetTicks();
 
@@ -396,7 +440,13 @@ int main(int argc, char* argv[])
 
 		ply.animate(frames);
 		emy.animate(frames);
-
+		for(int i = 0; i < 10; i++)
+		{
+			if(enemyExist[i])
+			{
+				fighter[i].animate(frames);
+			}
+		}
 
 		// Since game levels progress from L to R, no need for sprite to flip
 		// Code for flipping remains here if theres a change of plan
@@ -485,7 +535,7 @@ int main(int argc, char* argv[])
 			//ply.LostHealth(1);
 			if (healthRect.x == 1770)
 			{
-				return playCredits();	
+				return playCredits();
 			}
 			else
 			{
@@ -495,6 +545,13 @@ int main(int argc, char* argv[])
 
 		emy.move(0, emyDelta, timestep);
 		emy.checkPlayerCollision(&ply, timestep);
+		for(int i = 0; i < 10; i++)
+		{
+			if(enemyExist[i])
+			{
+				fighter[i].move(0, fighterDelta[i], timestep);
+			}
+		}
 		/*		
 		collision = emy.checkPlayerCollision(&ply, timestep);		
 		if (collision)
@@ -504,7 +561,7 @@ int main(int argc, char* argv[])
 		*/
 		pCam = ply.getPlayerCam();
 		eCam = emy.getEnemyCam();
-
+		SDL_Rect fighterCam[10];
         //attack button
 
 		if(keyState[SDL_SCANCODE_SPACE] && up == true)
@@ -516,6 +573,29 @@ int main(int argc, char* argv[])
 		ply.hit.renderAttack(timestep);
 		SDL_RenderCopyEx(gRenderer, ply.getPlayerSheet(), &pRect, &pCam, 0.0, nullptr, flip);
 		SDL_RenderCopyEx(gRenderer, emy.getEnemySheet(), &eRect, &eCam, 0.0, nullptr, flip);
+		for(int i = 0; i < 10; i++)
+		{
+			if(!enemyExist[i] && !nextEnemy && enemySpawn == 0)
+			{
+				nextEnemy = true;
+				enemySpawn = rand() % 200;
+			}
+			else if(enemySpawn == 1 && !enemyExist[i]){
+				enemyExist[i] = true;
+				nextEnemy = false;
+				enemySpawn = 0;
+			}
+			else{
+				printf("EXISTS %d, nextEnemy %d, enemySpawn %d\n", enemyExist[i], nextEnemy, enemySpawn);
+			}
+			if(enemyExist[i]){
+				fighterCam[i] = fighter[i].getEnemyCam();
+				SDL_RenderCopyEx(gRenderer, fighter[i].getEnemySheet(), &fRect[i], &fCam[i], 0.0, nullptr, flip);
+			}
+		}
+		if(enemySpawn){
+			enemySpawn--;
+		}
 
 		SDL_RenderCopy(gRenderer, gHealthbar, &healthRect, &healthCam);
 
