@@ -11,6 +11,7 @@ class blackhole
 public:
     blackhole(SDL_Texture* textBlackhole, Player* main);
     void showBlackhole();
+    bool seen();
 private:
     SDL_Rect blackholeRect;
     SDL_Renderer* gRenderer;

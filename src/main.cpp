@@ -422,15 +422,15 @@ int main(int argc, char* argv[])
 		}
         if(currTime >= 5000)
         {
-            if(currTime % 5000 == 0)
+            if((currTime % 5000 < 50 && enemyBlackhole.seen()) || enemyBlackhole.seen())
             {
 //                SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
                 enemyBlackhole.showBlackhole();
                
             }
-            else
-            {
-                
+//            else
+//            {
+            
 //                blackholeCam.x = blackholeCam.x - 1;
 //
 //                SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
@@ -463,7 +463,7 @@ int main(int argc, char* argv[])
 //                    }
 //                }
 
-            }
+//            }
 
 //            if(blackholeCam.x == -300)
 //            {
