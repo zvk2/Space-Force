@@ -11,6 +11,7 @@
 #include "blackhole.h"
 #include "Menu.h"
 #include <cstdlib>
+#include "HyperStar.h"
 
 
 // Used for file walk (somewhat crudely)
@@ -263,7 +264,7 @@ int main(int argc, char* argv[])
 	*/
 	gBackground = loadImage("resources/imgs/space_2_background.png");
 	gAttack = loadImage("resources/imgs/attack.png");
-    	gBlackhole = loadImage("resources/imgs/blackhole.png");
+    gBlackhole = loadImage("resources/imgs/blackhole.png");
 	gHealthbar = loadImage("resources/imgs/healthbar.png");
 
 
@@ -293,7 +294,7 @@ int main(int argc, char* argv[])
 
 	SDL_Rect healthRect = {0, 0, 177, 33};
 	SDL_Rect healthCam = {30, 30, 177, 33};
-
+	HyperStar stars(loadImage("resources/imgs/star4.png"),&ply);
 	Magnetar mag(&ply, loadImage("resources/imgs/Magnetars.png"));
 	double ACCEL = ply.GetMove();
 
@@ -396,7 +397,7 @@ int main(int argc, char* argv[])
 
 		ply.animate(frames);
 		emy.animate(frames);
-
+				
 
 		// Since game levels progress from L to R, no need for sprite to flip
 		// Code for flipping remains here if theres a change of plan
@@ -417,6 +418,10 @@ int main(int argc, char* argv[])
 			{
 
 				mag.Render();
+			}
+			if(currTime%3000<=20)
+			{
+				stars.addStar();
 			}
 		}
         if(currTime >= 5000)
@@ -516,7 +521,7 @@ int main(int argc, char* argv[])
 		ply.hit.renderAttack(timestep);
 		SDL_RenderCopyEx(gRenderer, ply.getPlayerSheet(), &pRect, &pCam, 0.0, nullptr, flip);
 		SDL_RenderCopyEx(gRenderer, emy.getEnemySheet(), &eRect, &eCam, 0.0, nullptr, flip);
-
+		stars.Render(timestep);
 		SDL_RenderCopy(gRenderer, gHealthbar, &healthRect, &healthCam);
 
 		SDL_RenderPresent(gRenderer);
