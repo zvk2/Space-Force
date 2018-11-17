@@ -20,8 +20,8 @@
 		
 		int upOrDown = rand() % 2; // 0 to 1
 		end->next = (struct StarNode*)malloc(sizeof(struct StarNode));
-		end->next->angle = (((double)(rand()%50 + 10))/180)*3.14; //10 to 60
-		end->next->vel = (rand()%16 + 5)*100.0;
+		end->next->angle = (((double)(rand()%50 + 15))/180)*3.14; //10 to 60
+		end->next->vel = (rand()%8 + 10)*100.0;
 		int y;
 		int x = rand()%426 + 852;
 		if(x > 1280)
@@ -56,7 +56,7 @@
 		StarNode* temp;
 		while(curr != nullptr)
 		{
-			imBox.y == (curr->frame%2)*size;
+			imBox.y == (curr->frame%2)*100;
 			curr->frame++;
 			SDL_RenderCopy(gRenderer, starIm, &imBox, &curr->colTest);
 			if(SDL_HasIntersection(&curr->colTest,plyCam))
