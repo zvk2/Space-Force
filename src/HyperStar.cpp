@@ -111,4 +111,6 @@
 	}
 	void HyperStar::checkCol(SDL_Rect inter)
 	{
+		int r = size/2;
+		
 	}
