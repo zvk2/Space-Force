@@ -2,7 +2,7 @@
 #include <iostream>
 //const int SCREEN_WIDTH = 1280;
 //const int SCREEN_HEIGHT = 720;
-	int size = 150;
+	int size = 100;
 	HyperStar::HyperStar(SDL_Texture* im, Player* main):starIm(im), ply(main)
 	{
 		imBox = {0,0,100,100};
@@ -21,7 +21,7 @@
 		int upOrDown = rand() % 2; // 0 to 1
 		end->next = (struct StarNode*)malloc(sizeof(struct StarNode));
 		end->next->angle = (((double)(rand()%50 + 15))/180)*3.14; //10 to 60
-		end->next->vel = (rand()%8 + 10)*100.0;
+		end->next->vel = (rand()%5 + 10)*100.0;
 		int y;
 		int x = rand()%426 + 852;
 		if(x > 1280)
@@ -84,7 +84,7 @@
 			}
 			else
 			{
-				if(curr->y>= 520 && curr->math==0)
+				if(curr->y>= 720-size && curr->math==0)
 				{
 					curr->math =1;
 				}
