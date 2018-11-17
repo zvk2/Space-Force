@@ -12,6 +12,8 @@ AlcoholCloud::AlcoholCloud(Player* p, Enemy* e, SDL_Texture* i, SDL_Texture* f):
 	alcoholCam = {1530, 150, 500, 300};
 	surroundingAlcoholCam = {1280, 0, 1000, 600};
 	onScreen = false;
+	flareUp = false;
+	flareTime = 0;
 	frame = 0;
 }
 
@@ -27,7 +29,16 @@ void AlcoholCloud::Render()
 	frame++;
 	
 	//Places object to screen
-	SDL_RenderCopy(gRenderer, sprite, &spriteBox, &alcoholCam);
+	if (flareUp)
+	{
+		//Increase the amount of flare up time by one
+		flareTime += 1;
+		SDL_RenderCopy(gRenderer, spriteFlare, &spriteBox, &alcoholCam);
+	}
+	else
+	{
+		SDL_RenderCopy(gRenderer, sprite, &spriteBox, &alcoholCam);
+	}
 
 	checkPlayerCollision();
 	checkEnemyCollision();
@@ -35,20 +46,22 @@ void AlcoholCloud::Render()
 	//Move the alcohol cloud the left by one pixel
 	alcoholCam.x = alcoholCam.x - 1;
 	surroundingAlcoholCam.x = surroundingAlcoholCam.x - 1;
-	
+		
 	//Used to determine how long to call the alcohol cloud for
-	if(surroundingAlcoholCam.x + surroundingAlcoholCam.w > 0)
+	if ((surroundingAlcoholCam.x + surroundingAlcoholCam.w > 0) && (flareTime < 250))
 	{
 		onScreen = true;
 	}
 	else
 	{
 		onScreen = false;
+		flareUp = false;
 		surroundingAlcoholCam.x = 1280;
 		surroundingAlcoholCam.y = 0;
 		alcoholCam.x = 1530;
 		alcoholCam.y = 150;
 		delay = 0;
+		flareTime = 0;
 	}
 }
 
@@ -92,6 +105,13 @@ void AlcoholCloud::checkPlayerCollision()
 		//Slow the player down if inside of the alcohol cloud
 		if (SDL_HasIntersection(&alcoholCam, playerCam))
 		{
+			flareUp = true;
+			
+			if (flareUp)
+			{
+				ply->LostHealth(1);
+			}
+			
 			ply->ChangeMaxVelocity((double) (rand() % 291) + 10);
 		}
 		//Slow the player down in proportion to the distance from the cloud
@@ -229,6 +249,11 @@ void AlcoholCloud::checkEnemyCollision()
 		//Slow the player down if inside of the alcohol cloud
 		if (SDL_HasIntersection(&alcoholCam, enemyCam))
 		{
+			if (flareUp)
+			{
+				emy->LostHealth(1);
+			}
+			
 			emy->ChangeMaxVelocity((double) (rand() % 291) + 10);
 		}
 		//Slow the player down in proportion to the distance from the cloud

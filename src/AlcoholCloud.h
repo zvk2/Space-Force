@@ -15,6 +15,7 @@ class AlcoholCloud
 	private:
 		int frame;
 		int delay;
+		int flareTime;
 		SDL_Texture* sprite;
 		SDL_Texture* spriteFlare;
 		SDL_Rect spriteBox;
@@ -26,6 +27,7 @@ class AlcoholCloud
 		Enemy* emy;
 		SDL_Renderer* gRenderer;
 		bool onScreen;
+		bool flareUp;
 		
 		//Check collision with the player
 		void checkPlayerCollision();
