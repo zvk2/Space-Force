@@ -10,7 +10,7 @@ class blackhole
 {
 public:
     blackhole(SDL_Texture* textBlackhole, Player* main);
-    void showBlackhole(SDL_Rect blackholeCam);
+    void showBlackhole();
 private:
     SDL_Rect blackholeRect;
     SDL_Renderer* gRenderer;

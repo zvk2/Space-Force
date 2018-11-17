@@ -13,7 +13,7 @@ blackhole::blackhole(SDL_Texture* textBlackhole, Player* main): ply(main), gBlac
             bFrames = 0;
         }
 
-        void blackhole::showBlackhole(SDL_Rect blackholeCam)
+        void blackhole::showBlackhole()
         {
 //            SDL_RenderCopy(gRenderer, gBlackhole, blackholeRect, &blackholeCam);
             if(blackholeCam.x != -300)

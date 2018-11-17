@@ -287,12 +287,13 @@ int main(int argc, char* argv[])
 	double timestep = 0;
 	SDL_Rect attackRect = {0, 0, 60, 10};
 	//SDL_Rect attackCam = {SCREEN_WIDTH+80, SCREEN_HEIGHT/2+51/2, 80, 20};
-    blackhole enemyBlackhole(loadImage("resources/imgs/blackhole.png"), &ply);
+  
 	
 	Player ply(10, loadImage("resources/imgs/starman.png"), 1,gRenderer);
 
 	SDL_Rect healthRect = {0, 0, 177, 33};
 	SDL_Rect healthCam = {30, 30, 177, 33};
+    blackhole enemyBlackhole(loadImage("resources/imgs/blackhole.png"), &ply);
 
 	Magnetar mag(&ply, loadImage("resources/imgs/Magnetars.png"));
 	double ACCEL = ply.GetMove();
@@ -424,7 +425,7 @@ int main(int argc, char* argv[])
             if(currTime % 5000 == 0)
             {
 //                SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
-                
+                enemyBlackhole.showBlackhole();
                
             }
             else
