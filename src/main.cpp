@@ -45,7 +45,7 @@ SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
 SDL_Texture* gBackground;
 SDL_Texture* gAttack;
-SDL_Texture* gBlackhole;
+//SDL_Texture* gBlackhole;
 SDL_Texture* gPlayerSheet;
 SDL_Texture* gHealthbar;
 std::vector<SDL_Texture*> gTex;
@@ -287,8 +287,7 @@ int main(int argc, char* argv[])
 	double timestep = 0;
 	SDL_Rect attackRect = {0, 0, 60, 10};
 	//SDL_Rect attackCam = {SCREEN_WIDTH+80, SCREEN_HEIGHT/2+51/2, 80, 20};
-	SDL_Rect blackholeRect = {0, 0, 300, 300};
-	SDL_Rect blackholeCam = {SCREEN_WIDTH,SCREEN_HEIGHT/2, 300, 300};
+	
 	Player ply(10, loadImage("resources/imgs/starman.png"), 1,gRenderer);
 
 	SDL_Rect healthRect = {0, 0, 177, 33};
@@ -421,59 +420,53 @@ int main(int argc, char* argv[])
 		}
         if(currTime >= 5000)
         {
-            int bFrames;
             if(currTime % 5000 == 0)
             {
-                SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
-                bFrames = 0;
-                //blackhole vacuum(gRenderer,gBlackhole,&blackholeRect,blackholeCam);
+//                SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
+               
             }
             else
             {
-                bFrames++;
-
-                if (bFrames / 12 > 5)
-                    bFrames = 0;
-
-                blackholeRect.x = (bFrames / 12) * 300;
-                blackholeCam.x = blackholeCam.x - 1;
-                SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
-
-                if(blackholeCam.x < SCREEN_WIDTH && blackholeCam.x > 0)
-                {
-                    if(blackholeCam.x + 150 > pCam.x)
-                    {
-                        if(blackholeCam.y + 150 > pCam.y)
-                        {
-                            yDeltav = yDeltav + 20;
-                        }
-                        if(blackholeCam.y + 150 < pCam.y)
-                        {
-                            yDeltav = yDeltav - 20;
-                        }
-                        xDeltav = xDeltav + 20;
-                    }
-                    else if(blackholeCam.x + 150 < pCam.x)
-                    {
-                        if(blackholeCam.y + 150 > pCam.y)
-                        {
-                            yDeltav = yDeltav + 20;
-                        }
-                        if(blackholeCam.y + 150 < pCam.y)
-                        {
-                            yDeltav = yDeltav - 20;
-                        }
-                        xDeltav = xDeltav - 20;
-                    }
-                }
+                
+//                blackholeCam.x = blackholeCam.x - 1;
+//
+//                SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
+//
+//                if(blackholeCam.x < SCREEN_WIDTH && blackholeCam.x > 0)
+//                {
+//                    if(blackholeCam.x + 150 > pCam.x)
+//                    {
+//                        if(blackholeCam.y + 150 > pCam.y)
+//                        {
+//                            yDeltav = yDeltav + 20;
+//                        }
+//                        if(blackholeCam.y + 150 < pCam.y)
+//                        {
+//                            yDeltav = yDeltav - 20;
+//                        }
+//                        xDeltav = xDeltav + 20;
+//                    }
+//                    else if(blackholeCam.x + 150 < pCam.x)
+//                    {
+//                        if(blackholeCam.y + 150 > pCam.y)
+//                        {
+//                            yDeltav = yDeltav + 20;
+//                        }
+//                        if(blackholeCam.y + 150 < pCam.y)
+//                        {
+//                            yDeltav = yDeltav - 20;
+//                        }
+//                        xDeltav = xDeltav - 20;
+//                    }
+//                }
 
             }
 
-            if(blackholeCam.x == -300)
-            {
-                blackholeCam = {SCREEN_WIDTH,rand() % (SCREEN_HEIGHT-300), 300, 300};
-                bFrames = 0;
-            }
+//            if(blackholeCam.x == -300)
+//            {
+//                blackholeCam = {SCREEN_WIDTH,rand() % (SCREEN_HEIGHT-300), 300, 300};
+//                bFrames = 0;
+//            }
 
         }
 		
