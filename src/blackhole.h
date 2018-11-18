@@ -13,7 +13,7 @@ public:
     blackhole(SDL_Texture* textBlackhole, Player* main);
     void showBlackhole(double xDeltav, double yDeltav, double timestep);
     bool seen();
-    void attractPlayer();
+    void attractPlayer(double xDeltav, double yDeltav, double timestep);
 private:
     SDL_Rect blackholeRect;
     SDL_Renderer* gRenderer;

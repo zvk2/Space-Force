@@ -41,7 +41,7 @@ blackhole::blackhole(SDL_Texture* textBlackhole, Player* main): ply(main), gBlac
                 blackholeCam.x = 1580;
             }
             
-            attractPlayer();
+            attractPlayer(xDeltav, yDeltav, timestep);
             SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
             blackholeCam.x = blackholeCam.x - 1;
             
@@ -52,7 +52,7 @@ blackhole::blackhole(SDL_Texture* textBlackhole, Player* main): ply(main), gBlac
             
         }
 
-        void blackhole::attractPlayer()
+        void blackhole::attractPlayer(double xDeltav, double yDeltav, double timestep)
         {
             double bx = blackholeCam.x;
             double by = blackholeCam.y;
@@ -66,7 +66,6 @@ blackhole::blackhole(SDL_Texture* textBlackhole, Player* main): ply(main), gBlac
             double vVecY;
             double newX;
             double newY;
-            
             
             if(blackholeCam.x < 1680 && blackholeCam.x > 0)
             {
@@ -93,7 +92,7 @@ blackhole::blackhole(SDL_Texture* textBlackhole, Player* main): ply(main), gBlac
                         gravAccel++;
                         
                         newX = newX + pow(gravAccel, 2);
-                        newY = newY / 5;
+                        newY = newY / (newY - 1);
                     }
                     //player below
                     if(blackholeCam.y + 150 < playerCam->y)
@@ -115,7 +114,7 @@ blackhole::blackhole(SDL_Texture* textBlackhole, Player* main): ply(main), gBlac
                         gravAccel++;
                         
                         newX = newX + pow(gravAccel, 2);
-                        newY = newY / 5;
+                        newY = newY / (newY - 1);
                     }
                     
                 }
@@ -142,7 +141,7 @@ blackhole::blackhole(SDL_Texture* textBlackhole, Player* main): ply(main), gBlac
                         gravAccel++;
                         
                         newX = newX + pow(gravAccel, 2);
-                        newY = newY / 5;
+                        newY = newY / (newY - 1);
                     }
                     //player below
                     if(blackholeCam.y + 150 < playerCam->y)
@@ -164,7 +163,7 @@ blackhole::blackhole(SDL_Texture* textBlackhole, Player* main): ply(main), gBlac
                         gravAccel++;
                         
                         newX = newX + pow(gravAccel, 2);
-                        newY = newY / 5;
+                        newY = newY / (newY - 1);
                     }
                     
                 }
