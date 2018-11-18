@@ -16,6 +16,7 @@ blackhole::blackhole(SDL_Texture* textBlackhole, Player* main): ply(main), gBlac
             blackholeExists = false;
             bFrames = 0;
             gravAccel = 1;
+            
         }
 
         bool blackhole::seen()
@@ -23,7 +24,7 @@ blackhole::blackhole(SDL_Texture* textBlackhole, Player* main): ply(main), gBlac
             return blackholeExists;
         }
 
-        void blackhole::showBlackhole()
+        void blackhole::showBlackhole(double xDeltav, double yDeltav, double timestep)
         {
             bFrames++;
             
@@ -167,6 +168,12 @@ blackhole::blackhole(SDL_Texture* textBlackhole, Player* main): ply(main), gBlac
                     }
                     
                 }
+                
+                xDeltav = xDeltav + newX;
+                yDeltav = yDeltav + newY;
+                
+                ply->move(xDeltav, yDeltav, timestep);
+                
             }
             
             

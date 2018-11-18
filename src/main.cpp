@@ -294,7 +294,7 @@ int main(int argc, char* argv[])
 
 	SDL_Rect healthRect = {0, 0, 177, 33};
 	SDL_Rect healthCam = {30, 30, 177, 33};
-    blackhole enemyBlackhole(loadImage("resources/imgs/blackhole.png"), &ply);
+    
 
 	Magnetar mag(&ply, loadImage("resources/imgs/Magnetars.png"));
 	double ACCEL = ply.GetMove();
@@ -409,6 +409,8 @@ int main(int argc, char* argv[])
 		else if (ply.getxVel() < 0 && flip == SDL_FLIP_NONE)
 			flip = SDL_FLIP_HORIZONTAL;*/
 
+        blackhole enemyBlackhole(loadImage("resources/imgs/blackhole.png"), &ply);
+        
 		pRect = ply.getPlayerRect();
 		pCam = ply.getPlayerCam();
         Uint32 currTime = SDL_GetTicks();
@@ -426,7 +428,7 @@ int main(int argc, char* argv[])
             if((currTime % 5000 < 50 && !enemyBlackhole.seen()) || enemyBlackhole.seen())
             {
 //                SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
-                enemyBlackhole.showBlackhole();
+                enemyBlackhole.showBlackhole(xDeltav, yDeltav, timestep);
                
             }
 //            else

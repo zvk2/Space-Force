@@ -11,7 +11,7 @@ class blackhole
 {
 public:
     blackhole(SDL_Texture* textBlackhole, Player* main);
-    void showBlackhole();
+    void showBlackhole(double xDeltav, double yDeltav, double timestep);
     bool seen();
     void attractPlayer();
 private:
@@ -24,5 +24,8 @@ private:
     int bFrames;
     SDL_Rect* playerCam;
     int gravAccel;
+    double xDeltav;
+    double yDeltav;
+    double timestep;
 };
 #endif

@@ -17,4 +17,6 @@ class Magnetar
 	Player* ply;
 	SDL_Renderer* gRenderer;
 	bool onScreen;
+    double xDeltav;
+    double yDeltav;
 };
