@@ -3,6 +3,11 @@
 #include "INC_SDL.h"
 #include "Player.h"
 #include <math.h>
+#include <cstdlib>
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cstring>
 
 #define PI 3.14159265
 
@@ -171,6 +176,10 @@ blackhole::blackhole(SDL_Texture* textBlackhole, Player* main): ply(main), gBlac
                 xDeltav = xDeltav + newX;
                 yDeltav = yDeltav + newY;
                 
+                std::cout << "newX = " << newX << std::endl;
+                std::cout << "newY = " << newY << std::endl;
+
+
                 ply->move(xDeltav, yDeltav, timestep);
                 
             }

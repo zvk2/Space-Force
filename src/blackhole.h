@@ -6,6 +6,11 @@
 #include "INC_SDL.h"
 #include "Player.h"
 #include <math.h>
+#include <cstdlib>
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cstring>
 
 class blackhole
 {
