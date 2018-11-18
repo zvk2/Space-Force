@@ -5,6 +5,7 @@
 #include<stdlib.h>
 #include "INC_SDL.h"
 #include "Player.h"
+#include <math.h>
 
 class blackhole
 {
@@ -12,6 +13,7 @@ public:
     blackhole(SDL_Texture* textBlackhole, Player* main);
     void showBlackhole();
     bool seen();
+    void attractPlayer();
 private:
     SDL_Rect blackholeRect;
     SDL_Renderer* gRenderer;
@@ -20,5 +22,7 @@ private:
     SDL_Rect blackholeCam;
     bool blackholeExists;
     int bFrames;
+    SDL_Rect* playerCam;
+    int gravAccel;
 };
 #endif

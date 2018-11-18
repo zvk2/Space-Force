@@ -11,6 +11,7 @@
 #include "blackhole.h"
 #include "Menu.h"
 #include <cstdlib>
+#include <math.h>
 
 
 // Used for file walk (somewhat crudely)
@@ -422,7 +423,7 @@ int main(int argc, char* argv[])
 		}
         if(currTime >= 5000)
         {
-            if((currTime % 5000 < 50 && enemyBlackhole.seen()) || enemyBlackhole.seen())
+            if((currTime % 5000 < 50 && !enemyBlackhole.seen()) || enemyBlackhole.seen())
             {
 //                SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
                 enemyBlackhole.showBlackhole();
@@ -463,12 +464,6 @@ int main(int argc, char* argv[])
 //                    }
 //                }
 
-//            }
-
-//            if(blackholeCam.x == -300)
-//            {
-//                blackholeCam = {SCREEN_WIDTH,rand() % (SCREEN_HEIGHT-300), 300, 300};
-//                bFrames = 0;
 //            }
 
         }
