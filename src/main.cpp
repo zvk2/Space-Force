@@ -501,7 +501,10 @@ int main(int argc, char* argv[])
 				healthRect.x += 177;
 			}
 		}
-
+		if(healthRect.x >= 1770)
+		{
+			return playCredits();
+		}
 		emy.move(0, emyDelta, timestep);
 		emy.checkPlayerCollision(&ply, timestep);
 		/*		
