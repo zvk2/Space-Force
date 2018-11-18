@@ -230,12 +230,12 @@ bool Enemy::hasCollision(Player* p)
 		
 		if (SDL_IntersectRect(&pRect, &enemyCam, &result))
 		{
-			if (result.x < (enemyCam.x + 33))
+			if ((result.x + result.w - 1) < (enemyCam.x + 33))
 			{
 				if ((result.y + result.h - 1) < (enemyCam.y + enemyCam.h / 2))
 				{
-					double enemySlope = ((enemyCam.y + enemyCam.h / 2) - enemyCam.y) / ((enemyCam.x - 1) - (enemyCam.x + 33));
-					double playerSlope = ((enemyCam.y + enemyCam.h / 2) - (result.y + result.h - 1)) / ((enemyCam.x - 1) - (result.x + result.w - 1));
+					double enemySlope = (double) ((enemyCam.y + enemyCam.h / 2) - enemyCam.y) / ((enemyCam.x - 1) - (enemyCam.x + 33));
+					double playerSlope = (double) ((enemyCam.y + enemyCam.h / 2) - (result.y + result.h - 1)) / ((enemyCam.x - 1) - (result.x + result.w - 1));
 					
 					if (playerSlope >= enemySlope)
 					{
@@ -248,8 +248,8 @@ bool Enemy::hasCollision(Player* p)
 				}
 				else if ((result.y) > (enemyCam.y + enemyCam.h / 2))
 				{
-					double enemySlope = ((enemyCam.y + enemyCam.h / 2) - (enemyCam.y + enemyCam.h - 1)) / ((enemyCam.x - 1) - (enemyCam.x + 33));
-					double playerSlope = ((enemyCam.y + enemyCam.h / 2) - (result.y)) / ((enemyCam.x - 1) - (result.x + result.w - 1));
+					double enemySlope = (double) ((enemyCam.y + enemyCam.h / 2) - (enemyCam.y + enemyCam.h - 1)) / ((enemyCam.x - 1) - (enemyCam.x + 33));
+					double playerSlope = (double) ((enemyCam.y + enemyCam.h / 2) - (result.y)) / ((enemyCam.x - 1) - (result.x + result.w - 1));
 					
 					if (playerSlope <= enemySlope)
 					{
@@ -265,7 +265,11 @@ bool Enemy::hasCollision(Player* p)
 					return true;
 				}
 			}
-			else if (result.x < (enemyCam.x + enemyCam.w - 19))
+			else if (result.x >= (enemyCam.x + enemyCam.w - 21))
+			{
+				return false;
+			}
+			else
 			{
 				return true;
 			}
