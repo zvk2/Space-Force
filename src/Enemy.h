@@ -6,6 +6,7 @@
 #include "INC_SDL.h"
 #include "physics.h"
 #include "Player.h"
+#include "attack.h"
 #define MAX_SPEED 50
 
 class Enemy
@@ -13,7 +14,7 @@ class Enemy
 	public:
 
 		//Constructor: takes health, character sheet, and attack value and sets all member vars
-		Enemy(int startingHealth, SDL_Texture* characterImages, int attack);
+		Enemy(int startingHealth, SDL_Texture* characterImages, int attac, attack* player);
 
 		//Subract hit points from the player
 		void LostHealth(int damage);
@@ -63,7 +64,7 @@ class Enemy
 		//Get the enemy sprite sheet
 		SDL_Texture* getEnemySheet();
 
-
+		void checkAttacked();
 
 	private:
 
@@ -80,6 +81,7 @@ class Enemy
 		int hitPoints;
 		int speed;
 		double attackPower;
+		attack* plyBlast;
 
 		//Not perm obviously but here as a reminder to store enemy texture here
 		SDL_Texture* enemySheet;

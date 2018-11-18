@@ -14,13 +14,14 @@ class HyperStar
 		SDL_Rect colTest;
 		struct StarNode* next;
 		struct StarNode* pre;
+		bool hitPly;
 	};
 	public:
 		HyperStar(SDL_Texture* im, Player* main);
 		HyperStar();
 		void addStar();
 		void Render(double timestep);
-		void checkCol(SDL_Rect inter);
+		bool checkCol(SDL_Rect circle);
 	
 	private:
 		SDL_Texture* starIm;

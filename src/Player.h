@@ -16,9 +16,10 @@ class Player
 		//Constructor: takes health, character sheet, and attack value and sets all member vars
 		Player(int startingHealth, SDL_Texture* characterImages, int attack, SDL_Renderer* gRend);
 
-
+		//attack* attackHit();
 		//Set the position of the player on screen
 		void setPosition(double x, double y);
+	
 
         //Int version
         void setPosition(int x, int y);
@@ -80,6 +81,8 @@ class Player
 		SDL_Rect* getPlayerCamLoc();
 		double GetMove();
 		void ChangeMove(double Accel);
+		void HealthBar(SDL_Rect* health);
+		void damage(int hits);
 	private:
 
 		/* Member variables:
@@ -87,7 +90,7 @@ class Player
 		 * currently a character sheet but can be updated to
 		 * OpenGL later
 		 */
-
+		SDL_Rect* healthBar;
 		double ACCEL;
 		double SPEED_LIMIT;
 		const int SCREEN_WIDTH = 1280;

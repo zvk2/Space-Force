@@ -28,6 +28,18 @@
 			playerCam.x = x;
 			playerCam.y = y;
 		}
+		void Player::HealthBar(SDL_Rect* health)
+		{
+			healthBar = health;
+		}
+		void Player::damage(int hits)
+		{
+			healthBar->x = healthBar->x + hits*177;
+		}
+		//attack* Player::attackHit()
+		//{
+			//return *hit;
+	//	}
 		SDL_Renderer* Player::getRend()
 		{
 			return gRenderer;

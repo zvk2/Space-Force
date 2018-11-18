@@ -22,6 +22,7 @@
 		end->next = (struct StarNode*)malloc(sizeof(struct StarNode));
 		end->next->angle = (((double)(rand()%50 + 15))/180)*3.14; //10 to 60
 		end->next->vel = (rand()%5 + 10)*100.0;
+		end->hitPly = false;
 		int y;
 		int x = rand()%426 + 852;
 		if(x > 1280)
@@ -59,9 +60,13 @@
 			imBox.y == (curr->frame%2)*100;
 			curr->frame++;
 			SDL_RenderCopy(gRenderer, starIm, &imBox, &curr->colTest);
-			if(SDL_HasIntersection(&curr->colTest,plyCam))
+			if(SDL_HasIntersection(&curr->colTest,plyCam)&& !curr->hitPly)
 			{
-				checkCol(curr->colTest);
+				if(checkCol(curr->colTest))
+				{
+					ply->damage(1);
+					curr->hitPly = true;
+				}
 			}
 			if(curr->colTest.x <= -size)
 			{
@@ -109,8 +114,42 @@
 		}
 		
 	}
-	void HyperStar::checkCol(SDL_Rect inter)
+	bool HyperStar::checkCol(SDL_Rect circle)
 	{
 		int r = size/2;
 		int c_x, c_y, d_x, d_y;
+		if(circle.x < plyCam-> x)
+		{
+			c_x = plyCam->x;
+		}
+		else if(circle.x > plyCam->x + plyCam->w)
+		{
+			c_x = plyCam->x + plyCam->w;
+		}
+		else
+		{
+			c_x = circle.x;
+		}
+		
+		if(circle.y < plyCam-> y)
+		{
+			c_y = plyCam->y;
+		}
+		else if(circle.y > plyCam->y + plyCam->h)
+		{
+			c_y = plyCam->y + plyCam->h;
+		}
+		else
+		{
+			c_y = circle.y;
+		}
+		
+		d_x = circle.x - c_x;
+		d_y = circle.y - c_y;
+		
+		int inter =  d_x * d_x + d_y * d_y;
+		if(inter <(r * r))
+			return true;
+		else
+			return false;
 	}

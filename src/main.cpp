@@ -298,10 +298,14 @@ int main(int argc, char* argv[])
 	Magnetar mag(&ply, loadImage("resources/imgs/Magnetars.png"));
 	double ACCEL = ply.GetMove();
 
-  Enemy emy(10, loadImage("resources/imgs/faxanaduitis.png"), 1);
+  Enemy emy(10, loadImage("resources/imgs/faxanaduitis.png"), 1,&ply.hit);
   emy.setPosition(860, 0);
 	emy.setVelocity(0, 50);
-
+	
+	
+	ply.HealthBar(&healthRect);
+	
+	
 	//the beginning/default image and attack box
 	ply.hit.setAttack(gAttack,&attackRect);
 	SDL_Event e;

@@ -31,15 +31,17 @@
 		//then it will continue to render all other attacks further across the screen
 		void attack::renderAttack(double timestep)
 		{
+			Node* pre = head;
 			curr = head->next;
 			while(curr != nullptr)
 			{
 				curr->attackCam.x +=(int) (1000 * timestep);
 				SDL_RenderCopy(gRenderer, gAttack, attackBox, &curr->attackCam);
+				pre = curr;
 				curr = curr->next;
 			}
 			curr = head->next;
-			if(curr != nullptr && curr -> attackCam.x + 80 >= 1280)
+			if(curr != nullptr && curr -> attackCam.x>= 1280)
 			{
 				
 				head->next = curr->next;
@@ -49,4 +51,36 @@
 				}
 				free(curr);
 			}
+		}
+		int attack::hitIntersect(SDL_Rect* rect)
+		{
+			Node* pre = head;
+			Node* temp;
+			curr = head->next;
+			int count = 0;
+			while(curr != nullptr)
+			{
+				if(SDL_HasIntersection(rect, &curr->attackCam))
+				{
+					temp = curr;
+					if(curr == end)
+					{
+						end = pre;
+						curr = nullptr;
+					}
+					else
+					{
+						curr = curr->next;
+						pre->next = curr;
+					}
+					free(temp);
+					count++;
+				}
+				else
+				{
+					pre = curr;
+					curr = curr->next;
+				}
+			}
+			return count;
 		}
