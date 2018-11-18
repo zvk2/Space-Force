@@ -1,11 +1,12 @@
 #include "INC_SDL.h"
 #include "Player.h"
 #include "Enemy.h"
+#include "attack.h"
 
 class AlcoholCloud
 {
 	public:
-		AlcoholCloud(Player* p, Enemy* e, SDL_Texture* i, SDL_Texture* f);
+		AlcoholCloud(Player* p, Enemy* e, SDL_Texture* i, SDL_Texture* f, attack* atk);
 		void Render();
 		bool Seen();
 		void setDelay(int time);
@@ -26,6 +27,7 @@ class AlcoholCloud
 		Player* ply;
 		Enemy* emy;
 		SDL_Renderer* gRenderer;
+		attack* plyBlast;
 		bool onScreen;
 		bool flareUp;
 		

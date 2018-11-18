@@ -292,7 +292,7 @@ int main(int argc, char* argv[])
 	Enemy emy(10, loadImage("resources/imgs/faxanaduitis.png"), 1);
 	
 	Magnetar mag(&ply, loadImage("resources/imgs/Magnetars.png"));
-	AlcoholCloud ac(&ply, &emy, loadImage("resources/imgs/Alcohol_Cloud.png"), loadImage("resources/imgs/Alcohol_Cloud_Flare_Up.png"));
+	AlcoholCloud ac(&ply, &emy, loadImage("resources/imgs/Alcohol_Cloud.png"), loadImage("resources/imgs/Alcohol_Cloud_Flare_Up.png"), &ply.hit);
 	double ACCEL = ply.GetMove();
 	
 	emy.setPosition(860, 0);
@@ -408,7 +408,7 @@ int main(int argc, char* argv[])
 		pCam = ply.getPlayerCam();
         Uint32 currTime = SDL_GetTicks();
 		
-        /*if(currTime>=6000)
+        if(currTime>=6000)
 		{
             //std::cout << currTime % 3000 << std::endl;
 			if((currTime % 3000 <= 50 && !mag.Seen()) ||mag.Seen())
@@ -472,8 +472,7 @@ int main(int argc, char* argv[])
                 blackholeCam = {SCREEN_WIDTH,rand() % (SCREEN_HEIGHT-300), 300, 300};
                 bFrames = 0;
             }
-
-        }*/
+        }
 
 		ply.move(xDeltav, yDeltav, timestep);
 		ply.checkEnemyCollision(&emy, timestep);
@@ -495,10 +494,13 @@ int main(int argc, char* argv[])
 		SDL_RenderCopyEx(gRenderer, ply.getPlayerSheet(), &pRect, &pCam, 0.0, nullptr, flip);
 		SDL_RenderCopyEx(gRenderer, emy.getEnemySheet(), &eRect, &eCam, 0.0, nullptr, flip);
 		
-		ac.setDelay((rand() % 3000) + 5000);
+		if (ac.getDelay() == 0)
+		{
+			ac.setDelay((rand() % 3000) + 5000);
+		}
 		
 		if (currTime >= ac.getDelay())
-		{
+		{	
 			if (!ac.Seen())
 			{
 				ac.setYPosition(rand() % 421);

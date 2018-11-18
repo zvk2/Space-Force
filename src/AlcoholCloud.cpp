@@ -1,7 +1,7 @@
 #include "AlcoholCloud.h"
 #include <iostream>
 
-AlcoholCloud::AlcoholCloud(Player* p, Enemy* e, SDL_Texture* i, SDL_Texture* f):ply(p), emy(e), sprite(i), spriteFlare(f)
+AlcoholCloud::AlcoholCloud(Player* p, Enemy* e, SDL_Texture* i, SDL_Texture* f, attack* atk):ply(p), emy(e), sprite(i), spriteFlare(f), plyBlast(atk)
 {
 	gRenderer = ply->getRend();
 	spriteBox = {0, 0, 500, 300};
@@ -15,6 +15,7 @@ AlcoholCloud::AlcoholCloud(Player* p, Enemy* e, SDL_Texture* i, SDL_Texture* f):
 	flareUp = false;
 	flareTime = 0;
 	frame = 0;
+	delay = 0;
 }
 
 void AlcoholCloud::Render()
@@ -27,6 +28,11 @@ void AlcoholCloud::Render()
 	
 	spriteBox.x = ((frame / 10) % 4) * spriteBox.w;
 	frame++;
+	
+	if (plyBlast->hitIntersect(&alcoholCam) > 0)
+	{
+		flareUp = true;
+	}
 	
 	//Places object to screen
 	if (flareUp)
@@ -105,8 +111,6 @@ void AlcoholCloud::checkPlayerCollision()
 		//Slow the player down if inside of the alcohol cloud
 		if (SDL_HasIntersection(&alcoholCam, playerCam))
 		{
-			flareUp = true;
-			
 			if (flareUp)
 			{
 				ply->LostHealth(1);
