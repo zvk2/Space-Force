@@ -12,11 +12,19 @@ class attack
 			SDL_Rect attackCam;
 			struct Node *next;
 		};
+		struct interList
+		{
+			int type;
+			SDL_Rect* rect;
+			SDL_Rect* circle;
+			SDL_Rect* triangle;
+		};
 	public:
 		attack(SDL_Renderer* Renderer);
 		void addAttack(int x, int y);
 		void renderAttack(double timestep);
 		void setAttack(SDL_Texture* gAtt, SDL_Rect* attac);
+		int hitIntersect(SDL_Rect* rect);
 	private:
 		struct Node* head;
 		struct Node* end;
