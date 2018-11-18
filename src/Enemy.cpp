@@ -230,6 +230,7 @@ bool Enemy::hasCollision(Player* p)
 		
 		if (SDL_IntersectRect(&pRect, &enemyCam, &result))
 		{
+			//Use algebra to calculate slopes and compare them to determine if there is collision
 			if ((result.x + result.w - 1) < (enemyCam.x + 33))
 			{
 				if ((result.y + result.h - 1) < (enemyCam.y + enemyCam.h / 2))
