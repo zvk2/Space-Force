@@ -173,7 +173,7 @@ blackhole::blackhole(SDL_Texture* textBlackhole, Player* main): ply(main), gBlac
                     
                 }
                 
-                xDeltav = xDeltav + newX;
+                xDeltav = xDeltav + (newX / 20000);
                 yDeltav = yDeltav + newY;
                 
                 std::cout << "newX = " << newX << std::endl;
