@@ -64,6 +64,7 @@ class Enemy
 		//Get the enemy sprite sheet
 		SDL_Texture* getEnemySheet();
 
+		//counts how many times an enemy has been hit
 		void checkAttacked();
 
 	private:

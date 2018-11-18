@@ -2,7 +2,9 @@
 #include <iostream>
 //const int SCREEN_WIDTH = 1280;
 //const int SCREEN_HEIGHT = 720;
+	//size of image
 	int size = 100;
+	
 	HyperStar::HyperStar(SDL_Texture* im, Player* main):starIm(im), ply(main)
 	{
 		imBox = {0,0,100,100};
@@ -14,16 +16,25 @@
 		end = head;
 	}
 
-	
+	//adds a new star to the list with a random spawn location
+	//random angle and random speed
 	void HyperStar::addStar()
 	{
-		
+		//random y
 		int upOrDown = rand() % 2; // 0 to 1
 		end->next = (struct StarNode*)malloc(sizeof(struct StarNode));
+		
+		//random angle
 		end->next->angle = (((double)(rand()%50 + 15))/180)*3.14; //10 to 60
+		
+		//random speed
 		end->next->vel = (rand()%5 + 10)*100.0;
+		
+		//one hit only on player
 		end->hitPly = false;
 		int y;
+		
+		//random x
 		int x = rand()%426 + 852;
 		if(x > 1280)
 		{
@@ -31,6 +42,7 @@
 		}
 		end->next->math = upOrDown;
 		end->next->frame = 0;
+		
 		end->next->pre = end;
 		end = end->next;
 		if(upOrDown == 0)
@@ -41,12 +53,15 @@
 		{
 			y = 720;
 		}
+		
+		//square box for star
 		end->colTest = {x,y,size,size};
 		end->x = (double)x;
 		end->y = (double)y;
 		end->next = nullptr;
 	}
 	
+	//places star on screen
 	void HyperStar::Render(double timestep)
 	{
 		if(head->next == nullptr)
@@ -60,14 +75,18 @@
 			imBox.y == (curr->frame%2)*100;
 			curr->frame++;
 			SDL_RenderCopy(gRenderer, starIm, &imBox, &curr->colTest);
-			if(SDL_HasIntersection(&curr->colTest,plyCam)&& !curr->hitPly)
+			
+			//checks rectangle intersection first
+			if(SDL_HasIntersection(&curr->colTest,plyCam)&& !(curr->hitPly))
 			{
+				//then checks circle
 				if(checkCol(curr->colTest))
 				{
 					ply->damage(1);
-					curr->hitPly = true;
+					curr->hitPly = true;//hits player only once
 				}
 			}
+			//if star is off screen free starnode
 			if(curr->colTest.x <= -size)
 			{
 				if(curr == end)
@@ -91,12 +110,14 @@
 			{
 				if(curr->y>= 720-size && curr->math==0)
 				{
-					curr->math =1;
+					curr->math =1;//star will goes up
 				}
 				else if(curr->y <=0 && curr->math == 1)
 				{
-					curr->math =0;
+					curr->math =0;//star will go down
 				}
+				
+				//moves star along angle
 				curr->x = curr->x-((curr->vel*timestep)*cos(curr->angle));
 				double newY = ((curr->vel*timestep)*sin(curr->angle));
 				if(curr->math == 0)
@@ -114,6 +135,7 @@
 		}
 		
 	}
+	//circle collision test
 	bool HyperStar::checkCol(SDL_Rect circle)
 	{
 		int r = size/2;

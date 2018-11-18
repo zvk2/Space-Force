@@ -28,11 +28,11 @@
 			playerCam.x = x;
 			playerCam.y = y;
 		}
-		void Player::HealthBar(SDL_Rect* health)
+		void Player::HealthBar(SDL_Rect* health)//needed to access healthbar other object classes
 		{
 			healthBar = health;
 		}
-		void Player::damage(int hits)
+		void Player::damage(int hits)//other objects effect on health
 		{
 			healthBar->x = healthBar->x + hits*177;
 		}

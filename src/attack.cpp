@@ -52,6 +52,8 @@
 				free(curr);
 			}
 		}
+		//will count how many times an attack hit that object
+		//and delete that attack
 		int attack::hitIntersect(SDL_Rect* rect)
 		{
 			Node* pre = head;

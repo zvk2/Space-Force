@@ -82,6 +82,7 @@ void Enemy::move(double xdvel, double ydvel, double tstep)
 }
 void Enemy::checkAttacked()
 {
+	//how many times an enemy been hit
 	int hits = plyBlast->hitIntersect(&enemyCam);
 }
 // Animate jet propulsion

@@ -25,7 +25,6 @@ class attack
 		void renderAttack(double timestep);
 		void setAttack(SDL_Texture* gAtt, SDL_Rect* attac);
 		int hitIntersect(SDL_Rect* rect);
-		Node* attackList();
 	private:
 		struct Node* head;
 		struct Node* end;

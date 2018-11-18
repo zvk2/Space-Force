@@ -81,6 +81,8 @@ class Player
 		SDL_Rect* getPlayerCamLoc();
 		double GetMove();
 		void ChangeMove(double Accel);
+		
+		//intracts with health bar
 		void HealthBar(SDL_Rect* health);
 		void damage(int hits);
 	private:

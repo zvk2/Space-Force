@@ -303,7 +303,7 @@ int main(int argc, char* argv[])
 	emy.setVelocity(0, 50);
 	
 	
-	ply.HealthBar(&healthRect);
+	ply.HealthBar(&healthRect);//needed healthbar in player
 	
 	
 	//the beginning/default image and attack box
@@ -501,7 +501,7 @@ int main(int argc, char* argv[])
 				healthRect.x += 177;
 			}
 		}
-		if(healthRect.x >= 1770)
+		if(healthRect.x >= 1598)//will now play credits when health is gone
 		{
 			return playCredits();
 		}
