@@ -263,7 +263,7 @@ int main(int argc, char* argv[])
 	*/
 	gBackground = loadImage("resources/imgs/space_2_background.png");
 	gAttack = loadImage("resources/imgs/attack.png");
-    	gBlackhole = loadImage("resources/imgs/blackhole.png");
+    gBlackhole = loadImage("resources/imgs/blackhole.png");
 	gHealthbar = loadImage("resources/imgs/healthbar.png");
 
 
@@ -297,8 +297,8 @@ int main(int argc, char* argv[])
 	Magnetar mag(&ply, loadImage("resources/imgs/Magnetars.png"));
 	double ACCEL = ply.GetMove();
 
-  Enemy emy(10, loadImage("resources/imgs/faxanaduitis.png"), 1);
-  emy.setPosition(860, 0);
+	Enemy emy(10, loadImage("resources/imgs/faxanaduitis.png"), 1, 'f');
+	emy.setPosition(860, 0);
 	emy.setVelocity(0, 50);
 
 	//the beginning/default image and attack box
@@ -410,7 +410,7 @@ int main(int argc, char* argv[])
 		pRect = ply.getPlayerRect();
 		pCam = ply.getPlayerCam();
         Uint32 currTime = SDL_GetTicks();
-        if(currTime>=6000)
+        /*if(currTime>=6000)
 		{
             //std::cout << currTime % 3000 << std::endl;
 			if((currTime % 3000 <= 50 && !mag.Seen()) ||mag.Seen())
@@ -475,12 +475,12 @@ int main(int argc, char* argv[])
                 bFrames = 0;
             }
 
-        }
+        }*/
 		
 		ply.move(xDeltav, yDeltav, timestep);
 		bool collision = ply.checkEnemyCollision(&emy, timestep);
 
-		if (collision)
+		/*if (collision)
 		{
 			//ply.LostHealth(1);
 			if (healthRect.x == 1770)
@@ -491,7 +491,7 @@ int main(int argc, char* argv[])
 			{
 				healthRect.x += 177;
 			}
-		}
+		}*/
 
 		emy.move(0, emyDelta, timestep);
 		emy.checkPlayerCollision(&ply, timestep);

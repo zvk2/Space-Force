@@ -13,7 +13,7 @@ class Enemy
 	public:
 
 		//Constructor: takes health, character sheet, and attack value and sets all member vars
-		Enemy(int startingHealth, SDL_Texture* characterImages, int attack);
+		Enemy(int startingHealth, SDL_Texture* characterImages, int attack, char tpe);
 
 		//Subract hit points from the player
 		void LostHealth(int damage);
@@ -63,6 +63,7 @@ class Enemy
 		//Get the enemy sprite sheet
 		SDL_Texture* getEnemySheet();
 
+		char getType();
 
 
 	private:
@@ -80,6 +81,9 @@ class Enemy
 		int hitPoints;
 		int speed;
 		double attackPower;
+		
+		//Determine the type of enemy
+		char type;
 
 		//Not perm obviously but here as a reminder to store enemy texture here
 		SDL_Texture* enemySheet;
@@ -101,5 +105,6 @@ class Enemy
 
 		void DecrementSpeed(int lostSpeed);
 
+		bool hasCollision(Player* p);
 };
 #endif
