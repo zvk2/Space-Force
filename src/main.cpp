@@ -12,6 +12,7 @@
 #include "blackhole.h"
 #include "Menu.h"
 #include <cstdlib>
+#include "HyperStar.h"
 
 
 // Used for file walk (somewhat crudely)
@@ -48,6 +49,7 @@ SDL_Texture* gBackground;
 SDL_Texture* gAttack;
 SDL_Texture* gBlackhole;
 SDL_Texture* gPlayerSheet;
+SDL_Texture* gHealthbar;
 std::vector<SDL_Texture*> gTex;
 
 bool init()
@@ -264,6 +266,7 @@ int main(int argc, char* argv[])
 	gBackground = loadImage("resources/imgs/space_2_background.png");
 	gAttack = loadImage("resources/imgs/attack.png");
     gBlackhole = loadImage("resources/imgs/blackhole.png");
+	gHealthbar = loadImage("resources/imgs/healthbar.png");
 
 
 
@@ -284,20 +287,27 @@ int main(int argc, char* argv[])
 	Uint32 fpsCurtime = 0;
 	Uint32 moveLasttime = SDL_GetTicks();
 	double timestep = 0;
-	SDL_Rect attackRect = {0, 0, 80, 20};
+	SDL_Rect attackRect = {0, 0, 60, 10};
 	//SDL_Rect attackCam = {SCREEN_WIDTH+80, SCREEN_HEIGHT/2+51/2, 80, 20};
 	SDL_Rect blackholeRect = {0, 0, 300, 300};
 	SDL_Rect blackholeCam = {SCREEN_WIDTH,SCREEN_HEIGHT/2, 300, 300};
 	Player ply(10, loadImage("resources/imgs/starman.png"), 1,gRenderer);
-	Enemy emy(10, loadImage("resources/imgs/faxanaduitis.png"), 1);
-	
-	Magnetar mag(&ply, loadImage("resources/imgs/Magnetars.png"));
-	AlcoholCloud ac(&ply, &emy, loadImage("resources/imgs/Alcohol_Cloud.png"), loadImage("resources/imgs/Alcohol_Cloud_Flare_Up.png"), &ply.hit);
-	double ACCEL = ply.GetMove();
-	
+
+	Enemy emy(10, loadImage("resources/imgs/faxanaduitis.png"), 1,&ply.hit, 'f');
 	emy.setPosition(860, 0);
 	emy.setVelocity(0, 50);
 
+	SDL_Rect healthRect = {0, 0, 177, 33};
+	SDL_Rect healthCam = {30, 30, 177, 33};
+	HyperStar stars(loadImage("resources/imgs/star4.png"),&ply);
+
+	Magnetar mag(&ply, loadImage("resources/imgs/Magnetars.png"));
+	AlcoholCloud ac(&ply, &emy, loadImage("resources/imgs/Alcohol_Cloud.png"), loadImage("resources/imgs/Alcohol_Cloud_Flare_Up.png"), &ply.hit);
+	double ACCEL = ply.GetMove();
+
+	ply.HealthBar(&healthRect);//needed healthbar in player
+	
+	
 	//the beginning/default image and attack box
 	ply.hit.setAttack(gAttack,&attackRect);
 	SDL_Event e;
@@ -393,7 +403,7 @@ int main(int argc, char* argv[])
 
 		ply.animate(frames);
 		emy.animate(frames);
-
+				
 
 		// Since game levels progress from L to R, no need for sprite to flip
 		// Code for flipping remains here if theres a change of plan
@@ -415,6 +425,10 @@ int main(int argc, char* argv[])
 			{
 
 				mag.Render();
+			}
+			if(currTime%3000<=20)
+			{
+				stars.addStar();
 			}
 		}
         if(currTime >= 5000)
@@ -464,7 +478,6 @@ int main(int argc, char* argv[])
                         xDeltav = xDeltav - 20;
                     }
                 }
-
             }
 
             if(blackholeCam.x == -300)
@@ -473,12 +486,36 @@ int main(int argc, char* argv[])
                 bFrames = 0;
             }
         }
-
+	
 		ply.move(xDeltav, yDeltav, timestep);
-		ply.checkEnemyCollision(&emy, timestep);
+		bool collision = ply.checkEnemyCollision(&emy, timestep);
+
+		if (collision)
+		{
+			//ply.LostHealth(1);
+			if (healthRect.x == 1770)
+			{
+				return playCredits();	
+			}
+			else
+			{
+				healthRect.x += 177;
+			}
+		}
+
+		if(healthRect.x >= 1598)//will now play credits when health is gone
+		{
+			return playCredits();
+		}
 		emy.move(0, emyDelta, timestep);
 		emy.checkPlayerCollision(&ply, timestep);
-
+		/*		
+		collision = emy.checkPlayerCollision(&ply, timestep);		
+		if (collision)
+		{
+			//Minor enemies should be destroyed in event of collision
+		}
+		*/
 		pCam = ply.getPlayerCam();
 		eCam = emy.getEnemyCam();
 
@@ -487,7 +524,7 @@ int main(int argc, char* argv[])
 		if(keyState[SDL_SCANCODE_SPACE] && up == true)
 		{
 			up = false;
-			ply.hit.addAttack(pCam.x + 300,pCam.y + 51/2);
+			ply.hit.addAttack(pCam.x + 240,pCam.y + 51/2);
 		}
 		//lets the attack move across the screen
 		ply.hit.renderAttack(timestep);
@@ -509,6 +546,9 @@ int main(int argc, char* argv[])
 			ac.Render();
 		}
 		
+		stars.Render(timestep);
+		SDL_RenderCopy(gRenderer, gHealthbar, &healthRect, &healthCam);
+
 		SDL_RenderPresent(gRenderer);
 
 	}

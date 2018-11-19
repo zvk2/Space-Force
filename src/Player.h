@@ -16,9 +16,10 @@ class Player
 		//Constructor: takes health, character sheet, and attack value and sets all member vars
 		Player(int startingHealth, SDL_Texture* characterImages, int attack, SDL_Renderer* gRend);
 
-
+		//attack* attackHit();
 		//Set the position of the player on screen
 		void setPosition(double x, double y);
+	
 
         //Int version
         void setPosition(int x, int y);
@@ -34,7 +35,7 @@ class Player
 		void animate(int frames);
 
 		//Check for collision with an enemy
-		void checkEnemyCollision(class Enemy* e, double tstep);
+		bool checkEnemyCollision(class Enemy* e, double tstep);
 
 		//Return the current x velocity
 		double getxVel();
@@ -83,6 +84,11 @@ class Player
 		double GetMove();
 		void ChangeMove(double Accel);
 		void ChangeMaxVelocity(double Speed);
+		
+		//intracts with health bar
+		void HealthBar(SDL_Rect* health);
+		void damage(int hits);
+		
 	private:
 
 		/* Member variables:
@@ -90,7 +96,7 @@ class Player
 		 * currently a character sheet but can be updated to
 		 * OpenGL later
 		 */
-
+		SDL_Rect* healthBar;
 		double ACCEL;
 		double SPEED_LIMIT;
 		const int SCREEN_WIDTH = 1280;
@@ -118,6 +124,8 @@ class Player
 
 		//Private method to increase player health
 		void IncrementHealth(int incAmount);
+		
+		bool hasCollision(Enemy* e);
 };
 
 #endif

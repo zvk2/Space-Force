@@ -12,11 +12,11 @@ Player::Player(int startingHealth, SDL_Texture* characterImages, int attack, SDL
 	attackPower(attack), attackModifier(1), defenseModifier(1),
 	phys(0, 0, 300.0, 3600.0), xCoord(1280/8), yCoord(720/2), hit(gRend)
 	{
-		playerRect = {0, 0, 300, 51};
-		playerCam = {1280/2, 720/2, 300, 51};
+		playerRect = {0, 0, 240, 51};
+		playerCam = {1280/2, 720/2, 240, 51};
 		gRenderer = gRend;
 	}
-	
+
 void Player::setAttack(SDL_Texture* gAttack, SDL_Rect* attackRect)
 {
 	hit.setAttack(gAttack,attackRect);
@@ -28,12 +28,22 @@ void Player::setPosition(int x, int y)
 	playerCam.x = x;
 	playerCam.y = y;
 }
-
+void Player::HealthBar(SDL_Rect* health)//needed to access healthbar other object classes
+{
+	healthBar = health;
+}
+void Player::damage(int hits)//other objects effect on health
+{
+	healthBar->x = healthBar->x + hits*177;
+}
+//attack* Player::attackHit()
+//{
+	//return *hit;
+//	}
 SDL_Renderer* Player::getRend()
 {
 	return gRenderer;
 }
-
 //Methods that can be called from model class
 void Player::move(double xdvel, double ydvel, double tstep)
 {
@@ -51,7 +61,7 @@ void Player::move(double xdvel, double ydvel, double tstep)
 // Animate jet propulsion
 void Player::animate(int frames)
 {
-	playerRect.x = (frames % 4) * 300;
+	playerRect.x = (frames % 4) * 240;
 }
 
 //Sets the current velocity of the player
@@ -78,7 +88,6 @@ SDL_Rect Player::getPlayerCam()
 	return playerCam;
 }
 
-//Get a pointer to the player cam
 SDL_Rect* Player::getPlayerCamLoc()
 {
 	return &playerCam;
@@ -89,16 +98,15 @@ double Player::GetMove()
 	return phys.GetMove();
 }
 
-void Player::ChangeMove(double Accel)
-{
-	phys.ChangeMove(Accel);
-}
-
 void Player::ChangeMaxVelocity(double Speed)
 {
 	phys.ChangeMaxSpeed(Speed);
 }
 
+void Player::ChangeMove(double Accel)
+{
+	phys.ChangeMove(Accel);
+}
 //Get the current rectangle from the sprite sheet
 SDL_Rect Player::getPlayerRect()
 {
@@ -154,8 +162,8 @@ void Player::CheckBoundaries()
 	// Boundary checks against the window
 	if (xCoord < 0)
 		xCoord = 0;
-	if (xCoord + 300 > SCREEN_WIDTH)
-		xCoord = SCREEN_WIDTH - 300;
+	if (xCoord + 240 > SCREEN_WIDTH)
+		xCoord = SCREEN_WIDTH - 240;
 	if (yCoord < 0)
 		yCoord = 0;
 	if (yCoord + 51 > SCREEN_HEIGHT)
@@ -175,11 +183,11 @@ void Player::IncrementHealth(int incAmount)
 }
 
 	//Check for collision with an enemy
-void Player::checkEnemyCollision(Enemy* e, double tstep)
+bool Player::checkEnemyCollision(Enemy* e, double tstep)
 {
 	SDL_Rect eRect = e->getEnemyCam();
 
-	if (SDL_HasIntersection(&eRect, &playerCam))
+	if (hasCollision(e))
 	{
 		double newPVelocityx = phys.getxVelocity();
 		double newPVelocityy = phys.getyVelocity();
@@ -227,7 +235,74 @@ void Player::checkEnemyCollision(Enemy* e, double tstep)
 
 		playerCam.x = (int) xCoord;
 		playerCam.y = (int) yCoord;
+		return true;
 	}
+	return false;
 }
 
-
+bool Player::hasCollision(Enemy* e)
+{
+	SDL_Rect enemyCam = e->getEnemyCam();
+	
+	//f for faxanaduitis
+	if (e->getType() == 'f')
+	{
+		SDL_Rect result;
+		
+		if (SDL_IntersectRect(&playerCam, &enemyCam, &result))
+		{
+			//Use algebra to calculate slopes and compare them to determine if there is collision
+			if ((result.x + result.w - 1) < (enemyCam.x + 33))
+			{	
+				if ((result.y + result.h - 1) < (enemyCam.y + enemyCam.h / 2))
+				{
+					double enemySlope = (double) ((enemyCam.y + enemyCam.h / 2) - enemyCam.y) / ((enemyCam.x - 1) - (enemyCam.x + 33));
+					double playerSlope = (double) ((enemyCam.y + enemyCam.h / 2) - (result.y + result.h - 1)) / ((enemyCam.x - 1) - (result.x + result.w - 1));
+					
+					if (playerSlope >= enemySlope)
+					{
+						return true;
+					}
+					else
+					{
+						return false;
+					}
+				}
+				else if ((result.y) > (enemyCam.y + enemyCam.h / 2))
+				{
+					double enemySlope = (double) ((enemyCam.y + enemyCam.h / 2) - (enemyCam.y + enemyCam.h - 1)) / ((enemyCam.x - 1) - (enemyCam.x + 33));
+					double playerSlope = (double) ((enemyCam.y + enemyCam.h / 2) - (result.y)) / ((enemyCam.x - 1) - (result.x + result.w - 1));
+					
+					if (playerSlope <= enemySlope)
+					{
+						return true;
+					}
+					else
+					{
+						return false;
+					}
+				}
+				else
+				{
+					return true;
+				}
+			}
+			else if (result.x >= (enemyCam.x + enemyCam.w - 21))
+			{
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else
+	{
+		return SDL_HasIntersection(&playerCam, &enemyCam);
+	}
+}

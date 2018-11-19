@@ -5,9 +5,10 @@
 #define MAX_SPEED 50
  
 //Public methods 
-Enemy::Enemy(int startingHealth, SDL_Texture* characterImages, int attack): 
+
+Enemy::Enemy(int startingHealth, SDL_Texture* characterImages, int attac, attack* player, char _type): 
 	hitPoints(startingHealth), enemySheet(characterImages),
-	attackPower(attack), phys(0, 0, 300.0, 3600.0), xCoord(1280/8), yCoord(720/2)
+	attackPower(attac), phys(0, 0, 300.0, 3600.0), xCoord(1280/8), yCoord(720/2), plyBlast(player), type(_type)
 	{
 		enemyRect = {0, 0, 144, 87};
 		enemyCam = {1280/2, 720/2, 144, 87};
@@ -76,11 +77,15 @@ void Enemy::move(double xdvel, double ydvel, double tstep)
 	yCoord += (phys.getyVelocity() * tstep);
 	
 	CheckBoundaries();
-	
+	checkAttacked();
 	enemyCam.x = (int) xCoord;
 	enemyCam.y = (int) yCoord;
 }
-
+void Enemy::checkAttacked()
+{
+	//how many times an enemy been hit
+	int hits = plyBlast->hitIntersect(&enemyCam);
+}
 // Animate jet propulsion
 void Enemy::animate(int frames)
 {
@@ -90,9 +95,7 @@ void Enemy::animate(int frames)
 //Check for collision with the player
 void Enemy::checkPlayerCollision(Player* p, double tstep)
 {
-	SDL_Rect pRect = p->getPlayerCam();
-
-	if (SDL_HasIntersection(&pRect, &enemyCam))
+	if (hasCollision(p))
 	{
 		double newPVelocityx = p->getxVel();
 		double newPVelocityy = p->getyVel();
@@ -185,6 +188,10 @@ void Enemy::ChangeMaxVelocity(double Speed)
 {
 	phys.ChangeMaxSpeed(Speed);
 }
+char Enemy::getType()
+{
+	return type;
+}
 
 //Private methods
 
@@ -227,4 +234,69 @@ void Enemy::DecrementSpeed(int lostSpeed)
 	}
 }
 
-
+bool Enemy::hasCollision(Player* p)
+{
+	SDL_Rect pRect = p->getPlayerCam();
+	
+	//f for faxanaduitis
+	if (type == 'f')
+	{
+		SDL_Rect result;
+		
+		if (SDL_IntersectRect(&pRect, &enemyCam, &result))
+		{
+			//Use algebra to calculate slopes and compare them to determine if there is collision
+			if ((result.x + result.w - 1) < (enemyCam.x + 33))
+			{
+				if ((result.y + result.h - 1) < (enemyCam.y + enemyCam.h / 2))
+				{
+					double enemySlope = (double) ((enemyCam.y + enemyCam.h / 2) - enemyCam.y) / ((enemyCam.x - 1) - (enemyCam.x + 33));
+					double playerSlope = (double) ((enemyCam.y + enemyCam.h / 2) - (result.y + result.h - 1)) / ((enemyCam.x - 1) - (result.x + result.w - 1));
+					
+					if (playerSlope >= enemySlope)
+					{
+						return true;
+					}
+					else
+					{
+						return false;
+					}
+				}
+				else if ((result.y) > (enemyCam.y + enemyCam.h / 2))
+				{
+					double enemySlope = (double) ((enemyCam.y + enemyCam.h / 2) - (enemyCam.y + enemyCam.h - 1)) / ((enemyCam.x - 1) - (enemyCam.x + 33));
+					double playerSlope = (double) ((enemyCam.y + enemyCam.h / 2) - (result.y)) / ((enemyCam.x - 1) - (result.x + result.w - 1));
+					
+					if (playerSlope <= enemySlope)
+					{
+						return true;
+					}
+					else
+					{
+						return false;
+					}
+				}
+				else
+				{
+					return true;
+				}
+			}
+			else if (result.x >= (enemyCam.x + enemyCam.w - 21))
+			{
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else
+	{
+		return SDL_HasIntersection(&pRect, &enemyCam);
+	}
+}

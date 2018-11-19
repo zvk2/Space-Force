@@ -8,7 +8,6 @@
 	}
 	Physics::Physics(double x_v, double y_v, double max_speed, double accel):
 	BACK_LIMIT{-max_speed}, FOR_LIMIT{max_speed},ACCEL{accel}, x_vel{x_v},y_vel{y_v}
-
 	{
 		move = ACCEL;
 	}
