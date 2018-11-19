@@ -38,7 +38,7 @@ ifeq ($(OS), Windows_NT)
 	CPP = g++
 	CFLAGS = -c -IC:/mingwdev/include/SDL2 -IC:/mingwdev/opengl/include
 	INCLUDE = -IC:/mingwdev/include/SDL2 -IC:/mingwdev/opengl/include
-	LFLAGS = -LC:/mingwdev/lib -LC:/mingwdev/opengl/lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_net -lopengl32 -lglew32
+	LFLAGS = -LC:/mingwdev/lib -LC:/mingwdev/opengl/lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_net -lopengl32 -lglew32 -lSDL2_mixer
 else ifeq ($(shell uname -s), Darwin)
 	DETECTED_OS := $(shell uname -s)
 	CPP = g++ -std=c11
