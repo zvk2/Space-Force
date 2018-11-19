@@ -523,7 +523,7 @@ int main(int argc, char* argv[])
 		if(keyState[SDL_SCANCODE_SPACE] && up == true)
 		{
 			up = false;
-			ply.hit.addAttack(pCam.x + 300,pCam.y + 51/2);
+			ply.hit.addAttack(pCam.x + 240,pCam.y + 51/2);
 		}
 		//lets the attack move across the screen
 		ply.hit.renderAttack(timestep);

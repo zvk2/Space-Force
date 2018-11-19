@@ -12,8 +12,8 @@ Player::Player(int startingHealth, SDL_Texture* characterImages, int attack, SDL
 	attackPower(attack), attackModifier(1), defenseModifier(1),
 	phys(0, 0, 300.0, 3600.0), xCoord(1280/8), yCoord(720/2), hit(gRend)
 	{
-		playerRect = {0, 0, 300, 51};
-		playerCam = {1280/2, 720/2, 300, 51};
+		playerRect = {0, 0, 240, 51};
+		playerCam = {1280/2, 720/2, 240, 51};
 		gRenderer = gRend;
 	}
 void Player::setAttack(SDL_Texture* gAttack, SDL_Rect* attackRect)
@@ -59,7 +59,7 @@ void Player::move(double xdvel, double ydvel, double tstep)
 // Animate jet propulsion
 void Player::animate(int frames)
 {
-	playerRect.x = (frames % 4) * 300;
+	playerRect.x = (frames % 4) * 240;
 }
 
 //Sets the current velocity of the player
@@ -148,15 +148,13 @@ int Player::GetAttack()
 	return (attackPower*attackModifier);
 }
 
-
-
 void Player::CheckBoundaries()
 {
 	// Boundary checks against the window
 	if (xCoord < 0)
 		xCoord = 0;
-	if (xCoord + 300 > SCREEN_WIDTH)
-		xCoord = SCREEN_WIDTH - 300;
+	if (xCoord + 240 > SCREEN_WIDTH)
+		xCoord = SCREEN_WIDTH - 240;
 	if (yCoord < 0)
 		yCoord = 0;
 	if (yCoord + 51 > SCREEN_HEIGHT)

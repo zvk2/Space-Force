@@ -7,7 +7,7 @@ Magnetar::Magnetar(Player* main, SDL_Texture* gIm):ply(main), im(gIm)
 	
 	//gets a pointer to the player's camBox
 	playerCam = ply->getPlayerCamLoc();
-	camBox = {1280,100,1280,520};
+	camBox = {1280,0,1280,720};
 	onScreen = false;
 	frame = 0;
 }
