@@ -6,8 +6,6 @@
 #include <cstdlib>
 #include <climits>
 
-
-
 //Constructor: takes health, character sheet, and attack value and sets all member vars
 Player::Player(int startingHealth, SDL_Texture* characterImages, int attack, SDL_Renderer* gRend):
 	hitPoints(startingHealth), playerSheet(characterImages),
@@ -28,6 +26,18 @@ void Player::setPosition(int x, int y)
 	playerCam.x = x;
 	playerCam.y = y;
 }
+void Player::HealthBar(SDL_Rect* health)//needed to access healthbar other object classes
+{
+	healthBar = health;
+}
+void Player::damage(int hits)//other objects effect on health
+{
+	healthBar->x = healthBar->x + hits*177;
+}
+//attack* Player::attackHit()
+//{
+	//return *hit;
+//	}
 SDL_Renderer* Player::getRend()
 {
 	return gRenderer;

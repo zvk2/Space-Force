@@ -11,6 +11,7 @@
 #include "blackhole.h"
 #include "Menu.h"
 #include <cstdlib>
+#include "HyperStar.h"
 
 
 // Used for file walk (somewhat crudely)
@@ -293,14 +294,19 @@ int main(int argc, char* argv[])
 
 	SDL_Rect healthRect = {0, 0, 177, 33};
 	SDL_Rect healthCam = {30, 30, 177, 33};
-
+	HyperStar stars(loadImage("resources/imgs/star4.png"),&ply);
 	Magnetar mag(&ply, loadImage("resources/imgs/Magnetars.png"));
 	double ACCEL = ply.GetMove();
 
-	Enemy emy(10, loadImage("resources/imgs/faxanaduitis.png"), 1, 'f');
-	emy.setPosition(860, 0);
-	emy.setVelocity(0, 50);
+  Enemy emy(10, loadImage("resources/imgs/faxanaduitis.png"), 1,&ply.hit, 'f');
+  emy.setPosition(860, 0);
 
+	emy.setVelocity(0, 50);
+	
+	
+	ply.HealthBar(&healthRect);//needed healthbar in player
+	
+	
 	//the beginning/default image and attack box
 	ply.hit.setAttack(gAttack,&attackRect);
 	SDL_Event e;
@@ -396,7 +402,7 @@ int main(int argc, char* argv[])
 
 		ply.animate(frames);
 		emy.animate(frames);
-
+				
 
 		// Since game levels progress from L to R, no need for sprite to flip
 		// Code for flipping remains here if theres a change of plan
@@ -410,13 +416,17 @@ int main(int argc, char* argv[])
 		pRect = ply.getPlayerRect();
 		pCam = ply.getPlayerCam();
         Uint32 currTime = SDL_GetTicks();
-        /*if(currTime>=6000)
+        if(currTime>=6000)
 		{
             //std::cout << currTime % 3000 << std::endl;
 			if((currTime % 3000 <= 50 && !mag.Seen()) ||mag.Seen())
 			{
 
 				mag.Render();
+			}
+			if(currTime%3000<=20)
+			{
+				stars.addStar();
 			}
 		}
         if(currTime >= 5000)
@@ -466,7 +476,6 @@ int main(int argc, char* argv[])
                         xDeltav = xDeltav - 20;
                     }
                 }
-
             }
 
             if(blackholeCam.x == -300)
@@ -475,12 +484,12 @@ int main(int argc, char* argv[])
                 bFrames = 0;
             }
 
-        }*/
-		
+        }
+	
 		ply.move(xDeltav, yDeltav, timestep);
 		bool collision = ply.checkEnemyCollision(&emy, timestep);
 
-		/*if (collision)
+		if (collision)
 		{
 			//ply.LostHealth(1);
 			if (healthRect.x == 1770)
@@ -491,8 +500,12 @@ int main(int argc, char* argv[])
 			{
 				healthRect.x += 177;
 			}
-		}*/
+		}
 
+		if(healthRect.x >= 1598)//will now play credits when health is gone
+		{
+			return playCredits();
+		}
 		emy.move(0, emyDelta, timestep);
 		emy.checkPlayerCollision(&ply, timestep);
 		/*		
@@ -516,7 +529,7 @@ int main(int argc, char* argv[])
 		ply.hit.renderAttack(timestep);
 		SDL_RenderCopyEx(gRenderer, ply.getPlayerSheet(), &pRect, &pCam, 0.0, nullptr, flip);
 		SDL_RenderCopyEx(gRenderer, emy.getEnemySheet(), &eRect, &eCam, 0.0, nullptr, flip);
-
+		stars.Render(timestep);
 		SDL_RenderCopy(gRenderer, gHealthbar, &healthRect, &healthCam);
 
 		SDL_RenderPresent(gRenderer);
