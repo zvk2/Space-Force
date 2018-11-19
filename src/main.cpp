@@ -298,8 +298,9 @@ int main(int argc, char* argv[])
 	Magnetar mag(&ply, loadImage("resources/imgs/Magnetars.png"));
 	double ACCEL = ply.GetMove();
 
-  Enemy emy(10, loadImage("resources/imgs/faxanaduitis.png"), 1,&ply.hit);
+  Enemy emy(10, loadImage("resources/imgs/faxanaduitis.png"), 1,&ply.hit, 'f');
   emy.setPosition(860, 0);
+
 	emy.setVelocity(0, 50);
 	
 	
@@ -475,7 +476,6 @@ int main(int argc, char* argv[])
                         xDeltav = xDeltav - 20;
                     }
                 }
-
             }
 
             if(blackholeCam.x == -300)
@@ -485,7 +485,7 @@ int main(int argc, char* argv[])
             }
 
         }
-		
+	
 		ply.move(xDeltav, yDeltav, timestep);
 		bool collision = ply.checkEnemyCollision(&emy, timestep);
 
@@ -501,6 +501,7 @@ int main(int argc, char* argv[])
 				healthRect.x += 177;
 			}
 		}
+
 		if(healthRect.x >= 1598)//will now play credits when health is gone
 		{
 			return playCredits();

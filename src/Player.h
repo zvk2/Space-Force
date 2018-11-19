@@ -120,6 +120,8 @@ class Player
 
 		//Private method to increase player health
 		void IncrementHealth(int incAmount);
+		
+		bool hasCollision(Enemy* e);
 };
 
 #endif
