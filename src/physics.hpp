@@ -13,7 +13,8 @@ public:
 	
 	void ChangeMove(double ac);
 	double GetMove();
-//What to do when no buttons are pressed
+	void ChangeMaxSpeed(double speed);
+	//What to do when no buttons are pressed
 	void Neutral(double timestep);
 	void ChangeVelocity(double x_del, double y_del, double timestep);
 	

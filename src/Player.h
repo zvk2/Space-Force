@@ -78,13 +78,17 @@ class Player
 		//Return the player's current attack
 		int GetAttack();
 		SDL_Renderer* getRend();
+		
+		//Get a pointer to the player cam
 		SDL_Rect* getPlayerCamLoc();
 		double GetMove();
 		void ChangeMove(double Accel);
+		void ChangeMaxVelocity(double Speed);
 		
 		//intracts with health bar
 		void HealthBar(SDL_Rect* health);
 		void damage(int hits);
+		
 	private:
 
 		/* Member variables:

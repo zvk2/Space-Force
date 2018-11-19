@@ -5,6 +5,7 @@
 #include <cstring>
 #include "INC_SDL.h"
 #include "Magnetar.h"
+#include "AlcoholCloud.h"
 #include "Player.h"
 #include "Enemy.h"
 #include "attack.h"
@@ -292,18 +293,18 @@ int main(int argc, char* argv[])
 	SDL_Rect blackholeCam = {SCREEN_WIDTH,SCREEN_HEIGHT/2, 300, 300};
 	Player ply(10, loadImage("resources/imgs/starman.png"), 1,gRenderer);
 
+	Enemy emy(10, loadImage("resources/imgs/faxanaduitis.png"), 1,&ply.hit, 'f');
+	emy.setPosition(860, 0);
+	emy.setVelocity(0, 50);
+
 	SDL_Rect healthRect = {0, 0, 177, 33};
 	SDL_Rect healthCam = {30, 30, 177, 33};
 	HyperStar stars(loadImage("resources/imgs/star4.png"),&ply);
+
 	Magnetar mag(&ply, loadImage("resources/imgs/Magnetars.png"));
+	AlcoholCloud ac(&ply, &emy, loadImage("resources/imgs/Alcohol_Cloud.png"), loadImage("resources/imgs/Alcohol_Cloud_Flare_Up.png"), &ply.hit);
 	double ACCEL = ply.GetMove();
 
-  Enemy emy(10, loadImage("resources/imgs/faxanaduitis.png"), 1,&ply.hit, 'f');
-  emy.setPosition(860, 0);
-
-	emy.setVelocity(0, 50);
-	
-	
 	ply.HealthBar(&healthRect);//needed healthbar in player
 	
 	
@@ -317,7 +318,6 @@ int main(int argc, char* argv[])
 
 	while(gameOn)
 	{
-
 		while(SDL_PollEvent(&e))
 		{
 			if (e.type == SDL_QUIT)
@@ -345,6 +345,7 @@ int main(int argc, char* argv[])
 				}
 			}
 		}
+		
 		ACCEL = ply.GetMove();
 		timestep = (SDL_GetTicks() - moveLasttime) / 1000.0;
 		xDeltav = 0.0;
@@ -416,6 +417,7 @@ int main(int argc, char* argv[])
 		pRect = ply.getPlayerRect();
 		pCam = ply.getPlayerCam();
         Uint32 currTime = SDL_GetTicks();
+		
         if(currTime>=6000)
 		{
             //std::cout << currTime % 3000 << std::endl;
@@ -483,7 +485,6 @@ int main(int argc, char* argv[])
                 blackholeCam = {SCREEN_WIDTH,rand() % (SCREEN_HEIGHT-300), 300, 300};
                 bFrames = 0;
             }
-
         }
 	
 		ply.move(xDeltav, yDeltav, timestep);
@@ -529,6 +530,22 @@ int main(int argc, char* argv[])
 		ply.hit.renderAttack(timestep);
 		SDL_RenderCopyEx(gRenderer, ply.getPlayerSheet(), &pRect, &pCam, 0.0, nullptr, flip);
 		SDL_RenderCopyEx(gRenderer, emy.getEnemySheet(), &eRect, &eCam, 0.0, nullptr, flip);
+		
+		if (ac.getDelay() == 0)
+		{
+			ac.setDelay((rand() % 3000) + 5000);
+		}
+		
+		if (currTime >= ac.getDelay())
+		{	
+			if (!ac.Seen())
+			{
+				ac.setYPosition(rand() % 421);
+			}
+			
+			ac.Render();
+		}
+		
 		stars.Render(timestep);
 		SDL_RenderCopy(gRenderer, gHealthbar, &healthRect, &healthCam);
 

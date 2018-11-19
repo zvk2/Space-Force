@@ -16,10 +16,12 @@ Player::Player(int startingHealth, SDL_Texture* characterImages, int attack, SDL
 		playerCam = {1280/2, 720/2, 240, 51};
 		gRenderer = gRend;
 	}
+
 void Player::setAttack(SDL_Texture* gAttack, SDL_Rect* attackRect)
 {
 	hit.setAttack(gAttack,attackRect);
 }
+
 //Set the position of the player on screen
 void Player::setPosition(int x, int y)
 {
@@ -90,10 +92,17 @@ SDL_Rect* Player::getPlayerCamLoc()
 {
 	return &playerCam;
 }
+
 double Player::GetMove()
 {
 	return phys.GetMove();
 }
+
+void Player::ChangeMaxVelocity(double Speed)
+{
+	phys.ChangeMaxSpeed(Speed);
+}
+
 void Player::ChangeMove(double Accel)
 {
 	phys.ChangeMove(Accel);

@@ -178,6 +178,16 @@ SDL_Texture* Enemy::getEnemySheet()
 	return enemySheet;
 }
 
+//Get a pointer to the enemy cam
+SDL_Rect* Enemy::getEnemyCamLoc()
+{
+	return &enemyCam;
+}
+
+void Enemy::ChangeMaxVelocity(double Speed)
+{
+	phys.ChangeMaxSpeed(Speed);
+}
 char Enemy::getType()
 {
 	return type;
