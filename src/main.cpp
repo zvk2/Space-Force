@@ -237,24 +237,26 @@ int main(int argc, char* argv[])
 	}
 	// MENU
 
-	Menu menu;
-	menu.displayMenu(gWindow);
-	int selection = menu.runMenu(gWindow);
-	//std::cout << selection << std::endl;
-	while (selection == 2)
-	{
-		playCredits();
-		selection = menu.runMenu(gWindow);
-	}
-	if (selection == 0)
-	{
-		close();
-		return 0;
-	}
-	if (selection == 1)
-	{
-        gContext = menu.closeMenu();
-	}
+	// Menu menu;
+	// menu.displayMenu(gWindow);
+	// int selection = menu.runMenu(gWindow);
+	// //std::cout << selection << std::endl;
+	// while (selection == 2)
+	// {
+	// 	playCredits();
+	// 	selection = menu.runMenu(gWindow);
+	// }
+	// if (selection == 0)
+	// {
+	// 	close();
+	// 	return 0;
+	// }
+	// if (selection == 1)
+	// {
+ //        gContext = menu.closeMenu();
+	// }
+
+	gContext = SDL_GL_CreateContext(gWindow);
 
 
 	// GAME
