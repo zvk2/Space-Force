@@ -12,6 +12,7 @@
 #include "Menu.h"
 #include <cstdlib>
 #include "HyperStar.h"
+#include "music.h"
 
 
 // Used for file walk (somewhat crudely)
@@ -139,6 +140,10 @@ int close()
 		i = nullptr;
 	}
 
+	music music;
+	//closes out music mixer
+	music.close();
+
 	SDL_DestroyRenderer(gRenderer);
     SDL_GL_DeleteContext(gContext);
 	SDL_DestroyWindow(gWindow);
@@ -255,7 +260,6 @@ int main(int argc, char* argv[])
         gContext = menu.closeMenu();
 	}
 
-
 	// GAME
 	/*
 	- Controls: WASD for movement, Spacebar to shoot
@@ -266,8 +270,6 @@ int main(int argc, char* argv[])
 	gAttack = loadImage("resources/imgs/attack.png");
     gBlackhole = loadImage("resources/imgs/blackhole.png");
 	gHealthbar = loadImage("resources/imgs/healthbar.png");
-
-
 
 	int scrollOffset = 0;
 	int rem = 0;
@@ -298,12 +300,14 @@ int main(int argc, char* argv[])
 	Magnetar mag(&ply, loadImage("resources/imgs/Magnetars.png"));
 	double ACCEL = ply.GetMove();
 
-  Enemy emy(10, loadImage("resources/imgs/faxanaduitis.png"), 1,&ply.hit);
-  emy.setPosition(860, 0);
+  	Enemy emy(10, loadImage("resources/imgs/faxanaduitis.png"), 1,&ply.hit);
+  	emy.setPosition(860, 0);
 	emy.setVelocity(0, 50);
 	
-	
 	ply.HealthBar(&healthRect);//needed healthbar in player
+
+	//used to call playMusic
+	music music;
 	
 	
 	//the beginning/default image and attack box
@@ -316,6 +320,7 @@ int main(int argc, char* argv[])
 
 	while(gameOn)
 	{
+		music.playMusic();
 
 		while(SDL_PollEvent(&e))
 		{
@@ -344,6 +349,7 @@ int main(int argc, char* argv[])
 				}
 			}
 		}
+
 		ACCEL = ply.GetMove();
 		timestep = (SDL_GetTicks() - moveLasttime) / 1000.0;
 		xDeltav = 0.0;
@@ -538,6 +544,7 @@ int main(int argc, char* argv[])
 	{
 		return playCredits();
 	}
+
 	close();
 	//return credits ? playCredits() : close();
 }

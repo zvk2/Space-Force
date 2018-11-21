@@ -6,6 +6,14 @@
 
 bool play = true;
 
+bool init();
+
+//Loads media
+bool loadMedia();
+
+//Frees media and shuts down SDL
+void close();
+
 //The music that will be played
 Mix_Music *gMusic = NULL;
 
@@ -14,7 +22,7 @@ Mix_Chunk *gFire = NULL;
 
 void music :: playMusic()
 {
-	//play = check();
+	play = check();
 
 	if(play){
 
@@ -25,50 +33,52 @@ void music :: playMusic()
  
 void music :: fireSound()
 {
-	//play = check();
+	play = check();
 
 	if(play){
+
 		Mix_PlayChannel( -1, gFire, 0 );
+
 	}
 }
 
-// bool music :: check()
-// {
-// 	if( !init() )
-// 	{
-// 		printf( "Failed to initialize sound!\n" );
-// 		play = false;
-// 	}
+bool music :: check()
+{
+	if( !init() )
+	{
+		printf( "Failed to initialize sound!\n" );
+		play = false;
+	}
 		
-// 	if( !loadMedia() )
-// 	{
-// 		printf( "Failed to load media!\n" );
-// 		play = false;
-// 	}
-// }
+	if( !loadMedia() )
+	{
+		printf( "Failed to load media!\n" );
+		play = false;
+	}
+}
 
-// bool music :: init()
-// {
-// 	//Initialization flag
-// 	success = true;
+bool music :: init()
+{
+	//Initialization flag
+	success = true;
 
-// 	//Initialize SDL
-// 	if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0 )
-// 	{
-// 		printf( "SDL could not initialize! SDL Error: %s\n", SDL_GetError() );
-// 		success = false;
-// 	}
+	//Initialize SDL
+	if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0 )
+	{
+		printf( "SDL could not initialize! SDL Error: %s\n", SDL_GetError() );
+		success = false;
+	}
 	
 
-// 	//Initialize SDL_mixer
-// 	if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0 )
-// 	{
-// 		printf( "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError() );
-// 		success = false;
-// 	}
+	//Initialize SDL_mixer
+	if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0 )
+	{
+		printf( "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError() );
+		success = false;
+	}
 
-// 	return success;
-// }
+	return success;
+}
 
 
 bool music :: loadMedia()
@@ -95,16 +105,16 @@ bool music :: loadMedia()
 	return success;
 }
 
-// void music :: close()
-// {
-// 	//Free the sound effects
-// 	Mix_FreeChunk( gFire );
-// 	gFire = NULL;
+void music :: close()
+{
+	//Free the sound effects
+	Mix_FreeChunk( gFire );
+	gFire = NULL;
 	
-// 	//Free the music
-// 	Mix_FreeMusic( gMusic );
-// 	gMusic = NULL;
+	//Free the music
+	Mix_FreeMusic( gMusic );
+	gMusic = NULL;
 
-// 	//Quit SDL subsystems
-// 	Mix_Quit();
-// }
+	//Quit SDL subsystems
+	Mix_Quit();
+}
