@@ -7,6 +7,7 @@
 #include "physics.h"
 #include "attack.h"
 #include <cmath>
+#include "OpenGLRenderer.hpp"
 #define MAX_SPEED 50
 
 class Player
@@ -116,5 +117,10 @@ class Player
 		//Private method to increase player health
 		void IncrementHealth(int incAmount);
 };
+
+namespace PlayerBuffer
+{
+	void TestSeparateBufferPopulation(OpenGLRenderer *openGL);
+}
 
 #endif

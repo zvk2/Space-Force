@@ -1,5 +1,7 @@
 // TODO INCLUDES
 // Includes
+#ifndef OPENGLRENDERER_HPP
+#define OPENGLRENDERER_HPP
 #include <iostream>
 #include <vector>
 #include <string>
@@ -25,7 +27,6 @@
 // For getting the shaders
 #include "shader.h"
 
-
 #ifdef CreateWindow
 #undef CreateWindow
 #endif
@@ -41,7 +42,7 @@ class RenderObject
 {
 	public:
 		// Constructor
-		RenderObject(double initX, double initY, double initWidth, double initHeight, GLuint initTextureID);
+		RenderObject(double initX, double initY, double initWidth, double initHeight, int numVertices, GLuint initTextureID, GLuint initBufferID);
 		~RenderObject();
 	// Bad taste to make these public
 	// Also probably better to have this just be a stuct or something?
@@ -50,23 +51,36 @@ class RenderObject
 		double y;
 		double width;
 		double height;
+		int numVertices;
 		GLuint textureID;
+		GLuint bufferID;
 };
+
+// Need to think about how to integrate this class with other entity classes
+//~ class RenderObject
+//~ {
+	//~ public:
+		//~ int index;
+		//~ int current_buffer_index;
+		//~ int final_buffer_index;
+		//~ int numVertices;
+		//~ mat4 transformation_matrix;
+//~ };
 
 class OpenGLRenderer
 {
 	public:
 		// Constructor
-		OpenGLRenderer();
+		OpenGLRenderer(SDL_Window*);
 		// Destructor
 		//~ ~OpenGLRenderer();
 		void Close();
-		int CreateWindow();
+		//~ int CreateWindow();
 		// CONTRIVED AT THE MOMENT
 		void PopulateTextures();
 		void AppendRenderObject(RenderObject newRenderObject);
 		void Display();
-	private:
+	//~ private:
 		// Number of vertices (needed to render)
 		int number_of_vertices;
 		// The camera
@@ -75,10 +89,12 @@ class OpenGLRenderer
 		mat4 projection;
 		// An array of objects to render
 		std::vector<RenderObject> renderObjects;
-		// Array of textures
+		// Vector of textures
 		std::vector<GLuint> textureIDs;
-		// Array of buffers
+		// Vector of buffers
 		std::vector<GLuint> bufferIDs;
+		// Vector of vertex arrays
+		std::vector<GLuint> vaoIDs;
 		// TODO
 		// The window to display to
 		SDL_Window* gWindow;
@@ -87,3 +103,9 @@ class OpenGLRenderer
 		// The "program" (shaders) used
 		GLuint program;
 };
+
+GLfloat CanonicalCoordinatesFromPixels(int pixels, int dimension);
+
+void PopulateDefault2DBuffer(OpenGLRenderer* openGL, char *file_name, int width, int height);
+void PopulateDefault2DBuffers(OpenGLRenderer* openGL, char *file_name, int width, int height, int rows, int columns);
+#endif
