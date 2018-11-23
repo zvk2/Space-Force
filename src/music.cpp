@@ -7,11 +7,7 @@
 bool play = true;
 
 bool init();
-
-//Loads media
 bool loadMedia();
-
-//Frees media and shuts down SDL
 void close();
 
 //The music that will be played

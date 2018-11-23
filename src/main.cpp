@@ -320,7 +320,7 @@ int main(int argc, char* argv[])
 
 	while(gameOn)
 	{
-		music.playMusic();
+		//music.playMusic();
 
 		while(SDL_PollEvent(&e))
 		{
@@ -529,6 +529,9 @@ int main(int argc, char* argv[])
 		{
 			up = false;
 			ply.hit.addAttack(pCam.x + 240,pCam.y + 51/2);
+
+			//play fire sound effect
+			music.fireSound();
 		}
 		//lets the attack move across the screen
 		ply.hit.renderAttack(timestep);
