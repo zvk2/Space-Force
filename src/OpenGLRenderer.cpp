@@ -5,22 +5,48 @@
 
 // TODO GLOBALS? PERHAPS I SHOULD MAKE THEM MERELY ATTRBUTES?
 
+// Get coords from pixels
+GLfloat CanonicalCoordinatesFromPixels(int pixels, int dimension)
+{
+	return (pixels - (dimension / 2.0)) / (dimension / 2.0);
+}
+
 // Need to think about how to integrate this class with other entity classes
 // Constructor
-RenderObject::RenderObject(double initX, double initY, double initWidth, double initHeight, int vertices, GLuint initTextureID, GLuint initBufferID)
+RenderObject::RenderObject(GLfloat initX, GLfloat initY, GLfloat initZ, GLfloat initWidth, GLfloat initHeight, int vertices, GLuint initTextureID, GLuint initBufferID)
+//~ RenderObject::RenderObject(GLfloat initX, GLfloat initY, GLfloat initWidth, GLfloat initHeight, int vertices, GLuint initTextureID, GLuint initBufferID)
 {
 	// I guess I am supposed to use an initializer list, but hey
-	x = initX;
-	y = initY;
+	//~ x = initX;
+	//~ y = initY;
+	//~ x = CanonicalCoordinatesFromPixels(initX, SCREEN_WIDTH) + 1;
+	//~ y = -CanonicalCoordinatesFromPixels(initY, SCREEN_HEIGHT) - 1;
+	//~ std::cout << x << " " << y << std::endl;
+	// TODO CONTRIVED
+	z = initZ;
+	// z = initZ;
 	width = initWidth;
 	height = initHeight;
 	numVertices = vertices;
 	textureID = initTextureID;
 	bufferID = initBufferID;
+	//~ ctm = translation_matrix(x, y, 0);
+
+	ChangeCoordinates(initX, initY);
+
+	//~ print_mat4(ctm);
 }
 // Destructor
 // EMPTY FOR NOW
 RenderObject::~RenderObject() {};
+
+// Change coordinates
+void RenderObject::ChangeCoordinates(GLfloat newX, GLfloat newY)
+{
+	x = CanonicalCoordinatesFromPixels(newX, SCREEN_WIDTH) + 1;
+	y = -CanonicalCoordinatesFromPixels(newY, SCREEN_HEIGHT) - 1;
+	ctm = translation_matrix(x, y, 0);
+}
 
 // Need to think about how to integrate this class with other entity classes
 // Constructor
@@ -33,7 +59,7 @@ RenderObject::~RenderObject() {};
 OpenGLRenderer::OpenGLRenderer(SDL_Window* window)
 {
 	// Initialzie renderObjects to an empty vector (can be dynamically populated)
-	renderObjects = std::vector<RenderObject>();
+	renderObjects = std::vector<RenderObject*>();
 
 	// Assign window
 	gWindow = window;
@@ -65,6 +91,7 @@ OpenGLRenderer::OpenGLRenderer(SDL_Window* window)
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
 	// Sync buffer swap with monitor vertical refresh (attempt to avoid flicker/tear)
+	// TODO REMOVE
 	SDL_GL_SetSwapInterval(1);
 
 	// Init GLEW
@@ -79,11 +106,6 @@ OpenGLRenderer::OpenGLRenderer(SDL_Window* window)
 	Shader shader("ztest");
 	program = shader.getProgram();
 
-	// Vertex array object, basically what to send to be rendered
-	//~ GLuint vao;
-	//~ glGenVertexArrays(1, &vao);
-	//~ glBindVertexArray(vao);
-
 	// If you want black
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 
@@ -91,6 +113,9 @@ OpenGLRenderer::OpenGLRenderer(SDL_Window* window)
 	// (For dealing with transparency, don't want blasted blocks all over!)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	// Transformation matrix
+	ctmLocation = glGetUniformLocation(program, "ctm");
 
 	// Get the textures
 	// BAD
@@ -123,8 +148,9 @@ void OpenGLRenderer::Close()
 	renderObjects.clear();
 }
 // This just appends the render object
-void OpenGLRenderer::AppendRenderObject(RenderObject newRenderObject)
+void OpenGLRenderer::AppendRenderObject(RenderObject *newRenderObject)
 {
+	newRenderObject->index = renderObjects.size();
 	renderObjects.push_back(newRenderObject);
 }
 // TODO
@@ -146,17 +172,17 @@ void OpenGLRenderer::Display()
 	// Iterate over every object to render
 	for (auto currentObject: renderObjects)
 	{
-		std::cout << currentObject.textureID << std::endl;
+		std::cout << currentObject->textureID << std::endl;
 		// AREN'T SUPPOSED TO HAVE A BUNCH OF VAOS BUT WHATEVER
-		glBindVertexArray(vaoIDs[currentObject.textureID]);
+		glBindVertexArray(vaoIDs[currentObject->bufferID]);
 		// Which texture to use
 		// (Somewhat crude)
-		glBindTexture(GL_TEXTURE_2D, textureIDs[currentObject.textureID]);
+		glBindTexture(GL_TEXTURE_2D, textureIDs[currentObject->textureID]);
 		// Also pick the right buffer
-		glBindBuffer(GL_ARRAY_BUFFER, bufferIDs[currentObject.textureID]);
+		glBindBuffer(GL_ARRAY_BUFFER, bufferIDs[currentObject->bufferID]);
 
-		// Didn't add a transform matrix yet
-		//~ ctm_location = glGetUniformLocation(program, "ctm");
+		// Transformation matrix
+		glUniformMatrix4fv(ctmLocation, 1, GL_FALSE, (GLfloat *) &currentObject->ctm);
 
 		// Enable the texture
 		// TECHNICALLY CAN BE USED TO SWAP TEXTURES IN AN ARRAY
@@ -164,7 +190,7 @@ void OpenGLRenderer::Display()
 		glUniform1i(glGetUniformLocation(program, "texture"), 0);
 
 		// Draw vertices in the buffer
-		glDrawArrays(GL_TRIANGLES, 0, currentObject.numVertices);
+		glDrawArrays(GL_TRIANGLES, 0, currentObject->numVertices);
 	}
 
 	//~ // Get rid of faces in the wrong direction
@@ -180,25 +206,27 @@ void OpenGLRenderer::Display()
 	SDL_GL_SwapWindow(gWindow);
 }
 
-GLfloat CanonicalCoordinatesFromPixels(int pixels, int dimension)
-{
-	return (pixels - (dimension / 2.0)) / (dimension / 2.0);
-}
-
 void PopulateDefault2DBuffer(
 	OpenGLRenderer* openGL,
 	char *textureName,
 	int width,
 	int height,
+	GLfloat z,
 	GLfloat tex_left,
 	GLfloat tex_right,
 	GLfloat tex_bottom,
 	GLfloat tex_top
 )
 {
-	int current_buffer = openGL->textureIDs.size();
-	openGL->textureIDs.push_back(current_buffer);
+	int current_buffer = openGL->bufferIDs.size();
+	int current_texture = openGL->textureIDs.size();
+	int current_vao = openGL->vaoIDs.size();
+	openGL->textureIDs.push_back(current_texture);
 	openGL->bufferIDs.push_back(current_buffer);
+	openGL->vaoIDs.push_back(current_vao);
+
+	glGenVertexArrays(1, &openGL->vaoIDs[current_vao]);
+	glBindVertexArray(openGL->vaoIDs[current_vao]);
 
 	// Get a cstyle string for loading the image
 	//~ char textureName[] = file_name;
@@ -270,12 +298,12 @@ void PopulateDefault2DBuffer(
 	// One rectangle
 	// WE SHOULD PROBABLY HAVE A USER-DEFINED z
 	vec4 vertices[6] = {
-		{left,  top,  0.5, 1.0},	// front top left
-		{left, bottom,  0.5, 1.0},	// front bottom left
-		{ right, bottom,  0.5, 1.0},	// front bottom right
-		{left,  top,  0.5, 1.0},	// front top left
-		{ right, bottom,  0.5, 1.0},	// front bottom right
-		{ right,  top,  0.5, 1.0},	// front top right
+		{left,  top,  z, 1.0},	// front top left
+		{left, bottom,  z, 1.0},	// front bottom left
+		{ right, bottom,  z, 1.0},	// front bottom right
+		{left,  top,  z, 1.0},	// front top left
+		{ right, bottom,  z, 1.0},	// front bottom right
+		{ right,  top,  z, 1.0},	// front top right
 	};
 
 	// **PLEASE NOTE THIS IS UPSIDE DOWN**

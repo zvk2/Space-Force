@@ -42,18 +42,28 @@ class RenderObject
 {
 	public:
 		// Constructor
-		RenderObject(double initX, double initY, double initWidth, double initHeight, int numVertices, GLuint initTextureID, GLuint initBufferID);
+		RenderObject(GLfloat initX, GLfloat initY, GLfloat initZ, GLfloat initWidth, GLfloat initHeight, int numVertices, GLuint initTextureID, GLuint initBufferID);
+		//~ RenderObject(GLfloat initX, GLfloat initY, GLfloat initWidth, GLfloat initHeight, int numVertices, GLuint initTextureID, GLuint initBufferID);
 		~RenderObject();
+		void ChangeCoordinates(GLfloat newX, GLfloat newY);
 	// Bad taste to make these public
 	// Also probably better to have this just be a stuct or something?
 	//~ private:
-		double x;
-		double y;
-		double width;
-		double height;
+		GLfloat x;
+		GLfloat y;
+		GLfloat z;
+		GLfloat width;
+		GLfloat height;
+		// I theoretically *could* have a mapping from bufferID to numVertices or something, but I don't know...
 		int numVertices;
 		GLuint textureID;
 		GLuint bufferID;
+		// bufferID should be the same as the vaoID
+		// GLuint vaoID;
+		// Transformation matrix?
+		mat4 ctm;
+		// Index in renderObjects (in OpenGLRenderer)
+		int index;
 };
 
 // Need to think about how to integrate this class with other entity classes
@@ -78,7 +88,7 @@ class OpenGLRenderer
 		//~ int CreateWindow();
 		// CONTRIVED AT THE MOMENT
 		void PopulateTextures();
-		void AppendRenderObject(RenderObject newRenderObject);
+		void AppendRenderObject(RenderObject *newRenderObject);
 		void Display();
 	//~ private:
 		// Number of vertices (needed to render)
@@ -88,7 +98,7 @@ class OpenGLRenderer
 		// The projection (frustum, etc)
 		mat4 projection;
 		// An array of objects to render
-		std::vector<RenderObject> renderObjects;
+		std::vector<RenderObject*> renderObjects;
 		// Vector of textures
 		std::vector<GLuint> textureIDs;
 		// Vector of buffers
@@ -100,6 +110,8 @@ class OpenGLRenderer
 		SDL_Window* gWindow;
 		// The opengl context handle
 		SDL_GLContext mainContext;
+		// CTM Location
+		GLuint ctmLocation;
 		// The "program" (shaders) used
 		GLuint program;
 };

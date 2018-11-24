@@ -358,16 +358,16 @@ int main(int argc, char* argv[]) {
 
 	// Rough sketch of a RenderObject?
 	RenderObject test = RenderObject(
-		0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 6, 0, 0
+		0, 0, 0.5, SCREEN_WIDTH, SCREEN_HEIGHT, 6, 0, 0
 	);
 
 	RenderObject test2 = RenderObject(
-		0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 6, 1, 1
+		0, 0, 0.6, SCREEN_WIDTH, SCREEN_HEIGHT, 6, 1, 1
 	);
 
 	// Crude idea of how to add to render queue?
-	openGL.AppendRenderObject(test);
-	openGL.AppendRenderObject(test2);
+	openGL.AppendRenderObject(&test);
+	openGL.AppendRenderObject(&test2);
 
 	// Displays stuff
 	openGL.Display();
