@@ -118,6 +118,26 @@ class OpenGLRenderer
 
 GLfloat CanonicalCoordinatesFromPixels(int pixels, int dimension);
 
-void PopulateDefault2DBuffer(OpenGLRenderer* openGL, char *file_name, int width, int height);
-void PopulateDefault2DBuffers(OpenGLRenderer* openGL, char *file_name, int width, int height, int rows, int columns);
+GLuint PopulateDefault2DBuffer(
+	OpenGLRenderer* openGL,
+	GLuint textureID,
+	int width,
+	int height,
+	//~ GLfloat z,
+	GLfloat texLeft,
+	GLfloat texRight,
+	GLfloat texBottom,
+	GLfloat texTop
+);
+void PopulateDefault2DBuffers(
+	OpenGLRenderer* openGL,
+	char *file_name,
+	int width,
+	int height,
+	int rows,
+	int columns,
+	//~ GLfloat z,
+	GLuint *startBuffer,
+	GLuint *endBuffer
+);
 #endif

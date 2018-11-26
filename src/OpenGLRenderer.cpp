@@ -182,6 +182,7 @@ void OpenGLRenderer::Display()
 		glBindBuffer(GL_ARRAY_BUFFER, bufferIDs[currentObject->bufferID]);
 
 		// Transformation matrix
+		//~ std::cout << "x: " << currentObject->ctm.w.x << " Y: " << currentObject->ctm.w.y << std::endl;
 		glUniformMatrix4fv(ctmLocation, 1, GL_FALSE, (GLfloat *) &currentObject->ctm);
 
 		// Enable the texture
@@ -206,27 +207,118 @@ void OpenGLRenderer::Display()
 	SDL_GL_SwapWindow(gWindow);
 }
 
-void PopulateDefault2DBuffer(
+GLuint PopulateDefault2DBuffer(
+	OpenGLRenderer* openGL,
+	//~ char *textureName,
+	GLuint currentTexture,
+	int width,
+	int height,
+	//~ GLfloat z,
+	GLfloat texLeft,
+	GLfloat texRight,
+	GLfloat texBottom,
+	GLfloat texTop
+)
+{
+	//~ int currentTexture = openGL->textureIDs.size();
+	int currentBuffer = openGL->bufferIDs.size();
+	int currentVao = openGL->vaoIDs.size();
+	//~ openGL->textureIDs.push_back(currentTexture);
+	openGL->bufferIDs.push_back(currentBuffer);
+	openGL->vaoIDs.push_back(currentVao);
+
+	glGenVertexArrays(1, &openGL->vaoIDs[currentVao]);
+	glBindVertexArray(openGL->vaoIDs[currentVao]);
+
+	// Texture parameters
+	// Basically, repeat if you need to and linear interpolation for texel -> pixel
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	// Contrived for one rectangle
+	int numVertices = 6;
+	int verticesSize = numVertices * sizeof(vec4);
+
+	GLfloat bottom = -CanonicalCoordinatesFromPixels(height, SCREEN_HEIGHT);
+	GLfloat right = CanonicalCoordinatesFromPixels(width, SCREEN_WIDTH);
+	GLfloat top = 1;
+	GLfloat left = -1;
+
+	// z is 0 due to a contrivance
+
+	// One rectangle
+	// WE SHOULD PROBABLY HAVE A USER-DEFINED z
+	vec4 vertices[6] = {
+		{left,  top,  z, 1.0},	// front top left
+		{left, bottom,  z, 1.0},	// front bottom left
+		{ right, bottom,  z, 1.0},	// front bottom right
+		{left,  top,  z, 1.0},	// front top left
+		{ right, bottom,  z, 1.0},	// front bottom right
+		{ right,  top,  z, 1.0},	// front top right
+	};
+
+	//~ std::cout << "Left: " << left << " Top: " << top << std::endl;
+	//~ std::cout << "Right: " << right << " Bottom: " << bottom << std::endl;
+
+	// **PLEASE NOTE THIS IS UPSIDE DOWN**
+	// Why? I think (though I am not sure) that the surface pixels from SDL are upside down
+	// That is, (0, 0) is top left from SDL's perspective, HOWEVER (0, 1) is top left from OpenGL's perspective
+	vec2 texCoord[6] = {
+		{texLeft, texTop},
+		{texLeft, texBottom},
+		{texRight, texBottom},
+		{texLeft, texTop},
+		{texRight, texBottom},
+		{texRight, texTop},
+	};
+
+	// Describes how we will be sending data out to be rendered
+	glGenBuffers(1, &openGL->bufferIDs[currentBuffer]);
+	glBindBuffer(GL_ARRAY_BUFFER, openGL->bufferIDs[currentBuffer]);
+	// Full buffer
+	glBufferData(GL_ARRAY_BUFFER, verticesSize + sizeof(texCoord), NULL, GL_STATIC_DRAW);
+	// Vertices
+	glBufferSubData(GL_ARRAY_BUFFER, 0, verticesSize, vertices);
+	// Texture stuff
+	glBufferSubData(GL_ARRAY_BUFFER, verticesSize, sizeof(texCoord), texCoord);
+
+	// Info for position (vec4 at the moment)
+	GLuint vPosition = glGetAttribLocation(openGL->program, "vPosition");
+	glEnableVertexAttribArray(vPosition);
+	glVertexAttribPointer(vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+
+	// Info for the texture (vec2 at the moment)
+	GLuint vTexCoord = glGetAttribLocation(openGL->program, "vTexCoord");
+	glEnableVertexAttribArray(vTexCoord);
+	glVertexAttribPointer(vTexCoord, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid *) verticesSize);
+
+	return currentBuffer;
+}
+void PopulateDefault2DBuffers(
 	OpenGLRenderer* openGL,
 	char *textureName,
 	int width,
 	int height,
-	GLfloat z,
-	GLfloat tex_left,
-	GLfloat tex_right,
-	GLfloat tex_bottom,
-	GLfloat tex_top
+	int rows,
+	int columns,
+	//~ GLfloat z,
+	GLuint *bufferStart,
+	GLuint *bufferEnd
 )
 {
-	int current_buffer = openGL->bufferIDs.size();
-	int current_texture = openGL->textureIDs.size();
-	int current_vao = openGL->vaoIDs.size();
-	openGL->textureIDs.push_back(current_texture);
-	openGL->bufferIDs.push_back(current_buffer);
-	openGL->vaoIDs.push_back(current_vao);
+	int currentRow = 0;
+	int currentColumn = 0;
 
-	glGenVertexArrays(1, &openGL->vaoIDs[current_vao]);
-	glBindVertexArray(openGL->vaoIDs[current_vao]);
+	GLfloat currentRowCoordinate = 0;
+	GLfloat rowOffset = 1 / rows;
+	GLfloat currentColumnCoordinate = 0;
+	GLfloat columnOffset = 1 / columns;
+
+	// Get texture
+	int currentTexture = openGL->textureIDs.size();
+	openGL->textureIDs.push_back(currentTexture);
 
 	// Get a cstyle string for loading the image
 	//~ char textureName[] = file_name;
@@ -244,9 +336,9 @@ void PopulateDefault2DBuffer(
 	}
 
 	// Indicate we want to make a new texture
-	glGenTextures(1, &openGL->textureIDs[current_buffer]);
+	glGenTextures(1, &openGL->textureIDs[currentTexture]);
 	// Indicate where this new texture will be bound
-	glBindTexture(GL_TEXTURE_2D, openGL->textureIDs[current_buffer]);
+	glBindTexture(GL_TEXTURE_2D, openGL->textureIDs[currentTexture]);
 
 	// Default to RGB
 	int mode = GL_RGB;
@@ -279,92 +371,32 @@ void PopulateDefault2DBuffer(
 		surface->pixels
 	);
 
-	// Texture parameters
-	// Basically, repeat if you need to and linear interpolation for texel -> pixel
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	while (currentRow < rows)
+	{
+		while (currentColumn < columns)
+		{
+			GLuint currentBuffer = PopulateDefault2DBuffer(
+				openGL,
+				currentTexture,
+				width,
+				height,
+				//~ z,
+				currentColumnCoordinate,
+				currentColumnCoordinate + columnOffset,
+				currentRowCoordinate + rowOffset,
+				currentRowCoordinate
+			);
 
-	// Contrived for one rectangle
-	int numVertices = 6;
-	int verticesSize = numVertices * sizeof(vec4);
+			currentColumnCoordinate += columnOffset;
+			currentColumn++;
+		}
 
-	GLfloat bottom = 1 - CanonicalCoordinatesFromPixels(height, SCREEN_HEIGHT);
-	GLfloat right = -1 + CanonicalCoordinatesFromPixels(width, SCREEN_WIDTH);
-	GLfloat top = 1;
-	GLfloat left = -1;
-
-	// One rectangle
-	// WE SHOULD PROBABLY HAVE A USER-DEFINED z
-	vec4 vertices[6] = {
-		{left,  top,  z, 1.0},	// front top left
-		{left, bottom,  z, 1.0},	// front bottom left
-		{ right, bottom,  z, 1.0},	// front bottom right
-		{left,  top,  z, 1.0},	// front top left
-		{ right, bottom,  z, 1.0},	// front bottom right
-		{ right,  top,  z, 1.0},	// front top right
-	};
-
-	// **PLEASE NOTE THIS IS UPSIDE DOWN**
-	// Why? I think (though I am not sure) that the surface pixels from SDL are upside down
-	// That is, (0, 0) is top left from SDL's perspective, HOWEVER (0, 1) is top left from OpenGL's perspective
-	vec2 texCoord[6] = {
-		{tex_left, tex_top},
-		{tex_left, tex_bottom},
-		{tex_right, tex_bottom},
-		{tex_left, tex_top},
-		{tex_right, tex_bottom},
-		{tex_right, tex_top},
-	};
-
-	// Describes how we will be sending data out to be rendered
-	glGenBuffers(1, &openGL->bufferIDs[current_buffer]);
-	glBindBuffer(GL_ARRAY_BUFFER, openGL->bufferIDs[current_buffer]);
-	// Full buffer
-	glBufferData(GL_ARRAY_BUFFER, verticesSize + sizeof(texCoord), NULL, GL_STATIC_DRAW);
-	// Vertices
-	glBufferSubData(GL_ARRAY_BUFFER, 0, verticesSize, vertices);
-	// Texture stuff
-	glBufferSubData(GL_ARRAY_BUFFER, verticesSize, sizeof(texCoord), texCoord);
-
-	// Info for position (vec4 at the moment)
-	GLuint vPosition = glGetAttribLocation(openGL->program, "vPosition");
-	glEnableVertexAttribArray(vPosition);
-	glVertexAttribPointer(vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
-
-	// Info for the texture (vec2 at the moment)
-	GLuint vTexCoord = glGetAttribLocation(openGL->program, "vTexCoord");
-	glEnableVertexAttribArray(vTexCoord);
-	glVertexAttribPointer(vTexCoord, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid *) verticesSize);
+		currentRowCoordinate += rowOffset;
+		currentRow++;
+	}
 
 	// FREE THE SURFACE
 	SDL_FreeSurface(surface);
-}
-void PopulateDefault2DBuffers(
-	OpenGLRenderer* openGL,
-	char *textureName,
-	int width,
-	int height,
-	int rows,
-	int columns
-)
-{
-	int current_row = 0;
-	int current_column = 0;
-
-	GLfloat current_row_coordinate = 0;
-	GLfloat row_offset = 1 / rows;
-	GLfloat current_column_coordinate = 0;
-	GLfloat column_offset = 1 / columns;
-
-	while (current_row < rows)
-	{
-		while (current_column < columns)
-		{
-
-		}
-	}
 }
 
 // This main function exists to test OpenGLRenderer
