@@ -212,14 +212,15 @@ int Menu::runMenu(SDL_Window* window)
 					option = 1; 
 					break;
 				}
-				/*
+				
 				if (x > SCREEN_WIDTH/2 - BUTTON_WIDTH/2 && x < SCREEN_WIDTH/2 + BUTTON_WIDTH/2 && y > SCREEN_HEIGHT/5 + 50 && y < SCREEN_HEIGHT/5 + BUTTON_HEIGHT + 50)
 				{
 					// 'Multiplayer' button clicked
 					running = false;
+					option = 3;
 					break;
 				}
-				*/
+				
 				if (x > SCREEN_WIDTH/2 - BUTTON_WIDTH/2 && x < SCREEN_WIDTH/2 + BUTTON_WIDTH/2 && y > SCREEN_HEIGHT/5 + 100 && y < SCREEN_HEIGHT/5 + BUTTON_HEIGHT + 100)
 				{
 					// 'Credits' button clicked

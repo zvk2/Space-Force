@@ -11,6 +11,7 @@
 #include "attack.h"
 #include "blackhole.h"
 #include "Menu.h"
+#include "ClientInterface.h"
 #include <cstdlib>
 #include "HyperStar.h"
 
@@ -51,6 +52,7 @@ SDL_Texture* gBlackhole;
 SDL_Texture* gPlayerSheet;
 SDL_Texture* gHealthbar;
 std::vector<SDL_Texture*> gTex;
+ClientInterface* client;
 
 bool init()
 {
@@ -106,6 +108,8 @@ bool init()
 		std::cout << "SDL_image could not initialize! SDL_image Error: " << IMG_GetError() << std::endl;
 		return false;
 	}
+	client = new ClientInterface();	
+	
 
 	return true;
 }
@@ -251,7 +255,7 @@ int main(int argc, char* argv[])
 		close();
 		return 0;
 	}
-	if (selection == 1)
+	if (selection == 1 || selection == 3)
 	{
         gContext = menu.closeMenu();
 	}
@@ -274,6 +278,8 @@ int main(int argc, char* argv[])
 	int rem = 0;
 	double xDeltav = 0.0;
 	double yDeltav = 0.0;
+	double x2DeltaV = 0.0;
+	double y2DeltaV = 0.0;
 	bool create;
 
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
@@ -288,10 +294,12 @@ int main(int argc, char* argv[])
 	Uint32 moveLasttime = SDL_GetTicks();
 	double timestep = 0;
 	SDL_Rect attackRect = {0, 0, 60, 10};
+	SDL_Rect attackRect2 = {0, 0, 60, 10};
 	//SDL_Rect attackCam = {SCREEN_WIDTH+80, SCREEN_HEIGHT/2+51/2, 80, 20};
 	SDL_Rect blackholeRect = {0, 0, 300, 300};
 	SDL_Rect blackholeCam = {SCREEN_WIDTH,SCREEN_HEIGHT/2, 300, 300};
-	Player ply(10, loadImage("resources/imgs/starman.png"), 1,gRenderer);
+	Player ply(10, loadImage("resources/imgs/starman.png"), 1, gRenderer);
+	Player ply2(10, loadImage("resources/imgs/starman_blue.png"), 1, gRenderer);
 
 	Enemy emy(10, loadImage("resources/imgs/faxanaduitis.png"), 1,&ply.hit, 'f');
 	emy.setPosition(860, 0);
@@ -302,22 +310,31 @@ int main(int argc, char* argv[])
 	HyperStar stars(loadImage("resources/imgs/star4.png"),&ply);
 
 	Magnetar mag(&ply, loadImage("resources/imgs/Magnetars.png"));
-	AlcoholCloud ac(&ply, &emy, loadImage("resources/imgs/Alcohol_Cloud.png"), loadImage("resources/imgs/Alcohol_Cloud_Flare_Up.png"), &ply.hit);
+
+	//~ Removed for demo
+	// AlcoholCloud ac(&ply, &emy, loadImage("resources/imgs/Alcohol_Cloud.png"), loadImage("resources/imgs/Alcohol_Cloud_Flare_Up.png"), &ply.hit);
 	double ACCEL = ply.GetMove();
 
 	ply.HealthBar(&healthRect);//needed healthbar in player
 	
+	mag.Multiplayer(&ply2);
 	
 	//the beginning/default image and attack box
 	ply.hit.setAttack(gAttack,&attackRect);
+	ply2.hit.setAttack(gAttack, &attackRect2);
 	SDL_Event e;
 	bool gameOn = true;
 	bool up = true;
 	bool credits = true;
     double emyDelta = 1;
+    int connected = 0;
 
 	while(gameOn)
 	{
+		if(selection == 3 && !connected){
+			connected = client->Connect();
+		}
+
 		while(SDL_PollEvent(&e))
 		{
 			if (e.type == SDL_QUIT)
@@ -350,6 +367,8 @@ int main(int argc, char* argv[])
 		timestep = (SDL_GetTicks() - moveLasttime) / 1000.0;
 		xDeltav = 0.0;
 		yDeltav = 0.0;
+		x2DeltaV = 0.0;
+		y2DeltaV = 0.0;
 
 		// WASD movement
 		const Uint8* keyState = SDL_GetKeyboardState(nullptr);
@@ -375,6 +394,13 @@ int main(int argc, char* argv[])
 
 		SDL_Rect pRect = ply.getPlayerRect();
 		SDL_Rect pCam = ply.getPlayerCam();
+		SDL_Rect pRect2 = ply2.getPlayerRect();
+		SDL_Rect pCam2 = ply.getPlayerCam();
+		SDL_Rect transfer;
+		
+		if(connected){
+			transfer = client->Communicate(pCam);
+		}
 
 		SDL_Rect eRect = emy.getEnemyRect();
 		SDL_Rect eCam = emy.getEnemyCam();
@@ -402,6 +428,10 @@ int main(int argc, char* argv[])
 		frames += 1 % 1000000000;
 
 		ply.animate(frames);
+		if(connected){
+			ply2.animate(frames);
+		}
+
 		emy.animate(frames);
 				
 
@@ -416,6 +446,12 @@ int main(int argc, char* argv[])
 
 		pRect = ply.getPlayerRect();
 		pCam = ply.getPlayerCam();
+
+		pRect2 = ply2.getPlayerRect();
+		if(connected){
+			transfer = client->Communicate(pCam);
+		}
+
         Uint32 currTime = SDL_GetTicks();
 		
         if(currTime>=6000)
@@ -495,7 +531,7 @@ int main(int argc, char* argv[])
 			//ply.LostHealth(1);
 			if (healthRect.x == 1770)
 			{
-				return playCredits();	
+				return playCredits();
 			}
 			else
 			{
@@ -517,6 +553,13 @@ int main(int argc, char* argv[])
 		}
 		*/
 		pCam = ply.getPlayerCam();
+
+		if(connected){
+			transfer = client->Communicate(pCam);
+		}
+		pCam2.x = transfer.x;
+		pCam2.y = transfer.y;
+
 		eCam = emy.getEnemyCam();
 
         //attack button
@@ -530,23 +573,28 @@ int main(int argc, char* argv[])
 		ply.hit.renderAttack(timestep);
 		SDL_RenderCopyEx(gRenderer, ply.getPlayerSheet(), &pRect, &pCam, 0.0, nullptr, flip);
 		SDL_RenderCopyEx(gRenderer, emy.getEnemySheet(), &eRect, &eCam, 0.0, nullptr, flip);
+
 		
-		if (ac.getDelay() == 0)
-		{
-			ac.setDelay((rand() % 3000) + 5000);
-		}
+		//~ removed for demo
+		// if (ac.getDelay() == 0)
+		// {
+		// 	ac.setDelay((rand() % 3000) + 5000);
+		// }
 		
-		if (currTime >= ac.getDelay())
-		{	
-			if (!ac.Seen())
-			{
-				ac.setYPosition(rand() % 421);
-			}
+		// if (currTime >= ac.getDelay())
+		// {	
+		// 	if (!ac.Seen())
+		// 	{
+		// 		ac.setYPosition(rand() % 421);
+		// 	}
 			
-			ac.Render();
-		}
+		// 	ac.Render();
+		// }
 		
 		stars.Render(timestep);
+
+		SDL_RenderCopyEx(gRenderer, ply2.getPlayerSheet(), &pRect2, &pCam2, 0.0, nullptr, flip);
+
 		SDL_RenderCopy(gRenderer, gHealthbar, &healthRect, &healthCam);
 
 		SDL_RenderPresent(gRenderer);

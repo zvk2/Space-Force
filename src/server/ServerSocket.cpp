@@ -102,6 +102,7 @@ void ServerSocket::CheckForConnections()
 					strcpy( dataBuffer, ACCEPTED.c_str() );
 					int msgLength = strlen(dataBuffer) + 1;
 					SDLNet_TCP_Send(clientList[free], (void *)dataBuffer, msgLength);
+					printf("New client connection at %d\n", free);
 					break;
 				}
 			}
