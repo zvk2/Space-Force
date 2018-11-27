@@ -5,7 +5,6 @@
 #include "Player.h"
 #include "INC_SDL.h"
 #include "physics.h"
-#include "Player.h"
 #include "OpenGLRenderer.hpp"
 #define MAX_SPEED 50
 
@@ -103,9 +102,4 @@ class Enemy
 		void DecrementSpeed(int lostSpeed);
 
 };
-
-namespace EnemyBuffer
-{
-	void TestSeparateBufferPopulation(OpenGLRenderer *openGL);
-}
 #endif

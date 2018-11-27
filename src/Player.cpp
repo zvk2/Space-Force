@@ -17,6 +17,22 @@
 				playerRect = {0, 0, 300, 51};
 				playerCam = {1280/2, 720/2, 300, 51};
 				gRenderer = gRend;
+
+				// This, uh, shouldn't be statically stored, but I will get to that
+				//~ render = RenderObject(
+					//~ // x
+					//~ 0,
+					//~ // y
+					//~ 0,
+					//~ // z
+					//~ 0.5,
+					//~ // width
+					//~ SCREEN_WIDTH,
+					//~ // height
+					//~ SCREEN_HEIGHT,
+					//~ // Buffer attributes
+					//~ BufferAttributes PlayerBuffer::bufferAttributes
+				//~ );
 			}
 		void Player::setAttack(SDL_Texture* gAttack, SDL_Rect* attackRect)
 		{
@@ -221,36 +237,4 @@ bool Player::checkEnemyCollision(Enemy* e, double tstep)
 		return true;
 	}
 	return false;
-}
-
-namespace PlayerBuffer
-{
-	GLuint startBuffer;
-	GLuint endBuffer;
-
-	char textureName[] = "resources/test.png";
-
-	void TestSeparateBufferPopulation(OpenGLRenderer *openGL)
-	{
-		PopulateDefault2DBuffers(
-			// OpenGL instance
-			openGL,
-			// File Name
-			textureName,
-			// Width
-			1280,
-			// Height
-			720,
-			// Row
-			1,
-			// Columns
-			1,
-			// Z
-			0.5,
-			// Start Buffer
-			&startBuffer,
-			// End Buffer
-			&endBuffer
-		);
-	}
 }

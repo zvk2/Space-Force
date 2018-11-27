@@ -215,35 +215,3 @@ void Enemy::DecrementSpeed(int lostSpeed)
 		speed -= lostSpeed;
 	}
 }
-
-namespace EnemyBuffer
-{
-	GLuint startBuffer;
-	GLuint endBuffer;
-
-	char textureName[] = "resources/test2.png";
-
-	void TestSeparateBufferPopulation(OpenGLRenderer *openGL)
-	{
-		PopulateDefault2DBuffers(
-			// OpenGL instance
-			openGL,
-			// File Name
-			textureName,
-			// Width
-			1280,
-			// Height
-			720,
-			// Row
-			1,
-			// Columns
-			1,
-			// Z
-			0.5,
-			// Start Buffer
-			&startBuffer,
-			// End Buffer
-			&endBuffer
-		);
-	}
-}

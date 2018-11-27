@@ -51,7 +51,6 @@ class Player
 		//Get the current rectangle from the sprite sheet
 		SDL_Rect getPlayerRect();
 
-
 		//Get the player sprite sheet
 		SDL_Texture* getPlayerSheet();
 
@@ -116,11 +115,8 @@ class Player
 
 		//Private method to increase player health
 		void IncrementHealth(int incAmount);
+
+		// Render Object
+		//~ RenderObject render;
 };
-
-namespace PlayerBuffer
-{
-	void TestSeparateBufferPopulation(OpenGLRenderer *openGL);
-}
-
 #endif

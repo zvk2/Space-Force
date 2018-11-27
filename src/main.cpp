@@ -1,6 +1,7 @@
 // Includes
 #include <iostream>
 #include <vector>
+#include <map>
 #include <string>
 #include <cstring>
 #include "INC_SDL.h"
@@ -51,6 +52,9 @@ SDL_Texture* gBlackhole;
 SDL_Texture* gPlayerSheet;
 SDL_Texture* gHealthbar;
 std::vector<SDL_Texture*> gTex;
+
+// Spaghetti code, sorry
+std::map<std::string, BufferAttributes> allBufferAttributes;
 
 bool init()
 {
@@ -238,139 +242,20 @@ int main(int argc, char* argv[]) {
 	// MENU
 
 	//~ std::cout << "Make renderer" << std::endl;
-	OpenGLRenderer openGL = OpenGLRenderer(gWindow);
-
-	//~ std::cout << "Make 0s" << std::endl;
-	// Just copied
-	// Add to openGL.textureIDs (needed to bind texture when rendering)
-		//~ openGL.textureIDs.push_back(openGL.textureIDs.size());
-		//~ openGL.bufferIDs.push_back(openGL.bufferIDs.size());
-
-		//~ // Get a cstyle string for loading the image
-		//~ char textureName[] = "resources/test2.png";
-
-		//~ // Debug output the name of the texture (make sure stuff isn't broken)
-		//~ std::cout << textureName << std::endl;
-
-		//~ // Load the image as a surface (don't need a texture, can be surface for the pixel data)
-		//~ SDL_Surface* surface = IMG_Load(textureName);
-
-		//~ // If something bad happened
-		//~ if (surface == nullptr)
-		//~ {
-			//~ std::cout << "Unable to load image " << textureName << "! SDL Error: " << SDL_GetError() << std::endl;
-		//~ }
-
-		//~ // Indicate we want to make a new texture
-		//~ glGenTextures(1, &openGL.textureIDs[0]);
-		//~ // Indicate where this new texture will be bound
-		//~ glBindTexture(GL_TEXTURE_2D, openGL.textureIDs[0]);
-
-		//~ // Default to RGB
-		//~ int mode = GL_RGB;
-
-		//~ // Otherwise account for alpha channel (we will probably usually have alpha)
-		//~ if(surface->format->BytesPerPixel == 4) {
-			//~ mode = GL_RGBA;
-		//~ }
-
-		//~ // Slam in the texture
-		//~ glTexImage2D(
-			//~ // Target: Here we just say to make it a 2D texture (there are other complicated things for like cubes and stuff)
-			//~ GL_TEXTURE_2D,
-			//~ // Level of detail (basically for mipmapping an image (shrinking it)
-			//~ // 0 here means don't mipmap to reduce it (ie, the base image)
-			//~ 0,
-			//~ // Internal format: how the bytes represent the colors
-			//~ mode,
-			//~ // Width
-			//~ surface->w,
-			//~ // Height
-			//~ surface->h,
-			//~ // The width of the border? Apparently this should *always* be 0
-			//~ 0,
-			//~ // The format for the texels ("3D" texture pixels)
-			//~ mode,
-			//~ // How exactly the texels should be passed to OpenGL
-			//~ GL_UNSIGNED_BYTE,
-			//~ // The pixels data itself, we rip it from the surface
-			//~ surface->pixels
-		//~ );
-
-		//~ // Texture parameters
-		//~ // Basically, repeat if you need to and linear interpolation for texel -> pixel
-		//~ glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		//~ glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		//~ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		//~ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		//~ // Contrived for one rectangle
-		//~ int numVertices = 6;
-		//~ int verticesSize = numVertices * sizeof(vec4);
-
-		//~ // One face of a cube
-		//~ vec4 vertices[6] = {
-			//~ {-0.5,  0.5,  0.5, 1.0},	// front top left
-			//~ {-0.5, -0.5,  0.5, 1.0},	// front bottom left
-			//~ { 0.5, -0.5,  0.5, 1.0},	// front bottom right
-			//~ {-0.5,  0.5,  0.5, 1.0},	// front top left
-			//~ { 0.5, -0.5,  0.5, 1.0},	// front bottom right
-			//~ { 0.5,  0.5,  0.5, 1.0},	// front top right
-		//~ };
-
-		//~ // **PLEASE NOTE THIS IS UPSIDE DOWN**
-		//~ // Why? I think (though I am not sure) that the surface pixels from SDL are upside down
-		//~ // That is, (0, 0) is top left from SDL's perspective, HOWEVER (0, 1) is top left from OpenGL's perspective
-		//~ vec2 texCoord[6] = {
-			//~ {0.0, 0.0},
-			//~ {0.0, 1.0},
-			//~ {1.0, 1.0},
-			//~ {0.0, 0.0},
-			//~ {1.0, 1.0},
-			//~ {1.0, 0.0},
-		//~ };
-
-		//~ // Describes how we will be sending data out to be rendered
-		//~ glGenBuffers(1, &openGL.bufferIDs[0]);
-		//~ glBindBuffer(GL_ARRAY_BUFFER, openGL.bufferIDs[0]);
-		//~ // Full buffer
-		//~ glBufferData(GL_ARRAY_BUFFER, verticesSize + sizeof(texCoord), NULL, GL_STATIC_DRAW);
-		//~ // Vertices
-		//~ glBufferSubData(GL_ARRAY_BUFFER, 0, verticesSize, vertices);
-		//~ // Texture stuff
-		//~ glBufferSubData(GL_ARRAY_BUFFER, verticesSize, sizeof(texCoord), texCoord);
-
-		//~ // Info for position (vec4 at the moment)
-		//~ GLuint vPosition = glGetAttribLocation(openGL.program, "vPosition");
-		//~ glEnableVertexAttribArray(vPosition);
-		//~ glVertexAttribPointer(vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
-
-		//~ // Info for the texture (vec2 at the moment)
-		//~ GLuint vTexCoord = glGetAttribLocation(openGL.program, "vTexCoord");
-		//~ glEnableVertexAttribArray(vTexCoord);
-		//~ glVertexAttribPointer(vTexCoord, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid *) verticesSize);
-
-		//~ // FREE THE SURFACE
-		//~ SDL_FreeSurface(surface);
-
-	PlayerBuffer::TestSeparateBufferPopulation(&openGL);
-	EnemyBuffer::TestSeparateBufferPopulation(&openGL);
+	OpenGLRenderer openGL = OpenGLRenderer(gWindow, &allBufferAttributes);
 
 	// Rough sketch of a RenderObject?
-	RenderObject test = RenderObject(
-		0, 0, 0.5, SCREEN_WIDTH, SCREEN_HEIGHT, 6, 0, 0
+	RenderObject *test = new RenderObject(
+		0, 0, 0.5, allBufferAttributes["resources/test.png"]
 	);
 
-	RenderObject test2 = RenderObject(
-		0, 0, 0.6, SCREEN_WIDTH, SCREEN_HEIGHT, 6, 1, 1
+	RenderObject *test2 = new RenderObject(
+		0, 0, 0.6, allBufferAttributes["resources/test2.png"]
 	);
 
 	// Crude idea of how to add to render queue?
-	openGL.AppendRenderObject(&test);
-	openGL.AppendRenderObject(&test2);
-
-	// Displays stuff
-	openGL.Display();
+	openGL.AppendRenderObject(test);
+	openGL.AppendRenderObject(test2);
 
 	bool loop = 1;
 	while (loop)
@@ -395,6 +280,9 @@ int main(int argc, char* argv[]) {
 				}
 			}
 		}
+
+		// Displays stuff
+		openGL.Display();
 	}
 
 	openGL.Close();

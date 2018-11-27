@@ -13,39 +13,29 @@ GLfloat CanonicalCoordinatesFromPixels(int pixels, int dimension)
 
 // Need to think about how to integrate this class with other entity classes
 // Constructor
-RenderObject::RenderObject(GLfloat initX, GLfloat initY, GLfloat initZ, GLfloat initWidth, GLfloat initHeight, int vertices, GLuint initTextureID, GLuint initBufferID)
+RenderObject::RenderObject(GLfloat initX, GLfloat initY, GLfloat initZ, BufferAttributes initBufferAttributes)
 //~ RenderObject::RenderObject(GLfloat initX, GLfloat initY, GLfloat initWidth, GLfloat initHeight, int vertices, GLuint initTextureID, GLuint initBufferID)
 {
 	// I guess I am supposed to use an initializer list, but hey
-	//~ x = initX;
-	//~ y = initY;
-	//~ x = CanonicalCoordinatesFromPixels(initX, SCREEN_WIDTH) + 1;
-	//~ y = -CanonicalCoordinatesFromPixels(initY, SCREEN_HEIGHT) - 1;
-	//~ std::cout << x << " " << y << std::endl;
-	// TODO CONTRIVED
-	z = initZ;
-	// z = initZ;
-	width = initWidth;
-	height = initHeight;
-	numVertices = vertices;
-	textureID = initTextureID;
-	bufferID = initBufferID;
+	bufferAttributes = initBufferAttributes;
+
+	currentBufferID = bufferAttributes.bufferIDStart;
+
 	//~ ctm = translation_matrix(x, y, 0);
 
-	ChangeCoordinates(initX, initY);
-
-	//~ print_mat4(ctm);
+	ChangeCoordinates(initX, initY, initZ);
 }
 // Destructor
 // EMPTY FOR NOW
 RenderObject::~RenderObject() {};
 
 // Change coordinates
-void RenderObject::ChangeCoordinates(GLfloat newX, GLfloat newY)
+void RenderObject::ChangeCoordinates(GLfloat newX, GLfloat newY, GLfloat newZ)
 {
 	x = CanonicalCoordinatesFromPixels(newX, SCREEN_WIDTH) + 1;
 	y = -CanonicalCoordinatesFromPixels(newY, SCREEN_HEIGHT) - 1;
-	ctm = translation_matrix(x, y, 0);
+	z = newZ;
+	ctm = translation_matrix(x, y, z);
 }
 
 // Need to think about how to integrate this class with other entity classes
@@ -56,8 +46,11 @@ void RenderObject::ChangeCoordinates(GLfloat newX, GLfloat newY)
 //~ RenderObject::~RenderObject() {};
 
 // Constructor
-OpenGLRenderer::OpenGLRenderer(SDL_Window* window)
+OpenGLRenderer::OpenGLRenderer(SDL_Window* window, std::map<std::string, BufferAttributes> *initAllBufferAttributes)
 {
+	// Make sure buffer matched up
+	allBufferAttributes = initAllBufferAttributes;
+
 	// Initialzie renderObjects to an empty vector (can be dynamically populated)
 	renderObjects = std::vector<RenderObject*>();
 
@@ -118,23 +111,35 @@ OpenGLRenderer::OpenGLRenderer(SDL_Window* window)
 	ctmLocation = glGetUniformLocation(program, "ctm");
 
 	// Get the textures
-	// BAD
-	//~ PopulateTextures();
+	PopulateTextures();
 }
-// Destructor
-// Not really the right way of freeing, methinks
-//~ OpenGLRenderer::~OpenGLRenderer()
-//~ {
-	//~ // Delete our OpengL context
-	//~ SDL_GL_DeleteContext(mainContext);
-
-	//~ SDL_DestroyWindow(gWindow);
-	//~ gWindow = nullptr;
-
-	//~ // Delete vector
-	//~ // BAD
-	//~ renderObjects.clear();
-//~ }
+void OpenGLRenderer::PopulateTextures()
+{
+	// Crude!
+	TextureGenerator textureGenerators[2] =
+	{
+		{1280, 720, 1, 1, "resources/test.png"},
+		{1280, 720, 1, 1, "resources/test2.png"},
+	};
+	// Iterate over every texture to generate
+	for (auto currentGenerator: textureGenerators)
+	{
+		PopulateDefault2DBuffers(
+			// OpenGL instance
+			this,
+			// File Name
+			currentGenerator.textureName,
+			// Width
+			currentGenerator.width,
+			// Height
+			currentGenerator.height,
+			// Row
+			currentGenerator.rows,
+			// Columns
+			currentGenerator.columns
+		);
+	}
+}
 void OpenGLRenderer::Close()
 {
 	// Delete our OpengL context
@@ -145,6 +150,11 @@ void OpenGLRenderer::Close()
 
 	// Delete vector
 	// BAD
+	for (int i=0; i<renderObjects.size(); i++)
+	{
+		delete renderObjects[i];
+	}
+
 	renderObjects.clear();
 }
 // This just appends the render object
@@ -154,16 +164,18 @@ void OpenGLRenderer::AppendRenderObject(RenderObject *newRenderObject)
 	renderObjects.push_back(newRenderObject);
 }
 // TODO
-//~ void OpenGLRenderer::RemoveRenderObject(int index)
-//~ {
-	//~ // Decrement indices
-	//~ for (auto object: renderObjects)
-	//~ {
-		//~ object.index -= 1;
-	//~ }
-	//~ // Actually remove the object
-	//~ renderObjects.erase(renderObjects.begin() + index);
-//~ }
+void OpenGLRenderer::RemoveRenderObject(int index)
+{
+	// Decrement indices
+	for (int i=index; i<renderObjects.size(); i++)
+	{
+		renderObjects[i]->index -= 1;
+	}
+	// Obviously, render objects need to be dynamically allocated before this can be used
+	delete renderObjects[index];
+	// Actually remove the object
+	renderObjects.erase(renderObjects.begin() + index);
+}
 void OpenGLRenderer::Display()
 {
 	// Clear initially
@@ -172,14 +184,17 @@ void OpenGLRenderer::Display()
 	// Iterate over every object to render
 	for (auto currentObject: renderObjects)
 	{
-		std::cout << currentObject->textureID << std::endl;
+		// Note dereference, world is a fuf
+		BufferAttributes bufferAttributes = currentObject->bufferAttributes;
+
+		//~ std::cout << bufferAttributes.textureID << std::endl;
 		// AREN'T SUPPOSED TO HAVE A BUNCH OF VAOS BUT WHATEVER
-		glBindVertexArray(vaoIDs[currentObject->bufferID]);
+		glBindVertexArray(vaoIDs[currentObject->currentBufferID]);
 		// Which texture to use
 		// (Somewhat crude)
-		glBindTexture(GL_TEXTURE_2D, textureIDs[currentObject->textureID]);
+		glBindTexture(GL_TEXTURE_2D, textureIDs[bufferAttributes.textureID]);
 		// Also pick the right buffer
-		glBindBuffer(GL_ARRAY_BUFFER, bufferIDs[currentObject->bufferID]);
+		glBindBuffer(GL_ARRAY_BUFFER, bufferIDs[currentObject->currentBufferID]);
 
 		// Transformation matrix
 		//~ std::cout << "x: " << currentObject->ctm.w.x << " Y: " << currentObject->ctm.w.y << std::endl;
@@ -191,7 +206,7 @@ void OpenGLRenderer::Display()
 		glUniform1i(glGetUniformLocation(program, "texture"), 0);
 
 		// Draw vertices in the buffer
-		glDrawArrays(GL_TRIANGLES, 0, currentObject->numVertices);
+		glDrawArrays(GL_TRIANGLES, 0, bufferAttributes.numVertices);
 	}
 
 	//~ // Get rid of faces in the wrong direction
@@ -247,6 +262,7 @@ GLuint PopulateDefault2DBuffer(
 	GLfloat left = -1;
 
 	// z is 0 due to a contrivance
+	GLfloat z = 0;
 
 	// One rectangle
 	// WE SHOULD PROBABLY HAVE A USER-DEFINED z
@@ -302,10 +318,8 @@ void PopulateDefault2DBuffers(
 	int width,
 	int height,
 	int rows,
-	int columns,
-	//~ GLfloat z,
-	GLuint *bufferStart,
-	GLuint *bufferEnd
+	int columns
+	//~ BufferAttributes *bufferAttributes
 )
 {
 	int currentRow = 0;
@@ -317,11 +331,11 @@ void PopulateDefault2DBuffers(
 	GLfloat columnOffset = 1 / columns;
 
 	// Get texture
-	int currentTexture = openGL->textureIDs.size();
+	GLuint currentTexture = openGL->textureIDs.size();
 	openGL->textureIDs.push_back(currentTexture);
 
 	// Get a cstyle string for loading the image
-	//~ char textureName[] = file_name;
+	//~ char textureName[] = fileName;
 
 	// Debug output the name of the texture (make sure stuff isn't broken)
 	std::cout << textureName << std::endl;
@@ -371,6 +385,8 @@ void PopulateDefault2DBuffers(
 		surface->pixels
 	);
 
+	GLuint firstBuffer = openGL->bufferIDs.size();
+	GLuint bufferOffset = 0;
 	while (currentRow < rows)
 	{
 		while (currentColumn < columns)
@@ -389,63 +405,32 @@ void PopulateDefault2DBuffers(
 
 			currentColumnCoordinate += columnOffset;
 			currentColumn++;
+
+			bufferOffset++;
 		}
 
 		currentRowCoordinate += rowOffset;
 		currentRow++;
 	}
 
+	// Note dereference, world is a fuf
+	std::map<std::string, BufferAttributes> *currentBufferAttributes = openGL->allBufferAttributes;
+	(*currentBufferAttributes)[textureName] = {
+		// Width
+		(GLfloat)width,
+		// Height
+		(GLfloat)height,
+		// verts
+		// contrived for now to 2d (3d will be individually defined, methinks)
+		6,
+		// texture
+		currentTexture,
+		// buffer start
+		firstBuffer,
+		// buffer end (changed at the conclusion)
+		firstBuffer + bufferOffset
+	};
+
 	// FREE THE SURFACE
 	SDL_FreeSurface(surface);
 }
-
-// This main function exists to test OpenGLRenderer
-//~ int main(int argc, char* argv[])
-//~ {
-	//~ // Spawn an instance of OpenGLRenderer
-	//~ OpenGLRenderer openGL = OpenGLRenderer();
-
-	//~ // Rough sketch of a RenderObject?
-	//~ RenderObject test = RenderObject(
-		//~ 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0
-	//~ );
-
-	//~ RenderObject test2 = RenderObject(
-		//~ 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 1
-	//~ );
-
-	//~ // Crude idea of how to add to render queue?
-	//~ openGL.AppendRenderObject(test);
-	//~ openGL.AppendRenderObject(test2);
-
-	//~ // Displays stuff
-	//~ openGL.Display();
-
-	//~ bool loop = 1;
-	//~ while (loop)
-	//~ {
-		//~ SDL_Event event;
-		//~ while (SDL_PollEvent(&event))
-		//~ {
-			//~ if (event.type == SDL_QUIT)
-				//~ loop = false;
-			//~ if (event.type == SDL_KEYDOWN)
-			//~ {
-				//~ switch (event.key.keysym.sym)
-				//~ {
-				//~ case SDLK_ESCAPE:
-					//~ loop = false;
-					//~ break;
-				//~ case SDLK_q:
-					//~ loop = false;
-					//~ break;
-				//~ default:
-					//~ break;
-				//~ }
-			//~ }
-		//~ }
-	//~ }
-
-	//~ openGL.Close();
-	//~ return -1;
-//~ }

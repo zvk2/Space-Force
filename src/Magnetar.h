@@ -1,3 +1,5 @@
+#ifndef MAGNETAR_HPP
+#define MAGNETAR_HPP
 #include "INC_SDL.h"
 #include "Player.h"
 class Magnetar
@@ -6,8 +8,8 @@ class Magnetar
 		Magnetar(Player* main, SDL_Texture* gIm);
 		void Render();
 		bool Seen();
-		
-		
+
+
 	private:
 	int frame;
 	SDL_Texture* im;
@@ -18,3 +20,4 @@ class Magnetar
 	SDL_Renderer* gRenderer;
 	bool onScreen;
 };
+#endif
