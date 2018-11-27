@@ -241,22 +241,43 @@ int main(int argc, char* argv[]) {
 	}
 	// MENU
 
+	// FPS params
+	Uint32 fpsLasttime = SDL_GetTicks();
+	Uint32 fpsCurtime = 0;
+	Uint32 moveLasttime = SDL_GetTicks();
+	double timestep = 0;
+
 	//~ std::cout << "Make renderer" << std::endl;
 	OpenGLRenderer openGL = OpenGLRenderer(gWindow, &allBufferAttributes);
 
 	// Rough sketch of a RenderObject?
 	RenderObject *test = new RenderObject(
-		0, 0, 0.5, allBufferAttributes["resources/test.png"]
+		//~ 0, 0, 0.5, allBufferAttributes["resources/test.png"]
+		0, 0, -0.99, allBufferAttributes["resources/imgs/space_2_background.png"]
 	);
 
 	RenderObject *test2 = new RenderObject(
-		0, 0, 0.6, allBufferAttributes["resources/test2.png"]
+		0, 0, 0.75, allBufferAttributes["resources/test2.png"]
+	);
+
+	RenderObject *test3 = new RenderObject(
+		SCREEN_WIDTH, 0, -0.99, allBufferAttributes["resources/imgs/space_2_background.png"]
+	);
+
+	RenderObject *test4 = new RenderObject(
+		0, 0.5, 0.80, allBufferAttributes["resources/test2.png"]
 	);
 
 	// Crude idea of how to add to render queue?
 	openGL.AppendRenderObject(test);
+
+	openGL.AppendRenderObject(test3);
+
 	openGL.AppendRenderObject(test2);
 
+	openGL.AppendRenderObject(test4);
+
+	int use_test4 = 1;
 	bool loop = 1;
 	while (loop)
 	{
@@ -279,6 +300,24 @@ int main(int argc, char* argv[]) {
 					break;
 				}
 			}
+		}
+
+		//~ timestep = (SDL_GetTicks() - moveLasttime) / 1000.0;
+
+		test->ChangeCoordinates(test->x - 1, test->y, test->z);
+		test3->ChangeCoordinates(test3->x - 1, test3->y, test3->z);
+		if (use_test4)
+		test4->ChangeCoordinates(test4->x - 1, test4->y, test4->z);
+
+		if (test->x < -SCREEN_WIDTH)
+		{
+			test->ChangeCoordinates(0, test->y, test->z);
+			test3->ChangeCoordinates(SCREEN_WIDTH, test3->y, test3->z);
+			if (use_test4)
+			{
+				openGL.RemoveRenderObject(test4->index);
+			}
+			use_test4 = 0;
 		}
 
 		// Displays stuff

@@ -32,10 +32,12 @@ RenderObject::~RenderObject() {};
 // Change coordinates
 void RenderObject::ChangeCoordinates(GLfloat newX, GLfloat newY, GLfloat newZ)
 {
-	x = CanonicalCoordinatesFromPixels(newX, SCREEN_WIDTH) + 1;
-	y = -CanonicalCoordinatesFromPixels(newY, SCREEN_HEIGHT) - 1;
+	x = newX;
+	y = newY;
+	GLfloat trX = CanonicalCoordinatesFromPixels(newX, SCREEN_WIDTH) + 1;
+	GLfloat trY = -CanonicalCoordinatesFromPixels(newY, SCREEN_HEIGHT) - 1;
 	z = newZ;
-	ctm = translation_matrix(x, y, z);
+	ctm = translation_matrix(trX, trY, z);
 }
 
 // Need to think about how to integrate this class with other entity classes
@@ -85,7 +87,7 @@ OpenGLRenderer::OpenGLRenderer(SDL_Window* window, std::map<std::string, BufferA
 
 	// Sync buffer swap with monitor vertical refresh (attempt to avoid flicker/tear)
 	// TODO REMOVE
-	SDL_GL_SetSwapInterval(1);
+	//~ SDL_GL_SetSwapInterval(1);
 
 	// Init GLEW
 	// Apparently, this is needed for Apple. Thanks to Ross Vander for letting me (headerphile) know
@@ -107,6 +109,12 @@ OpenGLRenderer::OpenGLRenderer(SDL_Window* window, std::map<std::string, BufferA
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	// Depth testing
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
+	// Clip outside
+	glEnable(GL_CULL_FACE);
+
 	// Transformation matrix
 	ctmLocation = glGetUniformLocation(program, "ctm");
 
@@ -116,10 +124,11 @@ OpenGLRenderer::OpenGLRenderer(SDL_Window* window, std::map<std::string, BufferA
 void OpenGLRenderer::PopulateTextures()
 {
 	// Crude!
-	TextureGenerator textureGenerators[2] =
+	TextureGenerator textureGenerators[] =
 	{
 		{1280, 720, 1, 1, "resources/test.png"},
 		{1280, 720, 1, 1, "resources/test2.png"},
+		{1280, 720, 1, 1, "resources/imgs/space_2_background.png"},
 	};
 	// Iterate over every texture to generate
 	for (auto currentGenerator: textureGenerators)
@@ -171,7 +180,8 @@ void OpenGLRenderer::RemoveRenderObject(int index)
 	{
 		renderObjects[i]->index -= 1;
 	}
-	// Obviously, render objects need to be dynamically allocated before this can be used
+	// Uhh... it might be a bad idea to delete renderObjects here?
+	// Problem is other things might call it before then
 	delete renderObjects[index];
 	// Actually remove the object
 	renderObjects.erase(renderObjects.begin() + index);
