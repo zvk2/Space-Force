@@ -147,6 +147,11 @@ void OpenGLRenderer::PopulateTextures()
 		{1, 6, "resources/imgs/starman_blue.png"},
 		{1, 6, "resources/imgs/starman_green.png"},
 		{1, 16, "resources/imgs/WingedShield.png"},
+		// For menu soon
+		{1, 1, "resources/imgs/titlescreen.png"},
+		{1, 2, "resources/imgs/start.png"},
+		{1, 2, "resources/imgs/multi.png"},
+		{1, 2, "resources/imgs/credits.png"},
 	};
 	// Iterate over every texture to generate
 	for (auto currentGenerator: textureGenerators)
