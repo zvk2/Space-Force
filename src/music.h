@@ -14,6 +14,7 @@ class music
 {
 
 	public:
+		void Set();
 		void playMusic();
 
 		void fireSound();

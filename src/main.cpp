@@ -328,7 +328,7 @@ int main(int argc, char* argv[])
 
 	//used to call playMusic
 	music mus;
-	
+	mus.Set();
 	mag.Multiplayer(&ply2);
 	
 	//the beginning/default image and attack box

@@ -24,10 +24,12 @@ void music :: playMusic()
 
 	}
 }
- 
+ void music::Set()
+ {
+	 play = check();
+ }
 void music :: fireSound()
 {
-	play = check();
 
 	if(play){
 
