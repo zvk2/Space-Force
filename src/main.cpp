@@ -233,6 +233,9 @@ int playCredits()
 
 int main(int argc, char* argv[])
 {
+
+	bool Multiplayer = false;
+
 	if (!init())
 	{
 		std::cout <<  "Failed to initialize!" << std::endl;
@@ -257,6 +260,10 @@ int main(int argc, char* argv[])
 	}
 	if (selection == 1 || selection == 3)
 	{
+		if(selection == 3){
+			Multiplayer = true;
+		}
+		cout << "SELECTION " << selection << endl;
         gContext = menu.closeMenu();
 	}
 
@@ -397,10 +404,6 @@ int main(int argc, char* argv[])
 		SDL_Rect pRect2 = ply2.getPlayerRect();
 		SDL_Rect pCam2 = ply.getPlayerCam();
 		SDL_Rect transfer;
-		
-		if(connected){
-			transfer = client->Communicate(pCam);
-		}
 
 		SDL_Rect eRect = emy.getEnemyRect();
 		SDL_Rect eCam = emy.getEnemyCam();
@@ -448,9 +451,6 @@ int main(int argc, char* argv[])
 		pCam = ply.getPlayerCam();
 
 		pRect2 = ply2.getPlayerRect();
-		if(connected){
-			transfer = client->Communicate(pCam);
-		}
 
         Uint32 currTime = SDL_GetTicks();
 		
@@ -593,7 +593,9 @@ int main(int argc, char* argv[])
 		
 		stars.Render(timestep);
 
-		SDL_RenderCopyEx(gRenderer, ply2.getPlayerSheet(), &pRect2, &pCam2, 0.0, nullptr, flip);
+		if(Multiplayer){
+			SDL_RenderCopyEx(gRenderer, ply2.getPlayerSheet(), &pRect2, &pCam2, 0.0, nullptr, flip);
+		}
 
 		SDL_RenderCopy(gRenderer, gHealthbar, &healthRect, &healthCam);
 
