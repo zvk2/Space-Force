@@ -131,20 +131,22 @@ void OpenGLRenderer::PopulateTextures()
 		{1, 1, "resources/imgs/space_2_background.png"},
 		{1, 1, "resources/imgs/attack.png"},
 		{1, 6, "resources/imgs/blackhole.png"},
+		// TODO REVISE
 		{1, 1, "resources/imgs/chatter_box.png"},
 		{1, 4, "resources/imgs/faxanaduitis.png"},
-		//~ {1, 1, "resources/imgs/health.png"},
-		{1, 1, "resources/imgs/healthbar.png"},
-		{1, 1, "resources/imgs/kill_everything.png"},
-		{1, 1, "resources/imgs/Magnetars.png"},
-		{1, 1, "resources/imgs/missile.png"},
+		{1, 1, "resources/imgs/health.png"},
+		{1, 10, "resources/imgs/healthbar.png"},
+		{1, 2, "resources/imgs/kill_everything.png"},
+		{3, 1, "resources/imgs/Magnetars.png"},
+		{1, 8, "resources/imgs/missile.png"},
 		{1, 1, "resources/imgs/multi.png"},
 		{1, 1, "resources/imgs/small_asteroid.png"},
-		{1, 1, "resources/imgs/SpeedUp.png"},
-		{1, 1, "resources/imgs/starman.png"},
-		{1, 1, "resources/imgs/starman_blue.png"},
-		{1, 1, "resources/imgs/starman_green.png"},
-		{1, 1, "resources/imgs/WingedShield.png"},
+		// I think?
+		{1, 16, "resources/imgs/SpeedUp.png"},
+		{1, 6, "resources/imgs/starman.png"},
+		{1, 6, "resources/imgs/starman_blue.png"},
+		{1, 6, "resources/imgs/starman_green.png"},
+		{1, 16, "resources/imgs/WingedShield.png"},
 	};
 	// Iterate over every texture to generate
 	for (auto currentGenerator: textureGenerators)
