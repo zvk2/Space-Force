@@ -321,8 +321,9 @@ int main(int argc, char* argv[])
 
 	SDL_Rect healthRect = {0, 0, 177, 33};
 	SDL_Rect healthCam = {30, 30, 177, 33};
+	
 	HyperStar stars(loadImage("resources/imgs/star4.png"),&ply);
-
+	blackhole enemyBlackhole(loadImage("resources/imgs/blackhole.png"), &ply);
 	Magnetar mag(&ply, loadImage("resources/imgs/Magnetars.png"));
 
 	//~ Removed for demo
@@ -476,14 +477,15 @@ int main(int argc, char* argv[])
 		}
         if(currTime >= 5000)
         {
-            int bFrames;
-            if(currTime % 5000 == 0)
+            //int bFrames;
+            if((currTime % 5000 < 50 && !enemyBlackhole.seen()) || enemyBlackhole.seen())
             {
-                SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
-                bFrames = 0;
+                //SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
+                //bFrames = 0;
                 //blackhole vacuum(gRenderer,gBlackhole,&blackholeRect,blackholeCam);
+				enemyBlackhole.showBlackhole(xDeltav, yDeltav, timestep);
             }
-            else
+         /*    else
             {
                 bFrames++;
 
@@ -527,7 +529,7 @@ int main(int argc, char* argv[])
             {
                 blackholeCam = {SCREEN_WIDTH,rand() % (SCREEN_HEIGHT-300), 300, 300};
                 bFrames = 0;
-            }
+            } */
         }
 
 		ply.move(xDeltav, yDeltav, timestep);
