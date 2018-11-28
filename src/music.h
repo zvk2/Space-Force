@@ -32,6 +32,8 @@ class music
 		Mix_Chunk *gFire;
 
 		bool success;
+		
+		bool play;
 
 };
 

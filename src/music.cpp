@@ -4,17 +4,15 @@
 #include "music.h"
 #include "SDL_mixer.h"
 
-bool play = true;
 
-bool init();
-bool loadMedia();
-void close();
+
+
 
 //The music that will be played
-Mix_Music *gMusic = NULL;
+
 
 //The sound effects that will be used
-Mix_Chunk *gFire = NULL;
+
 
 void music :: playMusic()
 {
@@ -33,7 +31,7 @@ void music :: fireSound()
 
 	if(play){
 
-		Mix_PlayChannel( -1, gFire, 0 );
+		Mix_PlayChannel( 1, gFire, 0 );
 
 	}
 }
@@ -55,6 +53,8 @@ bool music :: check()
 
 bool music :: init()
 {
+	gMusic = nullptr;
+	gFire = nullptr;
 	//Initialization flag
 	success = true;
 

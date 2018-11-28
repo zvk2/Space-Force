@@ -307,7 +307,7 @@ int main(int argc, char* argv[])
 	ply.HealthBar(&healthRect);//needed healthbar in player
 
 	//used to call playMusic
-	music music;
+	music mus;
 	
 	
 	//the beginning/default image and attack box
@@ -320,7 +320,7 @@ int main(int argc, char* argv[])
 
 	while(gameOn)
 	{
-		//music.playMusic();
+		//mus.playMusic();
 
 		while(SDL_PollEvent(&e))
 		{
@@ -531,7 +531,7 @@ int main(int argc, char* argv[])
 			ply.hit.addAttack(pCam.x + 240,pCam.y + 51/2);
 
 			//play fire sound effect
-			music.fireSound();
+			mus.fireSound();
 		}
 		//lets the attack move across the screen
 		ply.hit.renderAttack(timestep);
