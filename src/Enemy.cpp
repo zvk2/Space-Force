@@ -6,10 +6,13 @@
  
 //Public methods 
 
-Enemy::Enemy(int startingHealth, SDL_Texture* characterImages, int attac, attack* player, char _type): 
-	hitPoints(startingHealth), enemySheet(characterImages),
-	attackPower(attac), phys(0, 0, 300.0, 3600.0), xCoord(1280/8), yCoord(720/2), plyBlast(player), type(_type)
+Enemy::Enemy(Player* p, int startingHealth, SDL_Texture* characterImages, int attac, attack* player, char _type, double* tstep): 
+	ply(p), hitPoints(startingHealth), enemySheet(characterImages),
+	attackPower(attac), phys(0, 0, 300.0, 3600.0), xCoord(1280/8), yCoord(720/2), plyBlast(player), type(_type), timestep(tstep)
 	{
+		frame = 0;
+		emyDelta = 1;
+		gRenderer = ply->getRend();
 		enemyRect = {0, 0, 144, 87};
 		enemyCam = {1280/2, 720/2, 144, 87};
 	}
@@ -68,82 +71,10 @@ void Enemy::setVelocity(double x, double y)
 	phys.setyVelocity(y);
 }
 
-//Methods that can be called from model class
-void Enemy::move(double xdvel, double ydvel, double tstep)
-{
-	phys.ChangeVelocity(xdvel, ydvel, tstep);
-	
-	xCoord += (phys.getxVelocity() * tstep);
-	yCoord += (phys.getyVelocity() * tstep);
-	
-	CheckBoundaries();
-	checkAttacked();
-	enemyCam.x = (int) xCoord;
-	enemyCam.y = (int) yCoord;
-}
 void Enemy::checkAttacked()
 {
 	//how many times an enemy been hit
 	int hits = plyBlast->hitIntersect(&enemyCam);
-}
-// Animate jet propulsion
-void Enemy::animate(int frames)
-{
-	enemyRect.x = ((frames / 10) % 4) * enemyRect.w;
-}
-
-//Check for collision with the player
-void Enemy::checkPlayerCollision(Player* p, double tstep)
-{
-	if (hasCollision(p))
-	{
-		double newPVelocityx = p->getxVel();
-		double newPVelocityy = p->getyVel();
-		double newEVelocityx = phys.getxVelocity();
-		double newEVelocityy = phys.getyVelocity();
-		
-		xCoord -= (newEVelocityx * tstep);
-		yCoord -= (newEVelocityy * tstep);
-		
-		if (std::abs(newPVelocityx) > std::abs(newEVelocityx))
-		{
-			newEVelocityx = newEVelocityx + newPVelocityx;
-			newPVelocityx = 0;
-		}
-		else if (std::abs(newPVelocityx) < std::abs(newEVelocityx))
-		{
-			newPVelocityx = newPVelocityx + newEVelocityx;
-			newEVelocityx = 0;
-		}
-		else if (newPVelocityx == -newEVelocityx)
-		{
-			newPVelocityx = 0;
-			newEVelocityx = 0;
-		}
-		
-		if (std::abs(newPVelocityy) > std::abs(newEVelocityy))
-		{
-			newEVelocityy = newEVelocityy + newPVelocityy;
-			newPVelocityy = 0;
-		}
-		else if (std::abs(newPVelocityy) < std::abs(newEVelocityy))
-		{
-			newPVelocityy = newPVelocityy + newEVelocityy;
-			newEVelocityy = 0;
-		}
-		else if (newPVelocityy == -newEVelocityy)
-		{
-			newPVelocityy = 0;
-			newEVelocityy = 0;
-		}
-		
-		phys.setxVelocity(newEVelocityx);
-		phys.setyVelocity(newEVelocityy);
-		p->setVelocity(newPVelocityx, newPVelocityy);
-		
-		enemyCam.x = (int) xCoord;
-		enemyCam.y = (int) yCoord;
-	}
 }
 
 //Return the current x velocity
@@ -193,7 +124,103 @@ char Enemy::getType()
 	return type;
 }
 
+void Enemy::Render()
+{
+	if (enemyCam.y + enemyCam.h == SCREEN_HEIGHT)
+	{
+		emyDelta = -1;
+		setVelocity(0, -10);
+	}
+	if (enemyCam.y == 0)
+	{
+		emyDelta = 1;
+		setVelocity(0, 10);
+	}
+	
+	// Animate jet propulsion
+	if((frame / 10) >= 4)
+	{
+		frame = 0;
+	}
+	
+	enemyRect.x = ((frame / 10) % 4) * enemyRect.w;
+	frame++;
+	
+	move(0, emyDelta, *timestep);
+	checkPlayerCollision(*timestep);
+	
+	SDL_RenderCopy(gRenderer, enemySheet, &enemyRect, &enemyCam);
+}
+
 //Private methods
+
+//Check for collision with the player
+void Enemy::checkPlayerCollision(double tstep)
+{
+	if (hasCollision())
+	{
+		double newPVelocityx = ply->getxVel();
+		double newPVelocityy = ply->getyVel();
+		double newEVelocityx = phys.getxVelocity();
+		double newEVelocityy = phys.getyVelocity();
+		
+		xCoord -= (newEVelocityx * tstep);
+		yCoord -= (newEVelocityy * tstep);
+		
+		if (std::abs(newPVelocityx) > std::abs(newEVelocityx))
+		{
+			newEVelocityx = newEVelocityx + newPVelocityx;
+			newPVelocityx = 0;
+		}
+		else if (std::abs(newPVelocityx) < std::abs(newEVelocityx))
+		{
+			newPVelocityx = newPVelocityx + newEVelocityx;
+			newEVelocityx = 0;
+		}
+		else if (newPVelocityx == -newEVelocityx)
+		{
+			newPVelocityx = 0;
+			newEVelocityx = 0;
+		}
+		
+		if (std::abs(newPVelocityy) > std::abs(newEVelocityy))
+		{
+			newEVelocityy = newEVelocityy + newPVelocityy;
+			newPVelocityy = 0;
+		}
+		else if (std::abs(newPVelocityy) < std::abs(newEVelocityy))
+		{
+			newPVelocityy = newPVelocityy + newEVelocityy;
+			newEVelocityy = 0;
+		}
+		else if (newPVelocityy == -newEVelocityy)
+		{
+			newPVelocityy = 0;
+			newEVelocityy = 0;
+		}
+		
+		phys.setxVelocity(newEVelocityx);
+		phys.setyVelocity(newEVelocityy);
+		ply->setVelocity(newPVelocityx, newPVelocityy);
+		
+		enemyCam.x = (int) xCoord;
+		enemyCam.y = (int) yCoord;
+	}
+}
+
+//Methods that can be called from model class
+void Enemy::move(double xdvel, double ydvel, double tstep)
+{
+	phys.ChangeVelocity(xdvel, ydvel, tstep);
+	
+	xCoord += (phys.getxVelocity() * tstep);
+	yCoord += (phys.getyVelocity() * tstep);
+	
+	CheckBoundaries();
+	checkAttacked();
+	enemyCam.x = (int) xCoord;
+	enemyCam.y = (int) yCoord;
+}
 
 void Enemy::DecrementHealth(int decAmount)
 {
@@ -234,9 +261,9 @@ void Enemy::DecrementSpeed(int lostSpeed)
 	}
 }
 
-bool Enemy::hasCollision(Player* p)
+bool Enemy::hasCollision()
 {
-	SDL_Rect pRect = p->getPlayerCam();
+	SDL_Rect pRect = ply->getPlayerCam();
 	
 	//f for faxanaduitis
 	if (type == 'f')

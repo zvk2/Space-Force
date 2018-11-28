@@ -315,7 +315,7 @@ int main(int argc, char* argv[])
 	Player ply(10, loadImage("resources/imgs/starman.png"), 1, gRenderer);
 	Player ply2(10, loadImage("resources/imgs/starman_blue.png"), 1, gRenderer);
 
-	Enemy emy(10, loadImage("resources/imgs/faxanaduitis.png"), 1,&ply.hit, 'f');
+	Enemy emy(&ply, 10, loadImage("resources/imgs/faxanaduitis.png"), 1, &ply.hit, 'f', &timestep);
 	emy.setPosition(860, 0);
 	emy.setVelocity(0, 50);
 
@@ -340,7 +340,6 @@ int main(int argc, char* argv[])
 	bool gameOn = true;
 	bool up = true;
 	bool credits = true;
-    double emyDelta = 1;
     int connected = 0;
 
 	while(gameOn)
@@ -395,25 +394,11 @@ int main(int argc, char* argv[])
 		if (keyState[SDL_SCANCODE_S])
 			yDeltav += (ACCEL * timestep);
 
-		if (emy.getEnemyCam().y + emy.getEnemyCam().h == SCREEN_HEIGHT)
-		{
-			emyDelta = -1;
-			emy.setVelocity(0, -10);
-		}
-		if (emy.getEnemyCam().y == 0)
-		{
-			emyDelta = 1;
-			emy.setVelocity(0, 10);
-		}
-
 		SDL_Rect pRect = ply.getPlayerRect();
 		SDL_Rect pCam = ply.getPlayerCam();
 		SDL_Rect pRect2 = ply2.getPlayerRect();
 		SDL_Rect pCam2 = ply.getPlayerCam();
 		SDL_Rect transfer;
-
-		SDL_Rect eRect = emy.getEnemyRect();
-		SDL_Rect eCam = emy.getEnemyCam();
 
 		moveLasttime = SDL_GetTicks();
 
@@ -441,9 +426,6 @@ int main(int argc, char* argv[])
 		if(connected){
 			ply2.animate(frames);
 		}
-
-		emy.animate(frames);
-
 
 		// Since game levels progress from L to R, no need for sprite to flip
 		// Code for flipping remains here if theres a change of plan
@@ -550,8 +532,7 @@ int main(int argc, char* argv[])
 		{
 			return playCredits();
 		}
-		emy.move(0, emyDelta, timestep);
-		emy.checkPlayerCollision(&ply, timestep);
+
 		/*
 		collision = emy.checkPlayerCollision(&ply, timestep);
 		if (collision)
@@ -567,8 +548,8 @@ int main(int argc, char* argv[])
 		pCam2.x = transfer.x;
 		pCam2.y = transfer.y;
 
-		eCam = emy.getEnemyCam();
-
+		emy.Render();
+		
         //attack button
 
 		if(keyState[SDL_SCANCODE_SPACE] && up == true)
@@ -582,8 +563,6 @@ int main(int argc, char* argv[])
 		//lets the attack move across the screen
 		ply.hit.renderAttack(timestep);
 		SDL_RenderCopyEx(gRenderer, ply.getPlayerSheet(), &pRect, &pCam, 0.0, nullptr, flip);
-		SDL_RenderCopyEx(gRenderer, emy.getEnemySheet(), &eRect, &eCam, 0.0, nullptr, flip);
-
 
 		//~ removed for demo
 		// if (ac.getDelay() == 0)
