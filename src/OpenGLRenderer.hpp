@@ -124,6 +124,25 @@ class OpenGLRenderer
 		void AppendRenderObject(RenderObject *newRenderObject);
 		void RemoveRenderObject(int index);
 		void Display();
+		GLuint PopulateDefault2DBuffer(
+			//~ BufferAttributes *bufferAttributes,
+			GLuint textureID,
+			int width,
+			int height,
+			//~ GLfloat z,
+			GLfloat texLeft,
+			GLfloat texRight,
+			GLfloat texBottom,
+			GLfloat texTop
+		);
+		void PopulateDefault2DBuffers(
+			char *fileName,
+			//~ int width,
+			//~ int height,
+			int rows,
+			int columns
+			//~ BufferAttributes *bufferAttributes
+		);
 	//~ private:
 		// Number of vertices (needed to render)
 		int number_of_vertices;
@@ -154,26 +173,4 @@ class OpenGLRenderer
 };
 
 GLfloat CanonicalCoordinatesFromPixels(int pixels, int dimension);
-
-GLuint PopulateDefault2DBuffer(
-	OpenGLRenderer *openGL,
-	BufferAttributes *bufferAttributes,
-	//~ GLuint textureID,
-	//~ int width,
-	//~ int height,
-	//~ GLfloat z,
-	GLfloat texLeft,
-	GLfloat texRight,
-	GLfloat texBottom,
-	GLfloat texTop
-);
-void PopulateDefault2DBuffers(
-	OpenGLRenderer* openGL,
-	char *fileName,
-	//~ int width,
-	//~ int height,
-	int rows,
-	int columns
-	//~ BufferAttributes *bufferAttributes
-);
 #endif

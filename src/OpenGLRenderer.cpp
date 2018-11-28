@@ -150,8 +150,6 @@ void OpenGLRenderer::PopulateTextures()
 	for (auto currentGenerator: textureGenerators)
 	{
 		PopulateDefault2DBuffers(
-			// OpenGL instance
-			this,
 			// File Name
 			currentGenerator.textureName,
 			// Width
@@ -248,8 +246,7 @@ void OpenGLRenderer::Display()
 	SDL_GL_SwapWindow(gWindow);
 }
 
-GLuint PopulateDefault2DBuffer(
-	OpenGLRenderer* openGL,
+GLuint OpenGLRenderer::PopulateDefault2DBuffer(
 	//~ char *textureName,
 	GLuint currentTexture,
 	int width,
@@ -261,15 +258,15 @@ GLuint PopulateDefault2DBuffer(
 	GLfloat texTop
 )
 {
-	//~ int currentTexture = openGL->textureIDs.size();
-	int currentBuffer = openGL->bufferIDs.size();
-	int currentVao = openGL->vaoIDs.size();
-	//~ openGL->textureIDs.push_back(currentTexture);
-	openGL->bufferIDs.push_back(currentBuffer);
-	openGL->vaoIDs.push_back(currentVao);
+	//~ int currentTexture = textureIDs.size();
+	int currentBuffer = bufferIDs.size();
+	int currentVao = vaoIDs.size();
+	//~ textureIDs.push_back(currentTexture);
+	bufferIDs.push_back(currentBuffer);
+	vaoIDs.push_back(currentVao);
 
-	glGenVertexArrays(1, &openGL->vaoIDs[currentVao]);
-	glBindVertexArray(openGL->vaoIDs[currentVao]);
+	glGenVertexArrays(1, &vaoIDs[currentVao]);
+	glBindVertexArray(vaoIDs[currentVao]);
 
 	// Texture parameters
 	// Basically, repeat if you need to and linear interpolation for texel -> pixel
@@ -317,8 +314,8 @@ GLuint PopulateDefault2DBuffer(
 	};
 
 	// Describes how we will be sending data out to be rendered
-	glGenBuffers(1, &openGL->bufferIDs[currentBuffer]);
-	glBindBuffer(GL_ARRAY_BUFFER, openGL->bufferIDs[currentBuffer]);
+	glGenBuffers(1, &bufferIDs[currentBuffer]);
+	glBindBuffer(GL_ARRAY_BUFFER, bufferIDs[currentBuffer]);
 	// Full buffer
 	glBufferData(GL_ARRAY_BUFFER, verticesSize + sizeof(texCoord), NULL, GL_STATIC_DRAW);
 	// Vertices
@@ -327,19 +324,18 @@ GLuint PopulateDefault2DBuffer(
 	glBufferSubData(GL_ARRAY_BUFFER, verticesSize, sizeof(texCoord), texCoord);
 
 	// Info for position (vec4 at the moment)
-	GLuint vPosition = glGetAttribLocation(openGL->program, "vPosition");
+	GLuint vPosition = glGetAttribLocation(program, "vPosition");
 	glEnableVertexAttribArray(vPosition);
 	glVertexAttribPointer(vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
 
 	// Info for the texture (vec2 at the moment)
-	GLuint vTexCoord = glGetAttribLocation(openGL->program, "vTexCoord");
+	GLuint vTexCoord = glGetAttribLocation(program, "vTexCoord");
 	glEnableVertexAttribArray(vTexCoord);
 	glVertexAttribPointer(vTexCoord, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid *) verticesSize);
 
 	return currentBuffer;
 }
-void PopulateDefault2DBuffers(
-	OpenGLRenderer* openGL,
+void OpenGLRenderer::PopulateDefault2DBuffers(
 	char *textureName,
 	//~ int width,
 	//~ int height,
@@ -357,8 +353,8 @@ void PopulateDefault2DBuffers(
 	GLfloat columnOffset = 1.0 / columns;
 
 	// Get texture
-	GLuint currentTexture = openGL->textureIDs.size();
-	openGL->textureIDs.push_back(currentTexture);
+	GLuint currentTexture = textureIDs.size();
+	textureIDs.push_back(currentTexture);
 
 	// Get a cstyle string for loading the image
 	//~ char textureName[] = fileName;
@@ -376,9 +372,9 @@ void PopulateDefault2DBuffers(
 	}
 
 	// Indicate we want to make a new texture
-	glGenTextures(1, &openGL->textureIDs[currentTexture]);
+	glGenTextures(1, &textureIDs[currentTexture]);
 	// Indicate where this new texture will be bound
-	glBindTexture(GL_TEXTURE_2D, openGL->textureIDs[currentTexture]);
+	glBindTexture(GL_TEXTURE_2D, textureIDs[currentTexture]);
 
 	// Default to RGB
 	int mode = GL_RGB;
@@ -420,7 +416,7 @@ void PopulateDefault2DBuffers(
 	std::cout << width << " " << height << std::endl;
 	std::cout << frameWidth << " " << frameHeight << std::endl;
 
-	GLuint firstBuffer = openGL->bufferIDs.size();
+	GLuint firstBuffer = bufferIDs.size();
 	GLuint bufferOffset = 0;
 	while (currentRow < rows)
 	{
@@ -429,7 +425,6 @@ void PopulateDefault2DBuffers(
 		while (currentColumn < columns)
 		{
 			GLuint currentBuffer = PopulateDefault2DBuffer(
-				openGL,
 				currentTexture,
 				frameWidth,
 				frameHeight,
@@ -451,8 +446,7 @@ void PopulateDefault2DBuffers(
 	}
 
 	// Note dereference, world is a fuf
-	std::map<std::string, BufferAttributes> *currentBufferAttributes = openGL->allBufferAttributes;
-	(*currentBufferAttributes)[textureName] = {
+	(*allBufferAttributes)[textureName] = {
 		// Width
 		(GLfloat)frameWidth,
 		// Height
