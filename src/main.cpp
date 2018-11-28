@@ -315,9 +315,7 @@ int main(int argc, char* argv[])
 	Player ply(10, loadImage("resources/imgs/starman.png"), 1, gRenderer);
 	Player ply2(10, loadImage("resources/imgs/starman_blue.png"), 1, gRenderer);
 
-	Enemy emy(&ply, 10, loadImage("resources/imgs/faxanaduitis.png"), 1, &ply.hit, 'f', &timestep);
-	emy.setPosition(860, 0);
-	emy.setVelocity(0, 50);
+	Enemy emy(&ply, loadImage("resources/imgs/faxanaduitis.png"), 1, &ply.hit, 'f', &timestep);
 
 	SDL_Rect healthRect = {0, 0, 177, 33};
 	SDL_Rect healthCam = {30, 30, 177, 33};
@@ -326,7 +324,7 @@ int main(int argc, char* argv[])
 	Magnetar mag(&ply, loadImage("resources/imgs/Magnetars.png"));
 
 	//~ Removed for demo
-	// AlcoholCloud ac(&ply, &emy, loadImage("resources/imgs/Alcohol_Cloud.png"), loadImage("resources/imgs/Alcohol_Cloud_Flare_Up.png"), &ply.hit);
+	AlcoholCloud ac(&ply, &emy, loadImage("resources/imgs/Alcohol_Cloud.png"), loadImage("resources/imgs/Alcohol_Cloud_Flare_Up.png"), &ply.hit);
 	double ACCEL = ply.GetMove();
 
 	ply.HealthBar(&healthRect);//needed healthbar in player
@@ -513,19 +511,37 @@ int main(int argc, char* argv[])
         }
 
 		ply.move(xDeltav, yDeltav, timestep);
-		bool collision = ply.checkEnemyCollision(&emy, timestep);
-
-		if (collision)
+		
+		if (emy.Exists())
+		{	
+			bool collision = ply.checkEnemyCollision(&emy, timestep);
+			
+			emy.Render();
+			
+			if (collision)
+			{
+				//ply.LostHealth(1);
+				if (healthRect.x == 1770)
+				{
+					return playCredits();
+				}
+				else
+				{
+					healthRect.x += 177;
+				}
+			}
+		}
+		else
 		{
-			//ply.LostHealth(1);
-			if (healthRect.x == 1770)
+			if (emy.getNextSpawn() == 0)
 			{
-				return playCredits();
+				emy.setNextSpawn((rand() % 5001) + 5000 + currTime); 
 			}
-			else
+			
+			if (currTime >= emy.getNextSpawn())
 			{
-				healthRect.x += 177;
-			}
+				emy.Spawn();
+			}	
 		}
 
 		if(healthRect.x >= 1598)//will now play credits when health is gone
@@ -547,8 +563,6 @@ int main(int argc, char* argv[])
 		}
 		pCam2.x = transfer.x;
 		pCam2.y = transfer.y;
-
-		emy.Render();
 		
         //attack button
 
@@ -565,20 +579,20 @@ int main(int argc, char* argv[])
 		SDL_RenderCopyEx(gRenderer, ply.getPlayerSheet(), &pRect, &pCam, 0.0, nullptr, flip);
 
 		//~ removed for demo
-		// if (ac.getDelay() == 0)
-		// {
-		// 	ac.setDelay((rand() % 3000) + 5000);
-		// }
+		if (ac.getDelay() == 0)
+		{
+		 	ac.setDelay((rand() % 3000) + 5000);
+		}
 
-		// if (currTime >= ac.getDelay())
-		// {
-		// 	if (!ac.Seen())
-		// 	{
-		// 		ac.setYPosition(rand() % 421);
-		// 	}
+		if (currTime >= ac.getDelay())
+		{
+		 	if (!ac.Seen())
+		 	{
+		 		ac.setYPosition(rand() % 421);
+		 	}
 
-		// 	ac.Render();
-		// }
+		 	ac.Render();
+		}
 
 		stars.Render(timestep);
 

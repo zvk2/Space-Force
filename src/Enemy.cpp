@@ -6,15 +6,17 @@
  
 //Public methods 
 
-Enemy::Enemy(Player* p, int startingHealth, SDL_Texture* characterImages, int attac, attack* player, char _type, double* tstep): 
-	ply(p), hitPoints(startingHealth), enemySheet(characterImages),
-	attackPower(attac), phys(0, 0, 300.0, 3600.0), xCoord(1280/8), yCoord(720/2), plyBlast(player), type(_type), timestep(tstep)
+Enemy::Enemy(Player* p, SDL_Texture* characterImages, int attac, attack* player, char _type, double* tstep): 
+	ply(p), enemySheet(characterImages),
+	attackPower(attac), phys(0, 0, 300.0, 3600.0), xCoord(1500), yCoord(720), plyBlast(player), type(_type), timestep(tstep)
 	{
+		exists = false;
 		frame = 0;
 		emyDelta = 1;
+		nextSpawn = 0;
 		gRenderer = ply->getRend();
 		enemyRect = {0, 0, 144, 87};
-		enemyCam = {1280/2, 720/2, 144, 87};
+		enemyCam = {1500, 720, 144, 87};
 	}
 
 void Enemy::LostHealth(int damage)
@@ -52,13 +54,26 @@ int Enemy::GetSpeed()
 	return speed;
 }
 
+Uint32 Enemy::getNextSpawn()
+{
+	return nextSpawn;
+}
+
+void Enemy::setNextSpawn(Uint32 s)
+{
+	nextSpawn = s;
+}
+
 //Set the position of the enemy on screen
 void Enemy::setPosition(double x, double y)
 {
 	xCoord = x;
 	yCoord = y;
 	
-	CheckBoundaries();
+	if (exists)
+	{
+		CheckBoundaries();
+	}
 	
 	enemyCam.x = (int) xCoord;
 	enemyCam.y = (int) yCoord;
@@ -71,10 +86,17 @@ void Enemy::setVelocity(double x, double y)
 	phys.setyVelocity(y);
 }
 
+bool Enemy::Exists()
+{
+	return exists;
+}
+
 void Enemy::checkAttacked()
 {
 	//how many times an enemy been hit
 	int hits = plyBlast->hitIntersect(&enemyCam);
+	
+	DecrementHealth(hits*ply->GetAttack());
 }
 
 //Return the current x velocity
@@ -122,6 +144,22 @@ void Enemy::ChangeMaxVelocity(double Speed)
 char Enemy::getType()
 {
 	return type;
+}
+
+void Enemy::Spawn()
+{
+	SDL_Rect pRect = ply->getPlayerCam();
+	
+	setPosition(640 + (rand() % 554), 0);
+	
+	while (SDL_HasIntersection(&pRect, &enemyCam))
+	{
+		setPosition(640 + (rand() % 554), 0);
+	}
+	
+	setVelocity(0, 50);
+	hitPoints = 10;
+	exists = true;
 }
 
 void Enemy::Render()
@@ -225,6 +263,15 @@ void Enemy::move(double xdvel, double ydvel, double tstep)
 void Enemy::DecrementHealth(int decAmount)
 {
 	hitPoints -= decAmount;
+	
+	//Despawn the enemy
+	if (hitPoints <= 0)
+	{
+		exists = false;
+		frame = 0;
+		nextSpawn = 0;
+		setPosition(1500, 0);
+	}
 }
 
 void Enemy::IncrementHealth(int incAmount)

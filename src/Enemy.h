@@ -13,7 +13,7 @@ class Enemy
 	public:
 
 		//Constructor: takes health, character sheet, and attack value and sets all member vars
-		Enemy(Player* p, int startingHealth, SDL_Texture* characterImages, int attac, attack* player, char _type, double* tstep);
+		Enemy(Player* p, SDL_Texture* characterImages, int attac, attack* player, char _type, double* tstep);
 
 		//Subract hit points from the enemy
 		void LostHealth(int damage);
@@ -33,6 +33,10 @@ class Enemy
 
 		int GetSpeed();
 
+		Uint32 getNextSpawn();
+
+		void setNextSpawn(Uint32 s);
+		
 		//Set the position of the enemy on screen
 		void setPosition(double x, double y);
 
@@ -60,9 +64,13 @@ class Enemy
 		void ChangeMaxVelocity(double Speed);
 		
 		char getType();
+		
+		bool Exists();
 
 		//counts how many times an enemy has been hit
 		void checkAttacked();
+		
+		void Spawn();
 		
 		void Render();
 
@@ -84,6 +92,8 @@ class Enemy
 		double emyDelta;
 		double* timestep;
 		int frame;
+		bool exists;
+		Uint32 nextSpawn;
 		
 		//Determine the type of enemy
 		char type;
