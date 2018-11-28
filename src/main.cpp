@@ -251,33 +251,18 @@ int main(int argc, char* argv[]) {
 	OpenGLRenderer openGL = OpenGLRenderer(gWindow, &allBufferAttributes);
 
 	// Rough sketch of a RenderObject?
-	RenderObject *test = new RenderObject(
-		//~ 0, 0, 0.5, allBufferAttributes["resources/test.png"]
-		0, 0, -0.99, allBufferAttributes["resources/imgs/space_2_background.png"]
+	RenderObject *background1 = new RenderObject(
+		0, 0, -1, allBufferAttributes["resources/imgs/space_2_background.png"]
 	);
 
-	RenderObject *test2 = new RenderObject(
-		0, 0, 0.75, allBufferAttributes["resources/test2.png"]
+	RenderObject *background2 = new RenderObject(
+		SCREEN_WIDTH, 0, -1, allBufferAttributes["resources/imgs/space_2_background.png"]
 	);
 
-	RenderObject *test3 = new RenderObject(
-		SCREEN_WIDTH, 0, -0.99, allBufferAttributes["resources/imgs/space_2_background.png"]
-	);
+	// Crude use of render queue, but background requires only a few lines of code anyway
+	openGL.AppendRenderObject(background1);
+	openGL.AppendRenderObject(background2);
 
-	RenderObject *test4 = new RenderObject(
-		0, 0.5, 0.80, allBufferAttributes["resources/imgs/blackhole.png"]
-	);
-
-	// Crude idea of how to add to render queue?
-	openGL.AppendRenderObject(test);
-
-	openGL.AppendRenderObject(test3);
-
-	openGL.AppendRenderObject(test2);
-
-	openGL.AppendRenderObject(test4);
-
-	int use_test4 = 1;
 	bool loop = 1;
 	while (loop)
 	{
@@ -302,22 +287,15 @@ int main(int argc, char* argv[]) {
 			}
 		}
 
-		//~ timestep = (SDL_GetTicks() - moveLasttime) / 1000.0;
+		timestep = (SDL_GetTicks() - moveLasttime) / 1000.0;
 
-		test->ChangeCoordinates(test->x - 1, test->y, test->z);
-		test3->ChangeCoordinates(test3->x - 1, test3->y, test3->z);
-		if (use_test4)
-		test4->ChangeCoordinates(test4->x - 1, test4->y, test4->z);
+		background1->ChangeCoordinates(background1->x - 1, background1->y, background1->z);
+		background2->ChangeCoordinates(background2->x - 1, background2->y, background2->z);
 
-		if (test->x < -SCREEN_WIDTH)
+		if (background1->x < -SCREEN_WIDTH)
 		{
-			test->ChangeCoordinates(0, test->y, test->z);
-			test3->ChangeCoordinates(SCREEN_WIDTH, test3->y, test3->z);
-			if (use_test4)
-			{
-				openGL.RemoveRenderObject(test4->index);
-			}
-			use_test4 = 0;
+			background1->ChangeCoordinates(0, background1->y, background1->z);
+			background2->ChangeCoordinates(SCREEN_WIDTH, background2->y, background2->z);
 		}
 
 		// Displays stuff
