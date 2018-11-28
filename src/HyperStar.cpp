@@ -4,7 +4,7 @@
 //const int SCREEN_HEIGHT = 720;
 	//size of image
 	int size = 100;
-	
+
 	HyperStar::HyperStar(SDL_Texture* im, Player* main):starIm(im), ply(main)
 	{
 		imBox = {0,0,100,100};
@@ -23,17 +23,17 @@
 		//random y
 		int upOrDown = rand() % 2; // 0 to 1
 		end->next = (struct StarNode*)malloc(sizeof(struct StarNode));
-		
+
 		//random angle
 		end->next->angle = (((double)(rand()%50 + 15))/180)*3.14; //10 to 60
-		
+
 		//random speed
 		end->next->vel = (rand()%5 + 10)*100.0;
-		
+
 		//one hit only on player
 		end->hitPly = false;
 		int y;
-		
+
 		//random x
 		int x = rand()%426 + 852;
 		if(x > 1280)
@@ -42,7 +42,7 @@
 		}
 		end->next->math = upOrDown;
 		end->next->frame = 0;
-		
+
 		end->next->pre = end;
 		end = end->next;
 		if(upOrDown == 0)
@@ -53,14 +53,14 @@
 		{
 			y = 720;
 		}
-		
+
 		//square box for star
 		end->colTest = {x,y,size,size};
 		end->x = (double)x;
 		end->y = (double)y;
 		end->next = nullptr;
 	}
-	
+
 	//places star on screen
 	void HyperStar::Render(double timestep)
 	{
@@ -72,10 +72,10 @@
 		StarNode* temp;
 		while(curr != nullptr)
 		{
-			imBox.y == (curr->frame%2)*100;
+			imBox.y = (curr->frame%2)*100;
 			curr->frame++;
 			SDL_RenderCopy(gRenderer, starIm, &imBox, &curr->colTest);
-			
+
 			//checks rectangle intersection first
 			if(SDL_HasIntersection(&curr->colTest,plyCam)&& !(curr->hitPly))
 			{
@@ -98,7 +98,7 @@
 				}
 				else
 				{
-					
+
 					curr->next->pre = curr->pre;
 					curr->pre->next = curr->next;
 					temp = curr;
@@ -116,7 +116,7 @@
 				{
 					curr->math =0;//star will go down
 				}
-				
+
 				//moves star along angle
 				curr->x = curr->x-((curr->vel*timestep)*cos(curr->angle));
 				double newY = ((curr->vel*timestep)*sin(curr->angle));
@@ -133,7 +133,7 @@
 				curr = curr->next;
 			}
 		}
-		
+
 	}
 	//circle collision test
 	bool HyperStar::checkCol(SDL_Rect circle)
@@ -152,7 +152,7 @@
 		{
 			c_x = circle.x;
 		}
-		
+
 		if(circle.y < plyCam-> y)
 		{
 			c_y = plyCam->y;
@@ -165,10 +165,10 @@
 		{
 			c_y = circle.y;
 		}
-		
+
 		d_x = circle.x - c_x;
 		d_y = circle.y - c_y;
-		
+
 		int inter =  d_x * d_x + d_y * d_y;
 		if(inter <(r * r))
 			return true;

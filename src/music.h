@@ -18,7 +18,7 @@ class music
 
 		void fireSound();
 
-		bool check();
+		//~ bool check();
 
 		bool init();
 
@@ -32,7 +32,7 @@ class music
 		Mix_Chunk *gFire;
 
 		bool success;
-		
+
 		bool play;
 
 };

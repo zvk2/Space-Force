@@ -19,7 +19,7 @@ OUT = bin/SpaceForce
 SRC = $(wildcard src/*.c src/*.cpp)
 SRC := $(filter-out src/menu.cpp, $(SRC))
 DEP = $(wildcard src/*.h src/*.hpp)
-OBJ := $(patsubst src/%.cpp, obj/%.o, $(SRC)) 
+OBJ := $(patsubst src/%.cpp, obj/%.o, $(SRC))
 OBJ := $(patsubst src/%.c, obj/%.o, $(OBJ))
 #OBJ = $(src:.cpp=.o) saw this syntax somewhere, threw it in for reference purposes
 
@@ -31,7 +31,7 @@ NETOBJ := $(patsubst src/server/%.cpp, obj/%.o, $(NETSRC))
 
 # set appropriate flags for machine OS. include paths are specified, but do not
 # appear to cause problems if all includes are thrown into the base MinGW install.
-# this is true even if the specified directories do not exist. 
+# this is true even if the specified directories do not exist.
 
 ifeq ($(OS), Windows_NT)
 	DETECTED_OS = $(OS)
@@ -44,13 +44,13 @@ else ifeq ($(shell uname -s), Darwin)
 	CPP = g++ -std=c11
 	CFLAGS = -c -I/
 	INCLUDE = -I/
-	LFLAGS = -o $(OUT) 
+	LFLAGS = -o $(OUT)
 else
 	DETECTED_OS := $(shell uname -s)
 	CPP = clang++
 	CFLAGS = -c -I/usr/include/SDL2
 	INCLUDE = -I/usr/include/SDL2
-	LFLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_net -lGLEW -lGL -lGLU -lm
+	LFLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_net -lGLEW -lGL -lGLU -lm -lSDL2_mixer
 endif
 
 .PHONY: all client server clean mrclean os rebuild

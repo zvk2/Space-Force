@@ -26,7 +26,7 @@
 			SDL_RenderCopy(gRenderer, gAttack, attackBox, &end->attackCam);
 			end->next = nullptr;
 		}
-		//when the currently first attack hits the end of the screen than 
+		//when the currently first attack hits the end of the screen than
 		//it will free that information and delete it from the list
 		//then it will continue to render all other attacks further across the screen
 		void attack::renderAttack(double timestep)
@@ -43,7 +43,7 @@
 			curr = head->next;
 			if(curr != nullptr && curr -> attackCam.x>= 1280)
 			{
-				
+
 				head->next = curr->next;
 				if(curr == end)
 				{
@@ -57,14 +57,14 @@
 		int attack::hitIntersect(SDL_Rect* rect)
 		{
 			Node* pre = head;
-			Node* temp;
+			//~ Node* temp;
 			curr = head->next;
 			int count = 0;
 			while(curr != nullptr)
 			{
 				if(SDL_HasIntersection(rect, &curr->attackCam))
 				{
-					temp = curr;
+					//~ temp = curr;
 					if(curr == end)
 					{
 						end = pre;
@@ -75,7 +75,7 @@
 						curr = curr->next;
 						pre->next = curr;
 					}
-					free(temp);
+					//~ free(temp);
 					count++;
 				}
 				else
