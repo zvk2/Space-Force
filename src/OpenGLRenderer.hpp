@@ -41,9 +41,9 @@ const int SCREEN_HEIGHT = 720;
 // TextureGenerator struct definition
 typedef struct TextureGenerator {
 	// Width
-	GLuint width;
-	// Height
-	GLuint height;
+	//~ GLuint width;
+	//~ // Height
+	//~ GLuint height;
 	// Row
 	GLuint rows;
 	// Columns
@@ -170,8 +170,8 @@ GLuint PopulateDefault2DBuffer(
 void PopulateDefault2DBuffers(
 	OpenGLRenderer* openGL,
 	char *fileName,
-	int width,
-	int height,
+	//~ int width,
+	//~ int height,
 	int rows,
 	int columns
 	//~ BufferAttributes *bufferAttributes

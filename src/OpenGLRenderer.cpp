@@ -126,9 +126,25 @@ void OpenGLRenderer::PopulateTextures()
 	// Crude!
 	TextureGenerator textureGenerators[] =
 	{
-		{1280, 720, 1, 1, "resources/test.png"},
-		{1280, 720, 1, 1, "resources/test2.png"},
-		{1280, 720, 1, 1, "resources/imgs/space_2_background.png"},
+		{1, 1, "resources/test.png"},
+		{1, 1, "resources/test2.png"},
+		{1, 1, "resources/imgs/space_2_background.png"},
+		{1, 1, "resources/imgs/attack.png"},
+		{1, 6, "resources/imgs/blackhole.png"},
+		{1, 1, "resources/imgs/chatter_box.png"},
+		{1, 4, "resources/imgs/faxanaduitis.png"},
+		//~ {1, 1, "resources/imgs/health.png"},
+		{1, 1, "resources/imgs/healthbar.png"},
+		{1, 1, "resources/imgs/kill_everything.png"},
+		{1, 1, "resources/imgs/Magnetars.png"},
+		{1, 1, "resources/imgs/missile.png"},
+		{1, 1, "resources/imgs/multi.png"},
+		{1, 1, "resources/imgs/small_asteroid.png"},
+		{1, 1, "resources/imgs/SpeedUp.png"},
+		{1, 1, "resources/imgs/starman.png"},
+		{1, 1, "resources/imgs/starman_blue.png"},
+		{1, 1, "resources/imgs/starman_green.png"},
+		{1, 1, "resources/imgs/WingedShield.png"},
 	};
 	// Iterate over every texture to generate
 	for (auto currentGenerator: textureGenerators)
@@ -139,9 +155,9 @@ void OpenGLRenderer::PopulateTextures()
 			// File Name
 			currentGenerator.textureName,
 			// Width
-			currentGenerator.width,
-			// Height
-			currentGenerator.height,
+			//~ currentGenerator.width,
+			//~ // Height
+			//~ currentGenerator.height,
 			// Row
 			currentGenerator.rows,
 			// Columns
@@ -325,8 +341,8 @@ GLuint PopulateDefault2DBuffer(
 void PopulateDefault2DBuffers(
 	OpenGLRenderer* openGL,
 	char *textureName,
-	int width,
-	int height,
+	//~ int width,
+	//~ int height,
 	int rows,
 	int columns
 	//~ BufferAttributes *bufferAttributes
@@ -336,9 +352,9 @@ void PopulateDefault2DBuffers(
 	int currentColumn = 0;
 
 	GLfloat currentRowCoordinate = 0;
-	GLfloat rowOffset = 1 / rows;
+	GLfloat rowOffset = 1.0 / rows;
 	GLfloat currentColumnCoordinate = 0;
-	GLfloat columnOffset = 1 / columns;
+	GLfloat columnOffset = 1.0 / columns;
 
 	// Get texture
 	GLuint currentTexture = openGL->textureIDs.size();
@@ -395,17 +411,28 @@ void PopulateDefault2DBuffers(
 		surface->pixels
 	);
 
+	GLuint width = surface->w;
+	GLuint height = surface->h;
+
+	GLfloat frameWidth = width / columns;
+	GLfloat frameHeight = height / rows;
+
+	std::cout << width << " " << height << std::endl;
+	std::cout << frameWidth << " " << frameHeight << std::endl;
+
 	GLuint firstBuffer = openGL->bufferIDs.size();
 	GLuint bufferOffset = 0;
 	while (currentRow < rows)
 	{
+		//~ std::cout << currentRowCoordinate << std::endl;
+
 		while (currentColumn < columns)
 		{
 			GLuint currentBuffer = PopulateDefault2DBuffer(
 				openGL,
 				currentTexture,
-				width,
-				height,
+				frameWidth,
+				frameHeight,
 				//~ z,
 				currentColumnCoordinate,
 				currentColumnCoordinate + columnOffset,
@@ -427,9 +454,9 @@ void PopulateDefault2DBuffers(
 	std::map<std::string, BufferAttributes> *currentBufferAttributes = openGL->allBufferAttributes;
 	(*currentBufferAttributes)[textureName] = {
 		// Width
-		(GLfloat)width,
+		(GLfloat)frameWidth,
 		// Height
-		(GLfloat)height,
+		(GLfloat)frameHeight,
 		// verts
 		// contrived for now to 2d (3d will be individually defined, methinks)
 		6,

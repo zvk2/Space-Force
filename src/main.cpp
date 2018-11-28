@@ -265,7 +265,7 @@ int main(int argc, char* argv[]) {
 	);
 
 	RenderObject *test4 = new RenderObject(
-		0, 0.5, 0.80, allBufferAttributes["resources/test2.png"]
+		0, 0.5, 0.80, allBufferAttributes["resources/imgs/blackhole.png"]
 	);
 
 	// Crude idea of how to add to render queue?
