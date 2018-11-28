@@ -32,6 +32,7 @@ void music :: fireSound()
 	if(play){
 
 		Mix_PlayChannel( 1, gFire, 0 );
+		
 
 	}
 }
@@ -105,11 +106,11 @@ void music :: close()
 {
 	//Free the sound effects
 	Mix_FreeChunk( gFire );
-	gFire = NULL;
+	gFire = nullptr;
 	
 	//Free the music
 	Mix_FreeMusic( gMusic );
-	gMusic = NULL;
+	gMusic = nullptr;
 
 	//Quit SDL subsystems
 	Mix_Quit();

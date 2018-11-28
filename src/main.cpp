@@ -317,10 +317,10 @@ int main(int argc, char* argv[])
 	bool up = true;
 	bool credits = true;
     double emyDelta = 1;
-
+   
 	while(gameOn)
 	{
-		//mus.playMusic();
+	 //mus.playMusic();
 
 		while(SDL_PollEvent(&e))
 		{
