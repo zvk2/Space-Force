@@ -14,6 +14,7 @@
 #include "ClientInterface.h"
 #include <cstdlib>
 #include "HyperStar.h"
+#include "music.h"
 
 
 // Used for file walk (somewhat crudely)
@@ -144,6 +145,10 @@ int close()
 		i = nullptr;
 	}
 
+	music music;
+	//closes out music mixer
+	music.close();
+
 	SDL_DestroyRenderer(gRenderer);
     SDL_GL_DeleteContext(gContext);
 	SDL_DestroyWindow(gWindow);
@@ -267,7 +272,6 @@ int main(int argc, char* argv[])
         gContext = menu.closeMenu();
 	}
 
-
 	// GAME
 	/*
 	- Controls: WASD for movement, Spacebar to shoot
@@ -278,8 +282,6 @@ int main(int argc, char* argv[])
 	gAttack = loadImage("resources/imgs/attack.png");
     gBlackhole = loadImage("resources/imgs/blackhole.png");
 	gHealthbar = loadImage("resources/imgs/healthbar.png");
-
-
 
 	int scrollOffset = 0;
 	int rem = 0;
@@ -323,6 +325,9 @@ int main(int argc, char* argv[])
 	double ACCEL = ply.GetMove();
 
 	ply.HealthBar(&healthRect);//needed healthbar in player
+
+	//used to call playMusic
+	music mus;
 	
 	mag.Multiplayer(&ply2);
 	
@@ -568,6 +573,9 @@ int main(int argc, char* argv[])
 		{
 			up = false;
 			ply.hit.addAttack(pCam.x + 240,pCam.y + 51/2);
+
+			//play fire sound effect
+			mus.fireSound();
 		}
 		//lets the attack move across the screen
 		ply.hit.renderAttack(timestep);
@@ -606,6 +614,7 @@ int main(int argc, char* argv[])
 	{
 		return playCredits();
 	}
+
 	close();
 	//return credits ? playCredits() : close();
 }
