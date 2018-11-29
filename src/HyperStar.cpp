@@ -10,6 +10,9 @@
 		imBox = {0,0,100,100};
 		gRenderer = ply->getRend();
 		plyCam = ply ->getPlayerCamLoc();
+		
+		hasShield = ply->shieldStatus();
+		getShield = 0;
 		head = (struct StarNode*)malloc(sizeof(struct StarNode));
 		head->pre = nullptr;
 		head->next = nullptr;
@@ -64,18 +67,27 @@
 	//places star on screen
 	void HyperStar::Render(double timestep)
 	{
+		if(*hasShield && getShield == 0)
+		{
+			shield = ply->shieldInteractions();
+			getShield = 1;
+		}
 		if(head->next == nullptr)
 		{
 			return;
 		}
-		StarNode* curr = head->next;
-		StarNode* temp;
+		curr = head->next;
 		while(curr != nullptr)
 		{
 			imBox.y = (curr->frame%2)*100;
 			curr->frame++;
 			SDL_RenderCopy(gRenderer, starIm, &imBox, &curr->colTest);
-
+			if(*hasShield && SDL_HasIntersection(&curr->colTest,shield))
+			{
+				if(checkShieldCol(curr->colTest))
+				{
+				}
+			}
 			//checks rectangle intersection first
 			if(SDL_HasIntersection(&curr->colTest,plyCam)&& !(curr->hitPly))
 			{
@@ -89,22 +101,7 @@
 			//if star is off screen free starnode
 			if(curr->colTest.x <= -size)
 			{
-				if(curr == end)
-				{
-					end = end->pre;
-					end->next = nullptr;
-					free(curr);
-					curr = nullptr;
-				}
-				else
-				{
-
-					curr->next->pre = curr->pre;
-					curr->pre->next = curr->next;
-					temp = curr;
-					curr = curr->next;
-					free(temp);
-				}
+				killStar();
 			}
 			else
 			{
@@ -134,6 +131,25 @@
 			}
 		}
 
+	}
+	void HyperStar::killStar()
+	{	
+		
+		if(curr == end)
+		{
+			end = end->pre;
+			end->next = nullptr;
+			free(curr);
+			curr = nullptr;;
+		}
+		else
+		{
+			curr->next->pre = curr->pre;
+			curr->pre->next = curr->next;
+			StarNode* temp = curr;
+			curr = curr->next;
+			free(temp);
+		}
 	}
 	//circle collision test
 	bool HyperStar::checkCol(SDL_Rect circle)
@@ -174,4 +190,9 @@
 			return true;
 		else
 			return false;
+	}
+	
+	bool HyperStar::checkShieldCol(SDL_Rect circle)
+	{
+		return false;
 	}

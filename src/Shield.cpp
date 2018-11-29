@@ -13,6 +13,7 @@ Shield::Shield(SDL_Texture* imItem, SDL_Texture* power, Player* main): item(imIt
 	screen = false;
 	hits = 0;
 	addStrength = 2;
+	ply -> shieldLocation(&protectLoc);
 }
 void Shield::Render()
 {
@@ -35,6 +36,7 @@ void Shield::Render()
 			itemLoc.x = 1280;
 			if(intersect)
 			{
+				ply->hasShield(true);
 				hits = hits + addStrength;
 			}
 			
@@ -52,6 +54,7 @@ void Shield::RenderPower()
 	protectLoc.x = plyCam->x - 30;
 	protectLoc.y = plyCam->y - 125;
 	SDL_RenderCopy(gRenderer, protect, &protectIm, &protectLoc);
+	
 }
 void Shield::NewItem()
 {

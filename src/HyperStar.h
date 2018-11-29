@@ -22,13 +22,19 @@ class HyperStar
 		void addStar();
 		void Render(double timestep);
 		bool checkCol(SDL_Rect circle);
+		bool checkShieldCol(SDL_Rect circle);
+		void killStar();
 	
 	private:
+		int getShield;
+		bool* hasShield;
+		SDL_Rect* shield;
 		SDL_Texture* starIm;
 		Player* ply;
 		SDL_Rect imBox;
 		SDL_Rect* plyCam;
 		SDL_Renderer* gRenderer;
 		struct StarNode* head;
+		struct StarNode* curr;
 		struct StarNode* end;
 };
