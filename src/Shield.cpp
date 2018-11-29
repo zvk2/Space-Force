@@ -3,12 +3,12 @@ Shield::Shield(SDL_Texture* imItem, SDL_Texture* power, Player* main): item(imIt
 {
 	gRenderer = ply->getRend();
 	plyCam = ply ->getPlayerCamLoc();
-	int size = 100;
+	int size = 50;
 	itemLoc = {1280,720,size,size};
-	itemIm = {0,0,size,size};
+	itemIm = {0,0,100,100};
 	size = 300;
 	protectLoc = {1280,720,size,size};;
-	protectIm = {0,0,size,size};;
+	protectIm = {0,0,300,300};;
 	itemScreen = false;
 	screen = false;
 	hits = 0;
@@ -49,10 +49,11 @@ void Shield::Render()
 }
 void Shield::RenderPower()
 {
-	//play.x - 30
-	SDL_RenderCopy(gRenderer, protect, &itemIm, &itemLoc);
+	protectLoc.x = plyCam->x - 30;
+	protectLoc.y = plyCam->y - 125;
+	SDL_RenderCopy(gRenderer, protect, &protectIm, &protectLoc);
 }
-void Shield::newItem()
+void Shield::NewItem()
 {
 	itemScreen = true;
 }

@@ -9,7 +9,7 @@ class Shield
 		Shield(SDL_Texture* imItem, SDL_Texture* power, Player* main);
 		void Render();
 		void RenderPower();
-		void newItem();
+		void NewItem();
 	private:
 		SDL_Renderer* gRenderer;
 		SDL_Texture* item; 
