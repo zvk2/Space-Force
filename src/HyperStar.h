@@ -21,7 +21,8 @@ class HyperStar
 		HyperStar();
 		void addStar();
 		void Render(double timestep);
-		bool checkCol(SDL_Rect circle);
+		bool checkCol(SDL_Rect other, SDL_Rect star);//other is the object that isn't the star
+		bool checkCirCol(SDL_Rect circle);
 		bool checkShieldCol(SDL_Rect circle);
 		void killStar();
 	
@@ -37,4 +38,6 @@ class HyperStar
 		struct StarNode* head;
 		struct StarNode* curr;
 		struct StarNode* end;
+		int count;
+		int countKill;
 };

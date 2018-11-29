@@ -1,5 +1,6 @@
 #include "HyperStar.h"
 #include <iostream>
+#include <cmath>
 //const int SCREEN_WIDTH = 1280;
 //const int SCREEN_HEIGHT = 720;
 	//size of image
@@ -17,6 +18,8 @@
 		head->pre = nullptr;
 		head->next = nullptr;
 		end = head;
+		count = 0;
+		countKill = 0;
 	}
 
 	//adds a new star to the list with a random spawn location
@@ -77,24 +80,27 @@
 			return;
 		}
 		curr = head->next;
-		bool moveOn = true;
 		while(curr != nullptr)
 		{
 			imBox.y = (curr->frame%2)*100;
 			curr->frame++;
-			SDL_RenderCopy(gRenderer, starIm, &imBox, &curr->colTest);
-			if(*hasShield && SDL_HasIntersection(&curr->colTest,shield))
-			{
+			if(*hasShield && checkCol(*shield, curr->colTest))
+			{	
+				
 				if(checkShieldCol(curr->colTest))
 				{
-					killStar();//////////////////
+					killStar();
+					continue;
 				}
+				
 			}
+			
 			//checks rectangle intersection first
-			if(SDL_HasIntersection(&curr->colTest,plyCam)&& !(curr->hitPly))
+			else if(checkCol(*plyCam, curr->colTest)&& !(curr->hitPly))
 			{
+				
 				//then checks circle
-				if(checkCol(curr->colTest))
+				if(checkCirCol(curr->colTest))
 				{
 					ply->damage(1);
 					curr->hitPly = true;//hits player only once
@@ -105,8 +111,9 @@
 			{
 				killStar();
 			}
-			else if(moveOn)
+			else
 			{
+				SDL_RenderCopy(gRenderer, starIm, &imBox, &curr->colTest);
 				if(curr->y>= 720-size && curr->math==0)
 				{
 					curr->math =1;//star will goes up
@@ -153,10 +160,23 @@
 			free(temp);
 		}
 	}
-	//circle collision test
-	bool HyperStar::checkCol(SDL_Rect circle)
+	bool HyperStar::checkCol(SDL_Rect other, SDL_Rect star)
 	{
-		int r = size/2;
+		if(other.y + other.h <= star.y)
+			return false;
+		if(other.y >= star.y + star.h)
+			return false;
+		if(other.x >= star.x + star.w)
+			return false;
+		if(other.x + other.w <= star.w)
+			return false;
+		
+		return true;
+	}
+	//circle collision test
+	bool HyperStar::checkCirCol(SDL_Rect circle)
+	{
+		int r = 50;
 		int c_x, c_y, d_x, d_y;
 		if(circle.x < plyCam-> x)
 		{
@@ -187,14 +207,43 @@
 		d_x = circle.x - c_x;
 		d_y = circle.y - c_y;
 
-		int inter =  d_x * d_x + d_y * d_y;
-		if(inter <(r * r))
+		int distance =  d_x * d_x + d_y * d_y;
+		if(distance <(r * r))
 			return true;
-		else
-			return false;
+		
+		return false;
 	}
 	
 	bool HyperStar::checkShieldCol(SDL_Rect circle)
 	{
+		int rsum = (circle.h/2) + (shield->h/2);
+		std::cout << "rsum: "<<rsum << std::endl;
+		int x = shield->x;
+		int y = shield->y;
+		int xDistance;
+		int yDistance;
+		int squDist;
+		int increase;
+		if(x < 0)
+		{
+			increase = x*-1;
+			x = x + increase;
+			circle.x = circle.x + increase;
+		}
+		if(y < 0)
+		{
+			increase = y*-1;
+			y = y + increase;
+			circle.y = circle.y + increase;
+		}
+			
+		xDistance = x - circle.x;
+		yDistance = y - circle.y;
+		squDist = (xDistance * xDistance) + (yDistance* yDistance);
+		if(squDist < (rsum * rsum))
+		{
+			countKill++;
+			return true;
+		}
 		return false;
 	}

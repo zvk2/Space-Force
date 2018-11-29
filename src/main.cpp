@@ -466,7 +466,7 @@ int main(int argc, char* argv[])
         if(currTime>=6000)
 		{
             //std::cout << currTime % 3000 << std::endl;
-			if((currTime % 8000 <= 50 && !mag.Seen()) ||mag.Seen())
+			if((currTime % 10000 <= 50 && !mag.Seen()) ||mag.Seen())
 			{
 
 				mag.Render();
