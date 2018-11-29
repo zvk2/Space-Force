@@ -15,6 +15,7 @@
 #include <cstdlib>
 #include "HyperStar.h"
 #include "music.h"
+#include "Shield.h"
 
 #include "OpenGLRenderer.hpp"
 
@@ -332,6 +333,7 @@ int main(int argc, char* argv[])
 	double ACCEL = ply.GetMove();
 
 	ply.HealthBar(&healthRect);//needed healthbar in player
+	Shield protect(loadImage("resources/imgs/shield_powerup.png"), loadImage("resources/imgs/shield.png"), &ply);
 
 	mag.Multiplayer(&ply2);
 
@@ -462,11 +464,11 @@ int main(int argc, char* argv[])
 		pRect2 = ply2.getPlayerRect();
 
         Uint32 currTime = SDL_GetTicks();
-
+		
         if(currTime>=6000)
 		{
             //std::cout << currTime % 3000 << std::endl;
-			if((currTime % 3000 <= 50 && !mag.Seen()) ||mag.Seen())
+			if((currTime % 10000 <= 50 && !mag.Seen()) ||mag.Seen())
 			{
 
 				mag.Render();
@@ -474,6 +476,10 @@ int main(int argc, char* argv[])
 			if(currTime%3000<=20)
 			{
 				stars.addStar();
+			}
+			if(currTime%5000<=20)
+			{
+				protect.NewItem();
 			}
 		}
         if(currTime >= 5000)
@@ -584,6 +590,7 @@ int main(int argc, char* argv[])
 		//lets the attack move across the screen
 		ply.hit.renderAttack(timestep);
 		SDL_RenderCopyEx(gRenderer, ply.getPlayerSheet(), &pRect, &pCam, 0.0, nullptr, flip);
+		protect.Render();
 		SDL_RenderCopyEx(gRenderer, emy.getEnemySheet(), &eRect, &eCam, 0.0, nullptr, flip);
 
 

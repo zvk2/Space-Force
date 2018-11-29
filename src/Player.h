@@ -19,7 +19,7 @@ class Player
 		//attack* attackHit();
 		//Set the position of the player on screen
 		void setPosition(double x, double y);
-	
+		void hasShield(bool has);
 
         //Int version
         void setPosition(int x, int y);
@@ -69,7 +69,7 @@ class Player
 
 		//Reset the attack and defence modifiers to normal
 		void PowerupEnd();
-
+		
 
 		//Return the player's current health points
 		int GetHealth();
@@ -88,6 +88,10 @@ class Player
 		//intracts with health bar
 		void HealthBar(SDL_Rect* health);
 		void damage(int hits);
+		void shieldLocation(SDL_Rect* protect, int* strength);
+		bool* shieldStatus();
+		SDL_Rect* shieldInteractions();
+		void HitShield(int hits);
 		
 	private:
 
@@ -96,6 +100,8 @@ class Player
 		 * currently a character sheet but can be updated to
 		 * OpenGL later
 		 */
+		SDL_Rect* shield;
+		bool protection;
 		SDL_Rect* healthBar;
 		double ACCEL;
 		double SPEED_LIMIT;
@@ -110,6 +116,7 @@ class Player
 		SDL_Texture* playerSheet;
 		Physics phys;
 		SDL_Renderer* gRenderer;
+		int *shieldPoint;
 
 		SDL_Rect playerCam;
 		SDL_Rect playerRect;
