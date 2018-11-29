@@ -16,14 +16,16 @@
 #include "HyperStar.h"
 #include "music.h"
 
+#include "OpenGLRenderer.hpp"
 
 // Used for file walk (somewhat crudely)
 #include <stdio.h>
 #include <dirent.h>
 
 // Constants for resolution
-const int SCREEN_WIDTH = 1280;
-const int SCREEN_HEIGHT = 720;
+// Now declared globally in OpenGLRenderer.hpp
+//~ const int SCREEN_WIDTH = 1280;
+//~ const int SCREEN_HEIGHT = 720;
 
 // Constants for level
 const int LEVEL_LEN = 5120;
