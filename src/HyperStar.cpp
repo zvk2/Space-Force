@@ -77,6 +77,7 @@
 			return;
 		}
 		curr = head->next;
+		bool moveOn = true;
 		while(curr != nullptr)
 		{
 			imBox.y = (curr->frame%2)*100;
@@ -86,6 +87,7 @@
 			{
 				if(checkShieldCol(curr->colTest))
 				{
+					killStar();//////////////////
 				}
 			}
 			//checks rectangle intersection first
@@ -103,7 +105,7 @@
 			{
 				killStar();
 			}
-			else
+			else if(moveOn)
 			{
 				if(curr->y>= 720-size && curr->math==0)
 				{
