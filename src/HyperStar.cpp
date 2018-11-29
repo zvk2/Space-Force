@@ -90,6 +90,7 @@
 				if(checkShieldCol(curr->colTest))
 				{
 					killStar();
+					ply->HitShield(1);
 					continue;
 				}
 				
@@ -110,6 +111,7 @@
 			if(curr->colTest.x <= -size)
 			{
 				killStar();
+				
 			}
 			else
 			{

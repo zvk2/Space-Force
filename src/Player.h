@@ -88,9 +88,10 @@ class Player
 		//intracts with health bar
 		void HealthBar(SDL_Rect* health);
 		void damage(int hits);
-		void shieldLocation(SDL_Rect* protect);
+		void shieldLocation(SDL_Rect* protect, int* strength);
 		bool* shieldStatus();
 		SDL_Rect* shieldInteractions();
+		void HitShield(int hits);
 		
 	private:
 
@@ -115,6 +116,7 @@ class Player
 		SDL_Texture* playerSheet;
 		Physics phys;
 		SDL_Renderer* gRenderer;
+		int *shieldPoint;
 
 		SDL_Rect playerCam;
 		SDL_Rect playerRect;

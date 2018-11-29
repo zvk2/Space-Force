@@ -10,6 +10,7 @@ class Shield
 		void Render();
 		void RenderPower();
 		void NewItem();
+		void Damage(int hitsTaken);
 	private:
 		SDL_Renderer* gRenderer;
 		SDL_Texture* item; 

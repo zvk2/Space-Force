@@ -24,11 +24,12 @@ void Player::setAttack(SDL_Texture* gAttack, SDL_Rect* attackRect)
 }
 void Player::hasShield(bool has)
 {
-	protection = true;
+	protection = has;
 }
-void Player::shieldLocation(SDL_Rect* protect)
+void Player::shieldLocation(SDL_Rect* protect, int* strength)
 {
 	shield = protect;
+	shieldPoint = strength;
 }
 bool* Player::shieldStatus()
 {
@@ -37,6 +38,10 @@ bool* Player::shieldStatus()
 SDL_Rect* Player::shieldInteractions()
 {
 	return shield;
+}
+void Player::HitShield(int hits)
+{
+	*shieldPoint = *shieldPoint - hits;
 }
 
 //Set the position of the player on screen
