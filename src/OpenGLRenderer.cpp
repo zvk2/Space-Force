@@ -48,10 +48,10 @@ void RenderObject::ChangeCoordinates(GLfloat newX, GLfloat newY, GLfloat newZ)
 //~ RenderObject::~RenderObject() {};
 
 // Constructor
-OpenGLRenderer::OpenGLRenderer(SDL_Window* window, std::map<std::string, BufferAttributes> *initAllBufferAttributes)
+OpenGLRenderer::OpenGLRenderer(SDL_Window* window)
 {
-	// Make sure buffer matched up
-	allBufferAttributes = initAllBufferAttributes;
+	// Init buffers
+	allBufferAttributes = std::map<std::string, BufferAttributes>();
 
 	// Initialzie renderObjects to an empty vector (can be dynamically populated)
 	renderObjects = std::vector<RenderObject*>();
@@ -152,6 +152,17 @@ void OpenGLRenderer::PopulateTextures()
 		{1, 2, "resources/imgs/start.png"},
 		{1, 2, "resources/imgs/multi.png"},
 		{1, 2, "resources/imgs/credits.png"},
+		// Credits
+		//~ {1, 1, "resources/Credit_Image/carolyn_cole.png"},
+		//~ {1, 1, "resources/Credit_Image/Credit_AnthonyMartrano.png"},
+		//~ {1, 1, "resources/Credit_Image/DylanUmble.png"},
+		//~ {1, 1, "resources/Credit_Image/KevinW_credit.png"},
+		//~ {1, 1, "resources/Credit_Image/luke_malchow_bergenthal_1_3_FINAL_last_edge_lord.png"},
+		//~ {1, 1, "resources/Credit_Image/RuthDereje.png"},
+		//~ {1, 1, "resources/Credit_Image/ryan-kuhn.png"},
+		//~ {1, 1, "resources/Credit_Image/ShreeSampath.png"},
+		//~ {1, 1, "resources/Credit_Image/Zane_Credits.png"},
+		//~ {1, 1, "resources/Credit_Image/zhishengXu.png"},
 	};
 	// Iterate over every texture to generate
 	for (auto currentGenerator: textureGenerators)
@@ -175,11 +186,14 @@ void OpenGLRenderer::Close()
 	// Delete our OpengL context
 	SDL_GL_DeleteContext(mainContext);
 
-	SDL_DestroyWindow(gWindow);
+	//~ SDL_DestroyWindow(gWindow);
 	gWindow = nullptr;
 
+	TabulaRasa();
+}
+void OpenGLRenderer::TabulaRasa()
+{
 	// Delete vector
-	// BAD
 	for (int i=0; i<renderObjects.size(); i++)
 	{
 		delete renderObjects[i];
@@ -367,7 +381,7 @@ void OpenGLRenderer::PopulateDefault2DBuffers(
 	//~ char textureName[] = fileName;
 
 	// Debug output the name of the texture (make sure stuff isn't broken)
-	std::cout << textureName << std::endl;
+	//~ std::cout << textureName << std::endl;
 
 	// Load the image as a surface (don't need a texture, can be surface for the pixel data)
 	SDL_Surface* surface = IMG_Load(textureName);
@@ -420,8 +434,8 @@ void OpenGLRenderer::PopulateDefault2DBuffers(
 	GLfloat frameWidth = width / columns;
 	GLfloat frameHeight = height / rows;
 
-	std::cout << width << " " << height << std::endl;
-	std::cout << frameWidth << " " << frameHeight << std::endl;
+	//~ std::cout << width << " " << height << std::endl;
+	//~ std::cout << frameWidth << " " << frameHeight << std::endl;
 
 	GLuint firstBuffer = bufferIDs.size();
 	GLuint bufferOffset = 0;
@@ -452,8 +466,8 @@ void OpenGLRenderer::PopulateDefault2DBuffers(
 		currentRow++;
 	}
 
-	// Note dereference, world is a fuf
-	(*allBufferAttributes)[textureName] = {
+	// *No* dereference, world is a fuf
+	allBufferAttributes[textureName] = {
 		// Width
 		(GLfloat)frameWidth,
 		// Height
@@ -466,7 +480,7 @@ void OpenGLRenderer::PopulateDefault2DBuffers(
 		// buffer start
 		firstBuffer,
 		// buffer end (changed at the conclusion)
-		firstBuffer + bufferOffset
+		firstBuffer + bufferOffset - 1
 	};
 
 	// FREE THE SURFACE

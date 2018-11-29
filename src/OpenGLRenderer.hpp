@@ -114,7 +114,7 @@ class OpenGLRenderer
 {
 	public:
 		// Constructor
-		OpenGLRenderer(SDL_Window*, std::map<std::string, BufferAttributes> *allBufferAttributes);
+		OpenGLRenderer(SDL_Window* gWindow);
 		// Destructor
 		//~ ~OpenGLRenderer();
 		void Close();
@@ -123,6 +123,7 @@ class OpenGLRenderer
 		void PopulateTextures();
 		void AppendRenderObject(RenderObject *newRenderObject);
 		void RemoveRenderObject(int index);
+		void TabulaRasa();
 		void Display();
 		GLuint PopulateDefault2DBuffer(
 			//~ BufferAttributes *bufferAttributes,
@@ -169,7 +170,7 @@ class OpenGLRenderer
 		GLuint program;
 
 		// All of the bufferAttributes
-		std::map<std::string, BufferAttributes> *allBufferAttributes;
+		std::map<std::string, BufferAttributes> allBufferAttributes;
 };
 
 GLfloat CanonicalCoordinatesFromPixels(int pixels, int dimension);

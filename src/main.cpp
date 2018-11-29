@@ -251,14 +251,18 @@ int main(int argc, char* argv[])
 	}
 	// MENU
 
-	Menu menu;
-	menu.displayMenu(gWindow);
-	int selection = menu.runMenu(gWindow);
+	OpenGLRenderer openGL = OpenGLRenderer(gWindow);
+
+	Menu menu = Menu(&openGL);
+	int selection = menu.runMenu();
 	//std::cout << selection << std::endl;
 	while (selection == 2)
 	{
 		playCredits();
-		selection = menu.runMenu(gWindow);
+		// TEMPORARY, WILL RESTORE SOON
+		//~ selection = menu.runMenu();
+		close();
+		return 0;
 	}
 	if (selection == 0)
 	{
@@ -271,8 +275,10 @@ int main(int argc, char* argv[])
 			Multiplayer = true;
 		}
 		cout << "SELECTION " << selection << endl;
-        gContext = menu.closeMenu();
 	}
+
+	// Now that we are ready to start the game, clean the openGLRenderer
+	openGL.TabulaRasa();
 
 	// GAME
 	/*
@@ -618,6 +624,10 @@ int main(int argc, char* argv[])
 	{
 		return playCredits();
 	}
+
+	// When the main loop ends, we can assume it is time for openGL to die
+	// And yeah, should be in the close function (but it isn't because I instantiate openGL on the stack)
+	openGL.Close();
 
 	close();
 	//return credits ? playCredits() : close();
