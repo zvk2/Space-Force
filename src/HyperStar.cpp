@@ -96,7 +96,7 @@
 			}
 			
 			//checks rectangle intersection first
-			else if(checkCol(*plyCam, curr->colTest)&& !(curr->hitPly))
+			if(checkCol(*plyCam, curr->colTest)&& !(curr->hitPly))
 			{
 				
 				//then checks circle
@@ -162,13 +162,14 @@
 	}
 	bool HyperStar::checkCol(SDL_Rect other, SDL_Rect star)
 	{
+		
 		if(other.y + other.h <= star.y)
 			return false;
 		if(other.y >= star.y + star.h)
 			return false;
 		if(other.x >= star.x + star.w)
 			return false;
-		if(other.x + other.w <= star.w)
+		if(other.x + other.w <= star.x)
 			return false;
 		
 		return true;
@@ -208,7 +209,7 @@
 		d_y = circle.y - c_y;
 
 		int distance =  d_x * d_x + d_y * d_y;
-		if(distance <(r * r))
+		if(distance <=(r * r))
 			return true;
 		
 		return false;
@@ -216,8 +217,7 @@
 	
 	bool HyperStar::checkShieldCol(SDL_Rect circle)
 	{
-		int rsum = (circle.h/2) + (shield->h/2);
-		std::cout << "rsum: "<<rsum << std::endl;
+		int rsum = (circle.h/2) + (shield->h);
 		int x = shield->x;
 		int y = shield->y;
 		int xDistance;
@@ -226,21 +226,19 @@
 		int increase;
 		if(x < 0)
 		{
-			increase = x*-1;
-			x = x + increase;
-			circle.x = circle.x + increase;
+			x = x + shield->h;
+			circle.x = circle.x + shield->h;
 		}
 		if(y < 0)
 		{
-			increase = y*-1;
-			y = y + increase;
-			circle.y = circle.y + increase;
+			y = y + shield->h;
+			circle.y = circle.y + shield->h;
 		}
 			
 		xDistance = x - circle.x;
 		yDistance = y - circle.y;
 		squDist = (xDistance * xDistance) + (yDistance* yDistance);
-		if(squDist < (rsum * rsum))
+		if(squDist <=(rsum * rsum))
 		{
 			countKill++;
 			return true;
