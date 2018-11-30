@@ -144,11 +144,11 @@ SDL_Texture* loadImage(std::string fname)
 
 int close()
 {
-	for (auto i : gTex)
-	{
-		SDL_DestroyTexture(i);
-		i = nullptr;
-	}
+	//~ for (auto i : gTex)
+	//~ {
+		//~ SDL_DestroyTexture(i);
+		//~ i = nullptr;
+	//~ }
 
 	mus.close();
 
@@ -166,74 +166,66 @@ int close()
 }
 
 // CREDITS
-int playCredits()
+int playCredits(OpenGLRenderer *openGL)
 {
-	struct dirent *entry;
-	DIR *dp;
+	// Your compiler may complain because you are not supposed to do this
+	// Credits to play
+	std::string creditNames[] = {
+		"resources/Credit_Image/carolyn_cole.png",
+		"resources/Credit_Image/Credit_AnthonyMartrano.png",
+		"resources/Credit_Image/DylanUmble.png",
+		"resources/Credit_Image/KevinW_credit.png",
+		"resources/Credit_Image/luke_malchow_bergenthal_1_3_FINAL_last_edge_lord.png",
+		"resources/Credit_Image/RuthDereje.png",
+		"resources/Credit_Image/ryan-kuhn.png",
+		"resources/Credit_Image/ShreeSampath.png",
+		"resources/Credit_Image/Zane_Credits.png",
+		"resources/Credit_Image/zhishengXu.png"
+	};
 
-	dp = opendir(CREDITS_FOLDER);
-	if (dp == NULL)
-	{
-		perror("opendir: Path does not exist or could not be read.");
-		return -1;
-	}
-
-	while ((entry = readdir(dp)))
-	{
-
-		int dNameLength = strlen(entry->d_name);
-
-		// Crude
-		if (dNameLength > 4 && entry->d_name[dNameLength - 4] == '.')
-		{
-			// Crude
-			char currentImageBuffer[2000];
-			strcpy(currentImageBuffer, CREDITS_FOLDER);
-			strcat(currentImageBuffer, entry->d_name);
-
-			// Puts the image on the buffer queue
-			gTex.push_back(loadImage(currentImageBuffer));
-		}
-	}
-
-	// Close the directory
-	closedir(dp);
-
-	bool quit = false;
+	int index = 0;
+	bool creditsContinue = true;
 	SDL_Event e;
 
-	for (auto i : gTex)
+	while (index < 10 && creditsContinue)
 	{
-		// does the user want to quit?
-		while(SDL_PollEvent(&e) != 0)
+		const char *currentCreditName = creditNames[index].c_str();
+
+		while(SDL_PollEvent(&e))
 		{
 			if (e.type == SDL_QUIT)
 			{
-				quit = true;
+				creditsContinue = false;
 			}
-		 	if(e.type == SDL_KEYDOWN)
-		 	{
+			if (e.type == SDL_KEYDOWN)
+			{
 				if (e.key.keysym.sym == SDLK_ESCAPE)
 				{
-					quit = true;
+					creditsContinue = false;
 				}
-		 	}
+				if (e.key.keysym.sym == SDLK_q)
+				{
+					creditsContinue = false;
+				}
+			}
 		}
-		if (quit)
-		{
-			break;
-		}
-		// Clear
-		SDL_RenderClear(gRenderer);
-		// Render the image
-		SDL_RenderCopy(gRenderer, i, NULL, NULL);
-		// Display rendering
-		SDL_RenderPresent(gRenderer);
+
+		std::cout << currentCreditName << std::endl;
+		RenderObject *currentCreditImage = new RenderObject(
+			0, 0, 1, openGL->allBufferAttributes[currentCreditName]
+		);
+		openGL->AppendRenderObject(currentCreditImage);
+
+		openGL->Display();
+
 		// Wait 3 seconds
 		SDL_Delay(3000);
+
+		// Kill image
+		openGL->RemoveRenderObject(currentCreditImage->index);
+
+		index++;
 	}
-	// Clear the renderer one last time
-	SDL_RenderClear(gRenderer);
 
 	//close();
     return 0;
@@ -259,11 +251,8 @@ int main(int argc, char* argv[])
 	//std::cout << selection << std::endl;
 	while (selection == 2)
 	{
-		playCredits();
-		// TEMPORARY, WILL RESTORE SOON
-		//~ selection = menu.runMenu();
-		close();
-		return 0;
+		playCredits(&openGL);
+		selection = menu.runMenu();
 	}
 	if (selection == 0)
 	{
@@ -552,7 +541,7 @@ int main(int argc, char* argv[])
 			//ply.LostHealth(1);
 			if (healthRect.x == 1770)
 			{
-				return playCredits();
+				return playCredits(&openGL);
 			}
 			else
 			{
@@ -562,7 +551,7 @@ int main(int argc, char* argv[])
 
 		if(healthRect.x >= 1598)//will now play credits when health is gone
 		{
-			return playCredits();
+			return playCredits(&openGL);
 		}
 		emy.move(0, emyDelta, timestep);
 		emy.checkPlayerCollision(&ply, timestep);
@@ -629,7 +618,7 @@ int main(int argc, char* argv[])
 	}
 	if (credits)
 	{
-		return playCredits();
+		return playCredits(&openGL);
 	}
 
 	// When the main loop ends, we can assume it is time for openGL to die
@@ -637,5 +626,5 @@ int main(int argc, char* argv[])
 	openGL.Close();
 
 	close();
-	//return credits ? playCredits() : close();
+	//return credits ? playCredits(&openGL) : close();
 }

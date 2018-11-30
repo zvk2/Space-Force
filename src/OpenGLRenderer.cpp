@@ -153,16 +153,16 @@ void OpenGLRenderer::PopulateTextures()
 		{1, 2, "resources/imgs/multi.png"},
 		{1, 2, "resources/imgs/credits.png"},
 		// Credits
-		//~ {1, 1, "resources/Credit_Image/carolyn_cole.png"},
-		//~ {1, 1, "resources/Credit_Image/Credit_AnthonyMartrano.png"},
-		//~ {1, 1, "resources/Credit_Image/DylanUmble.png"},
-		//~ {1, 1, "resources/Credit_Image/KevinW_credit.png"},
-		//~ {1, 1, "resources/Credit_Image/luke_malchow_bergenthal_1_3_FINAL_last_edge_lord.png"},
-		//~ {1, 1, "resources/Credit_Image/RuthDereje.png"},
-		//~ {1, 1, "resources/Credit_Image/ryan-kuhn.png"},
-		//~ {1, 1, "resources/Credit_Image/ShreeSampath.png"},
-		//~ {1, 1, "resources/Credit_Image/Zane_Credits.png"},
-		//~ {1, 1, "resources/Credit_Image/zhishengXu.png"},
+		{1, 1, "resources/Credit_Image/carolyn_cole.png"},
+		{1, 1, "resources/Credit_Image/Credit_AnthonyMartrano.png"},
+		{1, 1, "resources/Credit_Image/DylanUmble.png"},
+		{1, 1, "resources/Credit_Image/KevinW_credit.png"},
+		{1, 1, "resources/Credit_Image/luke_malchow_bergenthal_1_3_FINAL_last_edge_lord.png"},
+		{1, 1, "resources/Credit_Image/RuthDereje.png"},
+		{1, 1, "resources/Credit_Image/ryan-kuhn.png"},
+		{1, 1, "resources/Credit_Image/ShreeSampath.png"},
+		{1, 1, "resources/Credit_Image/Zane_Credits.png"},
+		{1, 1, "resources/Credit_Image/zhishengXu.png"},
 	};
 	// Iterate over every texture to generate
 	for (auto currentGenerator: textureGenerators)
