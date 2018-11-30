@@ -187,10 +187,20 @@ int playCredits(OpenGLRenderer *openGL)
 	bool creditsContinue = true;
 	SDL_Event e;
 
+	Uint32 startTime = SDL_GetTicks();
+	double timeDelta = 0;
+
+	std::cout << creditNames[index].c_str() << std::endl;
+	RenderObject *currentCreditImage = new RenderObject(
+		0, 0, 1, openGL->allBufferAttributes[creditNames[index].c_str()]
+	);
+	openGL->AppendRenderObject(currentCreditImage);
+
+	openGL->Display();
+
+	// Magic number length
 	while (index < 10 && creditsContinue)
 	{
-		const char *currentCreditName = creditNames[index].c_str();
-
 		while(SDL_PollEvent(&e))
 		{
 			if (e.type == SDL_QUIT)
@@ -210,21 +220,42 @@ int playCredits(OpenGLRenderer *openGL)
 			}
 		}
 
-		std::cout << currentCreditName << std::endl;
-		RenderObject *currentCreditImage = new RenderObject(
-			0, 0, 1, openGL->allBufferAttributes[currentCreditName]
-		);
-		openGL->AppendRenderObject(currentCreditImage);
-
-		openGL->Display();
-
 		// Wait 3 seconds
-		SDL_Delay(3000);
+		if (timeDelta >= 3000)
+		{
+			index++;
+			// Magic number length
+			if (index > 9)
+			{
+				break;
+			}
 
+			const char *currentCreditName = creditNames[index].c_str();
+
+			startTime = SDL_GetTicks();
+			timeDelta = 0;
+
+			// Kill image
+			openGL->RemoveRenderObject(currentCreditImage->index);
+
+			// Get new
+			std::cout << currentCreditName << std::endl;
+			currentCreditImage = new RenderObject(
+				0, 0, 1, openGL->allBufferAttributes[currentCreditName]
+			);
+			openGL->AppendRenderObject(currentCreditImage);
+
+			openGL->Display();
+		}
+		else
+		{
+			timeDelta = SDL_GetTicks() - startTime;
+		}
+	}
+
+	if (currentCreditImage) {
 		// Kill image
 		openGL->RemoveRenderObject(currentCreditImage->index);
-
-		index++;
 	}
 
 	//close();
@@ -459,7 +490,7 @@ int main(int argc, char* argv[])
 		pRect2 = ply2.getPlayerRect();
 
         Uint32 currTime = SDL_GetTicks();
-		
+
         if(currTime>=6000)
 		{
             //std::cout << currTime % 3000 << std::endl;
