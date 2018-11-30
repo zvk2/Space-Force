@@ -64,7 +64,7 @@ bool music::loadMedia()
 	success = true;
 
 	//Load music
-	gMusic = Mix_LoadMUS("resources/sounds/disposition_matrix.wav");
+	gMusic = Mix_LoadMUS("resources/sounds/spaceJourneyDangerous.wav");
 	if(gMusic == NULL)
 	{
 		printf( "Failed to load music! SDL_mixer Error: %s\n", Mix_GetError() );
