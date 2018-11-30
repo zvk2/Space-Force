@@ -5,9 +5,11 @@
 #include <OpenGL/OpenGL.h>
 #include <OpenGL/gl.h>
 #include <OpenGL/gl3.h>
+#include <SDL2_mixer/SDL_mixer.h>
 #else
 #include <SDL.h>
 #include <SDL_image.h>
 #include <GL/glew.h>
 #include "SDL_net.h"
+#include <SDL_mixer.h>
 #endif

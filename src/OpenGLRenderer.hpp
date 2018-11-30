@@ -13,6 +13,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2_image/SDL_image.h>
 #else
+#include <GL/glew.h>
 #include <SDL.h>
 #include <SDL_image.h>
 #endif
@@ -20,7 +21,7 @@
 // OpenGL / glew Headers
 // ONLY TESTED ON LINUX
 #define GL3_PROTOTYPES 1
-#include <GL/glew.h>
+
 
 // For type definitions etc.
 #include "matrix.h"

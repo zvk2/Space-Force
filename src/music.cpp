@@ -2,7 +2,7 @@
 
 #include "INC_SDL.h"
 #include "music.h"
-#include "SDL_mixer.h"
+//#include "SDL_mixer.h"
 
 
 
