@@ -123,6 +123,24 @@ OpenGLRenderer::OpenGLRenderer(SDL_Window* window)
 }
 void OpenGLRenderer::PopulateTextures()
 {
+	char loadingTextureName[] = "resources/imgs/LOADING.png";
+	// Get loading image
+	PopulateDefault2DBuffers(
+		// File Name
+		loadingTextureName,
+		// Row
+		1,
+		// Columns
+		1
+	);
+
+	RenderObject *loading = new RenderObject(
+		0, 0, -1, allBufferAttributes[loadingTextureName]
+	);
+
+	AppendRenderObject(loading);
+	Display();
+
 	// Crude!
 	TextureGenerator textureGenerators[] =
 	{
@@ -180,6 +198,8 @@ void OpenGLRenderer::PopulateTextures()
 			currentGenerator.columns
 		);
 	}
+
+	TabulaRasa();
 }
 void OpenGLRenderer::Close()
 {
@@ -193,7 +213,11 @@ void OpenGLRenderer::Close()
 }
 void OpenGLRenderer::TabulaRasa()
 {
+	// Clear initially
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	// Delete vector
+	// Technically violating best practices
 	for (int i=0; i<renderObjects.size(); i++)
 	{
 		delete renderObjects[i];

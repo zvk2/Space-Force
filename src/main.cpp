@@ -262,7 +262,117 @@ int playCredits(OpenGLRenderer *openGL)
     return 0;
 }
 
-int main(int argc, char* argv[])
+// Test main
+int main(int argc, char* argv[]) {
+	bool Multiplayer = false;
+
+	if (!init())
+	{
+		std::cout <<  "Failed to initialize!" << std::endl;
+		close();
+		return 1;
+	}
+
+	// Music
+	mus = music();
+	mus.init();
+	mus.playMusic();
+
+	// OpenGL init
+	OpenGLRenderer openGL = OpenGLRenderer(gWindow);
+
+	// Menu
+	Menu menu = Menu(&openGL);
+	int selection = menu.runMenu();
+	//std::cout << selection << std::endl;
+	while (selection == 2)
+	{
+		playCredits(&openGL);
+		selection = menu.runMenu();
+	}
+	if (selection == 0)
+	{
+		close();
+		return 0;
+	}
+	if (selection == 1 || selection == 3)
+	{
+		if(selection == 3){
+			Multiplayer = true;
+		}
+		cout << "SELECTION " << selection << endl;
+	}
+
+	// Now that we are ready to start the game, clean the openGLRenderer
+	openGL.TabulaRasa();
+
+	// FPS params
+	Uint32 fpsLasttime = SDL_GetTicks();
+	Uint32 fpsCurtime = 0;
+	Uint32 moveLasttime = SDL_GetTicks();
+	double timestep = 0;
+
+	// Rough sketch of a RenderObject?
+	RenderObject *background1 = new RenderObject(
+		0, 0, -1, openGL.allBufferAttributes["resources/imgs/space_2_background.png"]
+	);
+
+	RenderObject *background2 = new RenderObject(
+		SCREEN_WIDTH, 0, -1, openGL.allBufferAttributes["resources/imgs/space_2_background.png"]
+	);
+
+	// Crude use of render queue, but background requires only a few lines of code anyway
+	openGL.AppendRenderObject(background1);
+	openGL.AppendRenderObject(background2);
+
+	bool loop = 1;
+	while (loop)
+	{
+		SDL_Event event;
+		while (SDL_PollEvent(&event))
+		{
+			if (event.type == SDL_QUIT)
+				loop = false;
+			if (event.type == SDL_KEYDOWN)
+			{
+				switch (event.key.keysym.sym)
+				{
+				case SDLK_ESCAPE:
+					loop = false;
+					break;
+				case SDLK_q:
+					loop = false;
+					break;
+				default:
+					break;
+				}
+			}
+		}
+
+		// Increment timestep
+		timestep = (SDL_GetTicks() - moveLasttime) / 1000.0;
+
+		// Move the background
+		background1->ChangeCoordinates(background1->x - 1, background1->y, background1->z);
+		background2->ChangeCoordinates(background2->x - 1, background2->y, background2->z);
+
+		// Reset the background as necessary
+		if (background1->x < -SCREEN_WIDTH)
+		{
+			background1->ChangeCoordinates(0, background1->y, background1->z);
+			background2->ChangeCoordinates(SCREEN_WIDTH, background2->y, background2->z);
+		}
+
+		// Displays stuff
+		openGL.Display();
+	}
+
+	openGL.Close();
+	close();
+	return -1;
+}
+
+int old_main(int argc, char* argv[])
 {
 
 	bool Multiplayer = false;
