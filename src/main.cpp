@@ -16,6 +16,7 @@
 #include "HyperStar.h"
 #include "music.h"
 #include "Shield.h"
+#include "Fonts.h"
 
 #include "OpenGLRenderer.hpp"
 
@@ -289,6 +290,7 @@ int main(int argc, char* argv[])
 	*/
 	//used to call playMusic
 	mus = music();
+	Fonts messages(gRenderer);
 	mus.init();
 	mus.playMusic();
 
@@ -477,7 +479,9 @@ int main(int argc, char* argv[])
             //std::cout << currTime % 3000 << std::endl;
 			if((currTime % 10000 <= 50 && !mag.Seen()) ||mag.Seen())
 			{
-
+				if(!mag.Seen())
+					messages.RenderFont("A strong magantic field is approacing.");
+				messages.RenderFont(" Up and down movements will be inversed");
 				mag.Render();
 			}
 			if(currTime%3000<=20)
