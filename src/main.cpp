@@ -15,15 +15,18 @@
 #include <cstdlib>
 #include "HyperStar.h"
 #include "music.h"
+#include "Shield.h"
 
+#include "OpenGLRenderer.hpp"
 
 // Used for file walk (somewhat crudely)
 #include <stdio.h>
 #include <dirent.h>
 
 // Constants for resolution
-const int SCREEN_WIDTH = 1280;
-const int SCREEN_HEIGHT = 720;
+// Now declared globally in OpenGLRenderer.hpp
+//~ const int SCREEN_WIDTH = 1280;
+//~ const int SCREEN_HEIGHT = 720;
 
 // Constants for level
 const int LEVEL_LEN = 5120;
@@ -249,14 +252,18 @@ int main(int argc, char* argv[])
 	}
 	// MENU
 
-	Menu menu;
-	menu.displayMenu(gWindow);
-	int selection = menu.runMenu(gWindow);
+	OpenGLRenderer openGL = OpenGLRenderer(gWindow);
+
+	Menu menu = Menu(&openGL);
+	int selection = menu.runMenu();
 	//std::cout << selection << std::endl;
 	while (selection == 2)
 	{
 		playCredits();
-		selection = menu.runMenu(gWindow);
+		// TEMPORARY, WILL RESTORE SOON
+		//~ selection = menu.runMenu();
+		close();
+		return 0;
 	}
 	if (selection == 0)
 	{
@@ -269,8 +276,10 @@ int main(int argc, char* argv[])
 			Multiplayer = true;
 		}
 		cout << "SELECTION " << selection << endl;
-        gContext = menu.closeMenu();
 	}
+
+	// Now that we are ready to start the game, clean the openGLRenderer
+	openGL.TabulaRasa();
 
 	// GAME
 	/*
@@ -331,6 +340,7 @@ int main(int argc, char* argv[])
 	double ACCEL = ply.GetMove();
 
 	ply.HealthBar(&healthRect);//needed healthbar in player
+	Shield protect(loadImage("resources/imgs/shield_powerup.png"), loadImage("resources/imgs/shield.png"), &ply);
 
 	mag.Multiplayer(&ply2);
 
@@ -461,11 +471,11 @@ int main(int argc, char* argv[])
 		pRect2 = ply2.getPlayerRect();
 
         Uint32 currTime = SDL_GetTicks();
-
+		
         if(currTime>=6000)
 		{
             //std::cout << currTime % 3000 << std::endl;
-			if((currTime % 3000 <= 50 && !mag.Seen()) ||mag.Seen())
+			if((currTime % 10000 <= 50 && !mag.Seen()) ||mag.Seen())
 			{
 
 				mag.Render();
@@ -473,6 +483,10 @@ int main(int argc, char* argv[])
 			if(currTime%3000<=20)
 			{
 				stars.addStar();
+			}
+			if(currTime%5000<=20)
+			{
+				protect.NewItem();
 			}
 		}
         if(currTime >= 5000)
@@ -584,6 +598,7 @@ int main(int argc, char* argv[])
 		//lets the attack move across the screen
 		ply.hit.renderAttack(timestep);
 		SDL_RenderCopyEx(gRenderer, ply.getPlayerSheet(), &pRect, &pCam, 0.0, nullptr, flip);
+		protect.Render();
 		SDL_RenderCopyEx(gRenderer, emy.getEnemySheet(), &eRect, &eCam, 0.0, nullptr, flip);
 
 
@@ -618,6 +633,10 @@ int main(int argc, char* argv[])
 	{
 		return playCredits();
 	}
+
+	// When the main loop ends, we can assume it is time for openGL to die
+	// And yeah, should be in the close function (but it isn't because I instantiate openGL on the stack)
+	openGL.Close();
 
 	close();
 	//return credits ? playCredits() : close();
