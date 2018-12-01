@@ -1,4 +1,5 @@
 #include "HyperStar.h"
+#include "music.h"
 #include <iostream>
 #include <cmath>
 //const int SCREEN_WIDTH = 1280;
@@ -219,6 +220,7 @@
 	
 	bool HyperStar::checkShieldCol(SDL_Rect circle)
 	{
+		music mus;
 		int rsum = (circle.h/2) + (shield->h);
 		int x = shield->x;
 		int y = shield->y;
@@ -242,6 +244,7 @@
 		squDist = (xDistance * xDistance) + (yDistance* yDistance);
 		if(squDist <=(rsum * rsum))
 		{
+			//mus.shieldStarCollision();
 			countKill++;
 			return true;
 		}
