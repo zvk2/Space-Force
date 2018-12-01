@@ -1,15 +1,17 @@
 
 #include "INC_SDL.h"
 #include "Enemy.h"
+#include <iostream>
 #include <cmath> 
 #define MAX_SPEED 50
  
 //Public methods 
 
-Enemy::Enemy(Player* p, SDL_Texture* characterImages, int attac, attack* player, char _type, double* tstep): 
-	ply(p), enemySheet(characterImages),
+Enemy::Enemy(Player* p, SDL_Texture* characterImages, SDL_Texture* deathAnimation, int attac, attack* player, char _type, double* tstep): 
+	ply(p), enemySheet(characterImages), deathSheet(deathAnimation),
 	attackPower(attac), phys(0, 0, 300.0, 3600.0), xCoord(1500), yCoord(720), plyBlast(player), type(_type), timestep(tstep)
 	{
+		life = false;
 		exists = false;
 		frame = 0;
 		emyDelta = 1;
@@ -160,6 +162,7 @@ void Enemy::Spawn()
 	setVelocity(0, 50);
 	hitPoints = 10;
 	exists = true;
+	life = true;
 }
 
 void Enemy::Render()
@@ -175,19 +178,43 @@ void Enemy::Render()
 		setVelocity(0, 10);
 	}
 	
-	// Animate jet propulsion
-	if((frame / 10) >= 4)
+	if (hitPoints > 0)
 	{
-		frame = 0;
+		// Animate jet propulsion
+		if((frame / 10) >= 4)
+		{
+			frame = 0;
+		}
+		
+		enemyRect.x = ((frame / 10) % 4) * enemyRect.w;
+		frame++;
+		
+		move(0, emyDelta, *timestep);
+		checkPlayerCollision(*timestep);
+		
+		SDL_RenderCopy(gRenderer, enemySheet, &enemyRect, &enemyCam);
 	}
-	
-	enemyRect.x = ((frame / 10) % 4) * enemyRect.w;
-	frame++;
-	
-	move(0, emyDelta, *timestep);
-	checkPlayerCollision(*timestep);
-	
-	SDL_RenderCopy(gRenderer, enemySheet, &enemyRect, &enemyCam);
+	else
+	{
+		enemyRect.x = ((frame / 10) % 10) * enemyRect.w;
+		frame++;
+		
+		//Despawn the enemy
+		if (frame == 100)
+		{
+			exists = false;
+			frame = 0;
+			nextSpawn = 0;
+			setPosition(1500, 0);
+		}
+		else
+		{
+			
+			move(0, 0, *timestep);
+			checkPlayerCollision(*timestep);
+			SDL_RenderCopy(gRenderer, deathSheet, &enemyRect, &enemyCam);
+		}
+	}
 }
 
 //Private methods
@@ -196,7 +223,7 @@ void Enemy::Render()
 void Enemy::checkPlayerCollision(double tstep)
 {
 	if (hasCollision())
-	{
+	{	
 		double newPVelocityx = ply->getxVel();
 		double newPVelocityy = ply->getyVel();
 		double newEVelocityx = phys.getxVelocity();
@@ -264,13 +291,10 @@ void Enemy::DecrementHealth(int decAmount)
 {
 	hitPoints -= decAmount;
 	
-	//Despawn the enemy
-	if (hitPoints <= 0)
+	if (hitPoints <= 0 && life)
 	{
-		exists = false;
+		life = false;
 		frame = 0;
-		nextSpawn = 0;
-		setPosition(1500, 0);
 	}
 }
 

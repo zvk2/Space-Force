@@ -315,7 +315,7 @@ int main(int argc, char* argv[])
 	Player ply(10, loadImage("resources/imgs/starman.png"), 1, gRenderer);
 	Player ply2(10, loadImage("resources/imgs/starman_blue.png"), 1, gRenderer);
 
-	Enemy emy(&ply, loadImage("resources/imgs/faxanaduitis.png"), 1, &ply.hit, 'f', &timestep);
+	Enemy emy(&ply, loadImage("resources/imgs/faxanaduitis.png"), loadImage("resources/imgs/Faxanaduitis_Death.png"), 1, &ply.hit, 'f', &timestep);
 
 	SDL_Rect healthRect = {0, 0, 177, 33};
 	SDL_Rect healthCam = {30, 30, 177, 33};
@@ -518,7 +518,7 @@ int main(int argc, char* argv[])
 			
 			emy.Render();
 			
-			if (collision)
+			if (collision && emy.GetHealth() > 0)
 			{
 				//ply.LostHealth(1);
 				if (healthRect.x == 1770)
@@ -532,7 +532,7 @@ int main(int argc, char* argv[])
 			}
 		}
 		else
-		{
+		{	
 			if (emy.getNextSpawn() == 0)
 			{
 				emy.setNextSpawn((rand() % 5001) + 5000 + currTime); 

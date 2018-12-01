@@ -13,7 +13,7 @@ class Enemy
 	public:
 
 		//Constructor: takes health, character sheet, and attack value and sets all member vars
-		Enemy(Player* p, SDL_Texture* characterImages, int attac, attack* player, char _type, double* tstep);
+		Enemy(Player* p, SDL_Texture* characterImages, SDL_Texture* deathAnimation, int attac, attack* player, char _type, double* tstep);
 
 		//Subract hit points from the enemy
 		void LostHealth(int damage);
@@ -93,6 +93,7 @@ class Enemy
 		double* timestep;
 		int frame;
 		bool exists;
+		bool life;
 		Uint32 nextSpawn;
 		
 		//Determine the type of enemy
@@ -103,6 +104,7 @@ class Enemy
 
 		//Not perm obviously but here as a reminder to store enemy texture here
 		SDL_Texture* enemySheet;
+		SDL_Texture* deathSheet;
 		SDL_Renderer* gRenderer;
 		Physics phys;
 
