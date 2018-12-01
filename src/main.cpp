@@ -398,9 +398,9 @@ int main(int argc, char* argv[])
 		// WASD movement
 		const Uint8* keyState = SDL_GetKeyboardState(nullptr);
 		if (keyState[SDL_SCANCODE_A])
-			xDeltav -= (ACCEL * timestep);
+			xDeltav -= (abs(ACCEL) * timestep);
 		if (keyState[SDL_SCANCODE_D])
-			xDeltav += (ACCEL * timestep);
+			xDeltav += (abs(ACCEL) * timestep);
 		if (keyState[SDL_SCANCODE_W])
 			yDeltav -= (ACCEL * timestep);
 		if (keyState[SDL_SCANCODE_S])
