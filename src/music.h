@@ -19,6 +19,8 @@ class music
 
 		void fireSound();
 
+		void shieldStarCollision(); 
+
 		//~ bool check();
 
 		bool init();
@@ -31,6 +33,8 @@ class music
 		Mix_Music *gMusic;
 
 		Mix_Chunk *gFire;
+		
+		Mix_Chunk *gShieldSound;
 
 		bool success;
 
