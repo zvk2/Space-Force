@@ -44,6 +44,22 @@ void Player::HitShield(int hits)
 	*shieldPoint = *shieldPoint - hits;
 }
 
+void Player::healthLocation(SDL_Rect* health)
+{
+	healthPower = health;
+}
+
+SDL_Rect* Player::healthInteractions()
+{
+	return healthPower;
+}
+
+void Player::healthIncrease(bool collected){
+	if(collected){
+		//increase health
+	}
+}
+
 //Set the position of the player on screen
 void Player::setPosition(int x, int y)
 {

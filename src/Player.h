@@ -20,6 +20,7 @@ class Player
 		//Set the position of the player on screen
 		void setPosition(double x, double y);
 		void hasShield(bool has);
+		void healthIncrease(bool collected);
 
         //Int version
         void setPosition(int x, int y);
@@ -89,8 +90,10 @@ class Player
 		void HealthBar(SDL_Rect* health);
 		void damage(int hits);
 		void shieldLocation(SDL_Rect* protect, int* strength);
+		void healthLocation(SDL_Rect* health);
 		bool* shieldStatus();
 		SDL_Rect* shieldInteractions();
+		SDL_Rect* healthInteractions();
 		void HitShield(int hits);
 		
 	private:
@@ -101,6 +104,7 @@ class Player
 		 * OpenGL later
 		 */
 		SDL_Rect* shield;
+		SDL_Rect* healthPower;
 		bool protection;
 		SDL_Rect* healthBar;
 		double ACCEL;
