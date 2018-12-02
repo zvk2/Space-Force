@@ -5,15 +5,6 @@
 //#include "SDL_mixer.h"
 
 
-
-
-
-//The music that will be played
-
-
-//The sound effects that will be used
-
-
 void music::playMusic()
 {
 	if (success) {
@@ -28,11 +19,19 @@ void music::fireSound()
 	}
 }
 
+void music :: shieldStarCollision() 
+{ 
+	if (success) { 
+		Mix_PlayChannel(-1, gShieldSound, 0); 
+	} 
+} 
+
 // A little strange to have this in lieu of a constructor
 bool music::init()
 {
 	gMusic = nullptr;
 	gFire = nullptr;
+	gShieldSound = nullptr; 
 	//Initialization flag
 	success = true;
 
@@ -43,7 +42,6 @@ bool music::init()
 		//~ printf( "SDL could not initialize! SDL Error: %s\n", SDL_GetError() );
 		//~ success = false;
 	//~ }
-
 
 	//Initialize SDL_mixer
 	if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
@@ -79,6 +77,13 @@ bool music::loadMedia()
 		success = false;
 	}
 
+	gShieldSound = Mix_LoadWAV("resources/sounds/shield.wav"); 
+	if(gFire == NULL) 
+	{ 
+		printf("Failed to load fire sound effect! SDL_mixer Error: %s\n", Mix_GetError()); 
+		success = false; 
+	} 
+
 	return success;
 }
 
@@ -91,6 +96,9 @@ void music::close()
 	//Free the music
 	Mix_FreeMusic(gMusic);
 	gMusic = nullptr;
+ 
+	Mix_FreeChunk(gShieldSound); 
+	gShieldSound = nullptr; 
 
 	//Quit SDL subsystems
 	Mix_Quit();

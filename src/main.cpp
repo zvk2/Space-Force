@@ -338,7 +338,7 @@ int main(int argc, char* argv[])
 	SDL_Rect healthRect = {0, 0, 177, 33};
 	SDL_Rect healthCam = {30, 30, 177, 33};
 	
-	HyperStar stars(loadImage("resources/imgs/star4.png"),&ply);
+	HyperStar stars(loadImage("resources/imgs/star4.png"),&ply, &mus);
 	blackhole enemyBlackhole(loadImage("resources/imgs/blackhole.png"), &ply);
 	Magnetar mag(&ply, loadImage("resources/imgs/Magnetars.png"));
 
