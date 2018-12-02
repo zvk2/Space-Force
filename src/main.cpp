@@ -327,8 +327,6 @@ int main(int argc, char* argv[])
 
 
 	Enemy emy(&ply, loadImage("resources/imgs/faxanaduitis.png"), loadImage("resources/imgs/Faxanaduitis_Death.png"), 1, &ply.hit, 'f', &timestep);
-	emy.setPosition(860, 0);
-	emy.setVelocity(0, 50);
     
     //Our king appears!!!!!
     VirtualPeacefulKing king(100, loadImage("resources/imgs/King.png"),2,4);
@@ -417,18 +415,6 @@ int main(int argc, char* argv[])
 			yDeltav -= (ACCEL * timestep);
 		if (keyState[SDL_SCANCODE_S])
 			yDeltav += (ACCEL * timestep);
-
-
-		if (emy.getEnemyCam().y + emy.getEnemyCam().h == SCREEN_HEIGHT)
-		{
-			emyDelta = -1;
-			emy.setVelocity(0, -10);
-		}
-		if (emy.getEnemyCam().y == 0)
-		{
-			emyDelta = 1;
-			emy.setVelocity(0, 10);
-		}
         
         //boundary check for king
         if (king.getCamera().y + king.getCamera().h == SCREEN_HEIGHT)
@@ -447,14 +433,8 @@ int main(int argc, char* argv[])
 		SDL_Rect pRect2 = ply2.getPlayerRect();
 		SDL_Rect pCam2 = ply.getPlayerCam();
 		SDL_Rect transfer;
-
-
-		SDL_Rect eRect = emy.getEnemyRect();
-		SDL_Rect eCam = emy.getEnemyCam();
-        
         SDL_Rect kRect = king.getRect();
         SDL_Rect kCam = king.getCamera();
-
 
 		moveLasttime = SDL_GetTicks();
 
@@ -482,9 +462,6 @@ int main(int argc, char* argv[])
 		if(connected){
 			ply2.animate(frames);
 		}
-
-
-		emy.animate(frames);
         
         king.animate(frames);
 
@@ -617,9 +594,6 @@ int main(int argc, char* argv[])
 		{
 			return playCredits();
 		}
-
-		emy.move(0, emyDelta, timestep);
-		emy.checkPlayerCollision(&ply, timestep);
         
         king.move(0, kingDelta, timestep);
         
@@ -637,8 +611,6 @@ int main(int argc, char* argv[])
 		}
 		pCam2.x = transfer.x;
 		pCam2.y = transfer.y;
-
-		eCam = emy.getEnemyCam();
         
         kCam = king.getCamera();
 
@@ -657,7 +629,6 @@ int main(int argc, char* argv[])
 		SDL_RenderCopyEx(gRenderer, ply.getPlayerSheet(), &pRect, &pCam, 0.0, nullptr, flip);
 
 		protect.Render();
-		SDL_RenderCopyEx(gRenderer, emy.getEnemySheet(), &eRect, &eCam, 0.0, nullptr, flip);
         SDL_RenderCopyEx(gRenderer, king.getSheet(), &kRect, &kCam, 0.0, nullptr, flip);
 
 

@@ -5,6 +5,7 @@
 #include "INC_SDL.h"
 #include "physics.h"
 #include "attack.h"
+#include "player.h"
 #define MAX_SPEED 50
 
 class Enemy
