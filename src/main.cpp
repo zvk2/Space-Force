@@ -325,7 +325,8 @@ int main(int argc, char* argv[])
 	Player ply(10, loadImage("resources/imgs/starman.png"), 1, gRenderer);
 	Player ply2(10, loadImage("resources/imgs/starman_blue.png"), 1, gRenderer);
 
-	Enemy emy(10, loadImage("resources/imgs/faxanaduitis.png"), 1,&ply.hit, 'f');
+
+	Enemy emy(&ply, loadImage("resources/imgs/faxanaduitis.png"), loadImage("resources/imgs/Faxanaduitis_Death.png"), 1, &ply.hit, 'f', &timestep);
 	emy.setPosition(860, 0);
 	emy.setVelocity(0, 50);
     
@@ -335,6 +336,7 @@ int main(int argc, char* argv[])
     king.setPosition(1100, 0);
     king.setVelocity(0, 50);
 
+
 	SDL_Rect healthRect = {0, 0, 177, 33};
 	SDL_Rect healthCam = {30, 30, 177, 33};
 	
@@ -343,7 +345,7 @@ int main(int argc, char* argv[])
 	Magnetar mag(&ply, loadImage("resources/imgs/Magnetars.png"));
 
 	//~ Removed for demo
-	// AlcoholCloud ac(&ply, &emy, loadImage("resources/imgs/Alcohol_Cloud.png"), loadImage("resources/imgs/Alcohol_Cloud_Flare_Up.png"), &ply.hit);
+	AlcoholCloud ac(&ply, &emy, loadImage("resources/imgs/Alcohol_Cloud.png"), loadImage("resources/imgs/Alcohol_Cloud_Flare_Up.png"), &ply.hit);
 	double ACCEL = ply.GetMove();
 
 	ply.HealthBar(&healthRect);//needed healthbar in player
@@ -358,8 +360,10 @@ int main(int argc, char* argv[])
 	bool gameOn = true;
 	bool up = true;
 	bool credits = true;
+
     double emyDelta = 1;
     double kingDelta = 1;
+
     int connected = 0;
 
 	while(gameOn)
@@ -414,6 +418,7 @@ int main(int argc, char* argv[])
 		if (keyState[SDL_SCANCODE_S])
 			yDeltav += (ACCEL * timestep);
 
+
 		if (emy.getEnemyCam().y + emy.getEnemyCam().h == SCREEN_HEIGHT)
 		{
 			emyDelta = -1;
@@ -443,11 +448,13 @@ int main(int argc, char* argv[])
 		SDL_Rect pCam2 = ply.getPlayerCam();
 		SDL_Rect transfer;
 
+
 		SDL_Rect eRect = emy.getEnemyRect();
 		SDL_Rect eCam = emy.getEnemyCam();
         
         SDL_Rect kRect = king.getRect();
         SDL_Rect kCam = king.getCamera();
+
 
 		moveLasttime = SDL_GetTicks();
 
@@ -475,6 +482,7 @@ int main(int argc, char* argv[])
 		if(connected){
 			ply2.animate(frames);
 		}
+
 
 		emy.animate(frames);
         
@@ -572,25 +580,44 @@ int main(int argc, char* argv[])
         }
 
 		ply.move(xDeltav, yDeltav, timestep);
-		bool collision = ply.checkEnemyCollision(&emy, timestep);
-
-		if (collision)
-		{
-			//ply.LostHealth(1);
-			if (healthRect.x == 1770)
+		
+		if (emy.Exists())
+		{	
+			bool collision = ply.checkEnemyCollision(&emy, timestep);
+			
+			emy.Render();
+			
+			if (collision && emy.GetHealth() > 0)
 			{
-				return playCredits();
+				//ply.LostHealth(1);
+				if (healthRect.x == 1770)
+				{
+					return playCredits();
+				}
+				else
+				{
+					healthRect.x += 177;
+				}
 			}
-			else
+		}
+		else
+		{	
+			if (emy.getNextSpawn() == 0)
 			{
-				healthRect.x += 177;
+				emy.setNextSpawn((rand() % 5001) + 5000 + currTime); 
 			}
+			
+			if (currTime >= emy.getNextSpawn())
+			{
+				emy.Spawn();
+			}	
 		}
 
 		if(healthRect.x >= 1598)//will now play credits when health is gone
 		{
 			return playCredits();
 		}
+
 		emy.move(0, emyDelta, timestep);
 		emy.checkPlayerCollision(&ply, timestep);
         
@@ -628,26 +655,27 @@ int main(int argc, char* argv[])
 		//lets the attack move across the screen
 		ply.hit.renderAttack(timestep);
 		SDL_RenderCopyEx(gRenderer, ply.getPlayerSheet(), &pRect, &pCam, 0.0, nullptr, flip);
+
 		protect.Render();
 		SDL_RenderCopyEx(gRenderer, emy.getEnemySheet(), &eRect, &eCam, 0.0, nullptr, flip);
         SDL_RenderCopyEx(gRenderer, king.getSheet(), &kRect, &kCam, 0.0, nullptr, flip);
 
 
 		//~ removed for demo
-		// if (ac.getDelay() == 0)
-		// {
-		// 	ac.setDelay((rand() % 3000) + 5000);
-		// }
+		if (ac.getDelay() == 0)
+		{
+		 	ac.setDelay((rand() % 3000) + 5000);
+		}
 
-		// if (currTime >= ac.getDelay())
-		// {
-		// 	if (!ac.Seen())
-		// 	{
-		// 		ac.setYPosition(rand() % 421);
-		// 	}
+		if (currTime >= ac.getDelay())
+		{
+		 	if (!ac.Seen())
+		 	{
+		 		ac.setYPosition(rand() % 421);
+		 	}
 
-		// 	ac.Render();
-		// }
+		 	ac.Render();
+		}
 
 		stars.Render(timestep);
 
