@@ -15,11 +15,33 @@ Player::Player(int startingHealth, SDL_Texture* characterImages, int attack, SDL
 		playerRect = {0, 0, 240, 51};
 		playerCam = {1280/2, 720/2, 240, 51};
 		gRenderer = gRend;
+		protection = false;
 	}
 
 void Player::setAttack(SDL_Texture* gAttack, SDL_Rect* attackRect)
 {
 	hit.setAttack(gAttack,attackRect);
+}
+void Player::hasShield(bool has)
+{
+	protection = has;
+}
+void Player::shieldLocation(SDL_Rect* protect, int* strength)
+{
+	shield = protect;
+	shieldPoint = strength;
+}
+bool* Player::shieldStatus()
+{
+	return &protection;
+}
+SDL_Rect* Player::shieldInteractions()
+{
+	return shield;
+}
+void Player::HitShield(int hits)
+{
+	*shieldPoint = *shieldPoint - hits;
 }
 
 //Set the position of the player on screen

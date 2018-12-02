@@ -2,7 +2,6 @@
 
 #ifndef ENEMY_H
 #define ENEMY_H
-#include "Player.h"
 #include "INC_SDL.h"
 #include "physics.h"
 #include "attack.h"

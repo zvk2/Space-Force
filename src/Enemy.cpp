@@ -7,9 +7,11 @@
  
 //Public methods 
 
+
 Enemy::Enemy(Player* p, SDL_Texture* characterImages, SDL_Texture* deathAnimation, int attac, attack* player, char _type, double* tstep): 
 	ply(p), enemySheet(characterImages), deathSheet(deathAnimation),
 	attackPower(attac), phys(0, 0, 300.0, 3600.0), xCoord(1500), yCoord(720), plyBlast(player), type(_type), timestep(tstep)
+
 	{
 		life = false;
 		exists = false;

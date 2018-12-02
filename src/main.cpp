@@ -15,15 +15,19 @@
 #include <cstdlib>
 #include "HyperStar.h"
 #include "music.h"
+#include "Shield.h"
+#include "VirtualPeacefulKing.h"
 
+#include "OpenGLRenderer.hpp"
 
 // Used for file walk (somewhat crudely)
 #include <stdio.h>
 #include <dirent.h>
 
 // Constants for resolution
-const int SCREEN_WIDTH = 1280;
-const int SCREEN_HEIGHT = 720;
+// Now declared globally in OpenGLRenderer.hpp
+//~ const int SCREEN_WIDTH = 1280;
+//~ const int SCREEN_HEIGHT = 720;
 
 // Constants for level
 const int LEVEL_LEN = 5120;
@@ -249,14 +253,18 @@ int main(int argc, char* argv[])
 	}
 	// MENU
 
-	Menu menu;
-	menu.displayMenu(gWindow);
-	int selection = menu.runMenu(gWindow);
+	OpenGLRenderer openGL = OpenGLRenderer(gWindow);
+
+	Menu menu = Menu(&openGL);
+	int selection = menu.runMenu();
 	//std::cout << selection << std::endl;
 	while (selection == 2)
 	{
 		playCredits();
-		selection = menu.runMenu(gWindow);
+		// TEMPORARY, WILL RESTORE SOON
+		//~ selection = menu.runMenu();
+		close();
+		return 0;
 	}
 	if (selection == 0)
 	{
@@ -269,8 +277,10 @@ int main(int argc, char* argv[])
 			Multiplayer = true;
 		}
 		cout << "SELECTION " << selection << endl;
-        gContext = menu.closeMenu();
 	}
+
+	// Now that we are ready to start the game, clean the openGLRenderer
+	openGL.TabulaRasa();
 
 	// GAME
 	/*
@@ -315,12 +325,23 @@ int main(int argc, char* argv[])
 	Player ply(10, loadImage("resources/imgs/starman.png"), 1, gRenderer);
 	Player ply2(10, loadImage("resources/imgs/starman_blue.png"), 1, gRenderer);
 
+
 	Enemy emy(&ply, loadImage("resources/imgs/faxanaduitis.png"), loadImage("resources/imgs/Faxanaduitis_Death.png"), 1, &ply.hit, 'f', &timestep);
+	emy.setPosition(860, 0);
+	emy.setVelocity(0, 50);
+    
+    //Our king appears!!!!!
+    VirtualPeacefulKing king(100, loadImage("resources/imgs/King.png"),2,4);
+    
+    king.setPosition(1100, 0);
+    king.setVelocity(0, 50);
+
 
 	SDL_Rect healthRect = {0, 0, 177, 33};
 	SDL_Rect healthCam = {30, 30, 177, 33};
+	
 	HyperStar stars(loadImage("resources/imgs/star4.png"),&ply);
-
+	blackhole enemyBlackhole(loadImage("resources/imgs/blackhole.png"), &ply);
 	Magnetar mag(&ply, loadImage("resources/imgs/Magnetars.png"));
 
 	//~ Removed for demo
@@ -328,6 +349,7 @@ int main(int argc, char* argv[])
 	double ACCEL = ply.GetMove();
 
 	ply.HealthBar(&healthRect);//needed healthbar in player
+	Shield protect(loadImage("resources/imgs/shield_powerup.png"), loadImage("resources/imgs/shield.png"), &ply);
 
 	mag.Multiplayer(&ply2);
 
@@ -338,6 +360,10 @@ int main(int argc, char* argv[])
 	bool gameOn = true;
 	bool up = true;
 	bool credits = true;
+
+    double emyDelta = 1;
+    double kingDelta = 1;
+
     int connected = 0;
 
 	while(gameOn)
@@ -384,19 +410,51 @@ int main(int argc, char* argv[])
 		// WASD movement
 		const Uint8* keyState = SDL_GetKeyboardState(nullptr);
 		if (keyState[SDL_SCANCODE_A])
-			xDeltav -= (ACCEL * timestep);
+			xDeltav -= (abs(ACCEL) * timestep);
 		if (keyState[SDL_SCANCODE_D])
-			xDeltav += (ACCEL * timestep);
+			xDeltav += (abs(ACCEL) * timestep);
 		if (keyState[SDL_SCANCODE_W])
 			yDeltav -= (ACCEL * timestep);
 		if (keyState[SDL_SCANCODE_S])
 			yDeltav += (ACCEL * timestep);
+
+
+		if (emy.getEnemyCam().y + emy.getEnemyCam().h == SCREEN_HEIGHT)
+		{
+			emyDelta = -1;
+			emy.setVelocity(0, -10);
+		}
+		if (emy.getEnemyCam().y == 0)
+		{
+			emyDelta = 1;
+			emy.setVelocity(0, 10);
+		}
+        
+        //boundary check for king
+        if (king.getCamera().y + king.getCamera().h == SCREEN_HEIGHT)
+        {
+            kingDelta = -1;
+            king.setVelocity(0, -10);
+        }
+        if (king.getCamera().y == 0)
+        {
+            kingDelta = 1;
+            king.setVelocity(0, 10);
+        }
 
 		SDL_Rect pRect = ply.getPlayerRect();
 		SDL_Rect pCam = ply.getPlayerCam();
 		SDL_Rect pRect2 = ply2.getPlayerRect();
 		SDL_Rect pCam2 = ply.getPlayerCam();
 		SDL_Rect transfer;
+
+
+		SDL_Rect eRect = emy.getEnemyRect();
+		SDL_Rect eCam = emy.getEnemyCam();
+        
+        SDL_Rect kRect = king.getRect();
+        SDL_Rect kCam = king.getCamera();
+
 
 		moveLasttime = SDL_GetTicks();
 
@@ -425,6 +483,12 @@ int main(int argc, char* argv[])
 			ply2.animate(frames);
 		}
 
+
+		emy.animate(frames);
+        
+        king.animate(frames);
+
+
 		// Since game levels progress from L to R, no need for sprite to flip
 		// Code for flipping remains here if theres a change of plan
 
@@ -440,11 +504,11 @@ int main(int argc, char* argv[])
 		pRect2 = ply2.getPlayerRect();
 
         Uint32 currTime = SDL_GetTicks();
-
+		
         if(currTime>=6000)
 		{
             //std::cout << currTime % 3000 << std::endl;
-			if((currTime % 3000 <= 50 && !mag.Seen()) ||mag.Seen())
+			if((currTime % 10000 <= 50 && !mag.Seen()) ||mag.Seen())
 			{
 
 				mag.Render();
@@ -453,17 +517,22 @@ int main(int argc, char* argv[])
 			{
 				stars.addStar();
 			}
+			if(currTime%5000<=20)
+			{
+				protect.NewItem();
+			}
 		}
         if(currTime >= 5000)
         {
-            int bFrames;
-            if(currTime % 5000 == 0)
+            //int bFrames;
+            if((currTime % 5000 < 50 && !enemyBlackhole.seen()) || enemyBlackhole.seen())
             {
-                SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
-                bFrames = 0;
+                //SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
+                //bFrames = 0;
                 //blackhole vacuum(gRenderer,gBlackhole,&blackholeRect,blackholeCam);
+				enemyBlackhole.showBlackhole(xDeltav, yDeltav, timestep);
             }
-            else
+         /*    else
             {
                 bFrames++;
 
@@ -507,7 +576,7 @@ int main(int argc, char* argv[])
             {
                 blackholeCam = {SCREEN_WIDTH,rand() % (SCREEN_HEIGHT-300), 300, 300};
                 bFrames = 0;
-            }
+            } */
         }
 
 		ply.move(xDeltav, yDeltav, timestep);
@@ -549,6 +618,11 @@ int main(int argc, char* argv[])
 			return playCredits();
 		}
 
+		emy.move(0, emyDelta, timestep);
+		emy.checkPlayerCollision(&ply, timestep);
+        
+        king.move(0, kingDelta, timestep);
+        
 		/*
 		collision = emy.checkPlayerCollision(&ply, timestep);
 		if (collision)
@@ -563,7 +637,11 @@ int main(int argc, char* argv[])
 		}
 		pCam2.x = transfer.x;
 		pCam2.y = transfer.y;
-		
+
+		eCam = emy.getEnemyCam();
+        
+        kCam = king.getCamera();
+
         //attack button
 
 		if(keyState[SDL_SCANCODE_SPACE] && up == true)
@@ -577,6 +655,11 @@ int main(int argc, char* argv[])
 		//lets the attack move across the screen
 		ply.hit.renderAttack(timestep);
 		SDL_RenderCopyEx(gRenderer, ply.getPlayerSheet(), &pRect, &pCam, 0.0, nullptr, flip);
+
+		protect.Render();
+		SDL_RenderCopyEx(gRenderer, emy.getEnemySheet(), &eRect, &eCam, 0.0, nullptr, flip);
+        SDL_RenderCopyEx(gRenderer, king.getSheet(), &kRect, &kCam, 0.0, nullptr, flip);
+
 
 		//~ removed for demo
 		if (ac.getDelay() == 0)
@@ -609,6 +692,10 @@ int main(int argc, char* argv[])
 	{
 		return playCredits();
 	}
+
+	// When the main loop ends, we can assume it is time for openGL to die
+	// And yeah, should be in the close function (but it isn't because I instantiate openGL on the stack)
+	openGL.Close();
 
 	close();
 	//return credits ? playCredits() : close();
