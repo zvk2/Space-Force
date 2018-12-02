@@ -10,7 +10,7 @@ Magnetar::Magnetar(Player* main):ply(main)
 
 	//gets a pointer to the player's camBox
 	playerCam = ply->getPlayerCamLoc();
-	camBox = {1280,0,800,721};
+	camBox = {1280,0,1280,721};
 	onScreen = false;
 	frame = 0;
 

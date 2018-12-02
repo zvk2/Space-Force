@@ -16,6 +16,7 @@
 #include "HyperStar.h"
 #include "music.h"
 #include "Shield.h"
+#include "VirtualPeacefulKing.h"
 
 #include "OpenGLRenderer.hpp"
 
@@ -328,9 +329,8 @@ int main(int argc, char* argv[]) {
 	return -1;
 }
 
-//~ int main(int argc, char* argv[])
-//~ {
-
+// Test main
+//~ int main(int argc, char* argv[]) {
 	//~ bool Multiplayer = false;
 
 	//~ if (!init())
@@ -339,20 +339,23 @@ int main(int argc, char* argv[]) {
 		//~ close();
 		//~ return 1;
 	//~ }
-	//~ // MENU
 
+	//~ // Music
+	//~ mus = music();
+	//~ mus.init();
+	//~ mus.playMusic();
+
+	//~ // OpenGL init
 	//~ OpenGLRenderer openGL = OpenGLRenderer(gWindow);
 
+	//~ // Menu
 	//~ Menu menu = Menu(&openGL);
 	//~ int selection = menu.runMenu();
 	//~ //std::cout << selection << std::endl;
 	//~ while (selection == 2)
 	//~ {
-		//~ playCredits();
-		//~ // TEMPORARY, WILL RESTORE SOON
-		//~ //selection = menu.runMenu();
-		//~ close();
-		//~ return 0;
+		//~ playCredits(&openGL);
+		//~ selection = menu.runMenu();
 	//~ }
 	//~ if (selection == 0)
 	//~ {
@@ -370,41 +373,12 @@ int main(int argc, char* argv[]) {
 	//~ // Now that we are ready to start the game, clean the openGLRenderer
 	//~ openGL.TabulaRasa();
 
-	//~ // GAME
-	//~ /*
-	//~ - Controls: WASD for movement, Spacebar to shoot
-	//~ - Can be terminated by x'ing out or pressing 'esc' to credits
-	//~ - Starman sprite's dimensions are 300 x 51
-	//~ */
-	//~ //used to call playMusic
-	//~ mus = music();
-	//~ mus.init();
-	//~ mus.playMusic();
-
-	//~ gBackground = loadImage("resources/imgs/space_2_background.png");
-	//~ gAttack = loadImage("resources/imgs/attack.png");
-    //~ gBlackhole = loadImage("resources/imgs/blackhole.png");
-	//~ gHealthbar = loadImage("resources/imgs/healthbar.png");
-
-	//~ int scrollOffset = 0;
-	//~ int rem = 0;
-	//~ double xDeltav = 0.0;
-	//~ double yDeltav = 0.0;
-	//~ double x2DeltaV = 0.0;
-	//~ double y2DeltaV = 0.0;
-	//~ bool create;
-
-	//~ OpenGLRendererFlip flip = SDL_FLIP_NONE;
-
-	//~ int frames = 0;
-	//~ int frameCount = 0;
-
-	//~ SDL_Rect bgRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
-
+	//~ // FPS params
 	//~ Uint32 fpsLasttime = SDL_GetTicks();
 	//~ Uint32 fpsCurtime = 0;
 	//~ Uint32 moveLasttime = SDL_GetTicks();
 	//~ double timestep = 0;
+
 	//~ SDL_Rect attackRect = {0, 0, 60, 10};
 	//~ SDL_Rect attackRect2 = {0, 0, 60, 10};
 	//~ //SDL_Rect attackCam = {SCREEN_WIDTH+80, SCREEN_HEIGHT/2+51/2, 80, 20};
@@ -413,9 +387,15 @@ int main(int argc, char* argv[]) {
 	//~ Player ply(10, loadImage("resources/imgs/starman.png"), 1, gRenderer);
 	//~ Player ply2(10, loadImage("resources/imgs/starman_blue.png"), 1, gRenderer);
 
-	//~ Enemy emy(10, loadImage("resources/imgs/faxanaduitis.png"), 1,&ply.hit, 'f');
-	//~ emy.setPosition(860, 0);
-	//~ emy.setVelocity(0, 50);
+
+	//~ Enemy emy(&ply, loadImage("resources/imgs/faxanaduitis.png"), loadImage("resources/imgs/Faxanaduitis_Death.png"), 1, &ply.hit, 'f', &timestep);
+
+    //~ //Our king appears!!!!!
+    //~ VirtualPeacefulKing king(100, loadImage("resources/imgs/King.png"),2,4);
+
+    //~ king.setPosition(1100, 0);
+    //~ king.setVelocity(0, 50);
+
 
 	//~ SDL_Rect healthRect = {0, 0, 177, 33};
 	//~ SDL_Rect healthCam = {30, 30, 177, 33};
@@ -424,14 +404,9 @@ int main(int argc, char* argv[]) {
 	//~ blackhole enemyBlackhole(loadImage("resources/imgs/blackhole.png"), &ply);
 	//~ Magnetar mag(&ply, loadImage("resources/imgs/Magnetars.png"));
 
-	//~ Removed for demo
-	//~ // AlcoholCloud ac(&ply, &emy, loadImage("resources/imgs/Alcohol_Cloud.png"), loadImage("resources/imgs/Alcohol_Cloud_Flare_Up.png"), &ply.hit);
+	Removed for demo
+	//~ AlcoholCloud ac(&ply, &emy, loadImage("resources/imgs/Alcohol_Cloud.png"), loadImage("resources/imgs/Alcohol_Cloud_Flare_Up.png"), &ply.hit);
 	//~ double ACCEL = ply.GetMove();
-
-	//~ ply.HealthBar(&healthRect);//needed healthbar in player
-	//~ Shield protect(loadImage("resources/imgs/shield_powerup.png"), loadImage("resources/imgs/shield.png"), &ply);
-
-	//~ mag.Multiplayer(&ply2);
 
 	//~ //the beginning/default image and attack box
 	//~ ply.hit.setAttack(gAttack,&attackRect);
@@ -440,45 +415,39 @@ int main(int argc, char* argv[]) {
 	//~ bool gameOn = true;
 	//~ bool up = true;
 	//~ bool credits = true;
+
     //~ double emyDelta = 1;
+    //~ double kingDelta = 1;
+
     //~ int connected = 0;
 
-	//~ while(gameOn)
+	//~ bool loop = 1;
+	//~ while (loop)
 	//~ {
-		//~ if(selection == 3 && !connected){
-			//~ connected = client->Connect();
-		//~ }
-
-		//~ while(SDL_PollEvent(&e))
+		//~ SDL_Event event;
+		//~ while (SDL_PollEvent(&event))
 		//~ {
-			//~ if (e.type == SDL_QUIT)
+			//~ if (event.type == SDL_QUIT)
+				//~ loop = false;
+			//~ if (event.type == SDL_KEYDOWN)
 			//~ {
-				//~ gameOn = false;
-				//~ credits = false;
-			//~ }
-			//~ if (e.type == SDL_KEYDOWN)
-			//~ {
-				//~ if (e.key.keysym.sym == SDLK_ESCAPE)
+				//~ switch (event.key.keysym.sym)
 				//~ {
-					//~ gameOn = false;
-					//~ credits = false;
-				//~ }
-				//~ if (e.key.keysym.sym == SDLK_q)
-				//~ {
-					//~ gameOn = false;
-				//~ }
-			//~ }
-			//~ if(up == false && e.type == SDL_KEYUP && e.key.repeat == 0)
-			//~ {
-				//~ if(e.key.keysym.sym == SDLK_SPACE)
-				//~ {
-					//~ up = true;
+				//~ case SDLK_ESCAPE:
+					//~ loop = false;
+					//~ break;
+				//~ case SDLK_q:
+					//~ loop = false;
+					//~ break;
+				//~ default:
+					//~ break;
 				//~ }
 			//~ }
 		//~ }
 
-		//~ ACCEL = ply.GetMove();
+		//~ // Increment timestep
 		//~ timestep = (SDL_GetTicks() - moveLasttime) / 1000.0;
+
 		//~ xDeltav = 0.0;
 		//~ yDeltav = 0.0;
 		//~ x2DeltaV = 0.0;
@@ -487,42 +456,36 @@ int main(int argc, char* argv[]) {
 		//~ // WASD movement
 		//~ const Uint8* keyState = SDL_GetKeyboardState(nullptr);
 		//~ if (keyState[SDL_SCANCODE_A])
-			//~ xDeltav -= (ACCEL * timestep);
+			//~ xDeltav -= (abs(ACCEL) * timestep);
 		//~ if (keyState[SDL_SCANCODE_D])
-			//~ xDeltav += (ACCEL * timestep);
+			//~ xDeltav += (abs(ACCEL) * timestep);
 		//~ if (keyState[SDL_SCANCODE_W])
 			//~ yDeltav -= (ACCEL * timestep);
 		//~ if (keyState[SDL_SCANCODE_S])
 			//~ yDeltav += (ACCEL * timestep);
 
-		//~ if (emy.getEnemyCam().y + emy.getEnemyCam().h == SCREEN_HEIGHT)
-		//~ {
-			//~ emyDelta = -1;
-			//~ emy.setVelocity(0, -10);
-		//~ }
-		//~ if (emy.getEnemyCam().y == 0)
-		//~ {
-			//~ emyDelta = 1;
-			//~ emy.setVelocity(0, 10);
-		//~ }
+        //~ //boundary check for king
+        //~ if (king.getCamera().y + king.getCamera().h == SCREEN_HEIGHT)
+        //~ {
+            //~ kingDelta = -1;
+            //~ king.setVelocity(0, -10);
+        //~ }
+        //~ if (king.getCamera().y == 0)
+        //~ {
+            //~ kingDelta = 1;
+            //~ king.setVelocity(0, 10);
+        //~ }
 
 		//~ SDL_Rect pRect = ply.getPlayerRect();
 		//~ SDL_Rect pCam = ply.getPlayerCam();
 		//~ SDL_Rect pRect2 = ply2.getPlayerRect();
 		//~ SDL_Rect pCam2 = ply.getPlayerCam();
 		//~ SDL_Rect transfer;
+        //~ SDL_Rect kRect = king.getRect();
+        //~ SDL_Rect kCam = king.getCamera();
 
-		//~ SDL_Rect eRect = emy.getEnemyRect();
-		//~ SDL_Rect eCam = emy.getEnemyCam();
-
-		//~ moveLasttime = SDL_GetTicks();
-
-		//~ // Scrolling background
-		//~ ++scrollOffset;
-		//~ if (scrollOffset > bgRect.w)
-		//~ {
-			//~ scrollOffset = 0;
-		//~ }
+		//~ // Displays stuff
+		//~ openGL.Display();
 
 		//~ SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
 		//~ SDL_RenderClear(gRenderer);
@@ -542,7 +505,7 @@ int main(int argc, char* argv[]) {
 			//~ ply2.animate(frames);
 		//~ }
 
-		//~ emy.animate(frames);
+        //~ king.animate(frames);
 
 
 		//~ // Since game levels progress from L to R, no need for sprite to flip
@@ -580,25 +543,92 @@ int main(int argc, char* argv[]) {
 		//~ }
         //~ if(currTime >= 5000)
         //~ {
+            //~ //int bFrames;
             //~ if((currTime % 5000 < 50 && !enemyBlackhole.seen()) || enemyBlackhole.seen())
             //~ {
+                //~ //SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
+                //~ //bFrames = 0;
+                //~ //blackhole vacuum(gRenderer,gBlackhole,&blackholeRect,blackholeCam);
 				//~ enemyBlackhole.showBlackhole(xDeltav, yDeltav, timestep);
             //~ }
+         //~ /*    else
+            //~ {
+                //~ bFrames++;
+
+                //~ if (bFrames / 12 > 5)
+                    //~ bFrames = 0;
+
+                //~ blackholeRect.x = (bFrames / 12) * 300;
+                //~ blackholeCam.x = blackholeCam.x - 1;
+                //~ SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
+
+                //~ if(blackholeCam.x < SCREEN_WIDTH && blackholeCam.x > 0)
+                //~ {
+                    //~ if(blackholeCam.x + 150 > pCam.x)
+                    //~ {
+                        //~ if(blackholeCam.y + 150 > pCam.y)
+                        //~ {
+                            //~ yDeltav = yDeltav + 20;
+                        //~ }
+                        //~ if(blackholeCam.y + 150 < pCam.y)
+                        //~ {
+                            //~ yDeltav = yDeltav - 20;
+                        //~ }
+                        //~ xDeltav = xDeltav + 20;
+                    //~ }
+                    //~ else if(blackholeCam.x + 150 < pCam.x)
+                    //~ {
+                        //~ if(blackholeCam.y + 150 > pCam.y)
+                        //~ {
+                            //~ yDeltav = yDeltav + 20;
+                        //~ }
+                        //~ if(blackholeCam.y + 150 < pCam.y)
+                        //~ {
+                            //~ yDeltav = yDeltav - 20;
+                        //~ }
+                        //~ xDeltav = xDeltav - 20;
+                    //~ }
+                //~ }
+            //~ }
+
+            //~ if(blackholeCam.x == -300)
+            //~ {
+                //~ blackholeCam = {SCREEN_WIDTH,rand() % (SCREEN_HEIGHT-300), 300, 300};
+                //~ bFrames = 0;
+            //~ } */
         //~ }
 
 		//~ ply.move(xDeltav, yDeltav, timestep);
-		//~ bool collision = ply.checkEnemyCollision(&emy, timestep);
 
-		//~ if (collision)
+		//~ if (emy.Exists())
 		//~ {
-			//~ //ply.LostHealth(1);
-			//~ if (healthRect.x == 1770)
+			//~ bool collision = ply.checkEnemyCollision(&emy, timestep);
+
+			//~ emy.Render();
+
+			//~ if (collision && emy.GetHealth() > 0)
 			//~ {
-				//~ return playCredits();
+				//~ //ply.LostHealth(1);
+				//~ if (healthRect.x == 1770)
+				//~ {
+					//~ return playCredits();
+				//~ }
+				//~ else
+				//~ {
+					//~ healthRect.x += 177;
+				//~ }
 			//~ }
-			//~ else
+		//~ }
+		//~ else
+		//~ {
+			//~ if (emy.getNextSpawn() == 0)
 			//~ {
-				//~ healthRect.x += 177;
+				//~ emy.setNextSpawn((rand() % 5001) + 5000 + currTime);
+			//~ }
+
+			//~ if (currTime >= emy.getNextSpawn())
+			//~ {
+				//~ emy.Spawn();
 			//~ }
 		//~ }
 
@@ -606,8 +636,9 @@ int main(int argc, char* argv[]) {
 		//~ {
 			//~ return playCredits();
 		//~ }
-		//~ emy.move(0, emyDelta, timestep);
-		//~ emy.checkPlayerCollision(&ply, timestep);
+
+        //~ king.move(0, kingDelta, timestep);
+
 		//~ /*
 		//~ collision = emy.checkPlayerCollision(&ply, timestep);
 		//~ if (collision)
@@ -623,7 +654,7 @@ int main(int argc, char* argv[]) {
 		//~ pCam2.x = transfer.x;
 		//~ pCam2.y = transfer.y;
 
-		//~ eCam = emy.getEnemyCam();
+        //~ kCam = king.getCamera();
 
         //~ //attack button
 
@@ -638,25 +669,26 @@ int main(int argc, char* argv[]) {
 		//~ //lets the attack move across the screen
 		//~ ply.hit.renderAttack(timestep);
 		//~ SDL_RenderCopyEx(gRenderer, ply.getPlayerSheet(), &pRect, &pCam, 0.0, nullptr, flip);
+
 		//~ protect.Render();
-		//~ SDL_RenderCopyEx(gRenderer, emy.getEnemySheet(), &eRect, &eCam, 0.0, nullptr, flip);
+        //~ SDL_RenderCopyEx(gRenderer, king.getSheet(), &kRect, &kCam, 0.0, nullptr, flip);
 
 
-		//~ // removed for demo
-		//~ // if (ac.getDelay() == 0)
-		//~ // {
-		//~ // 	ac.setDelay((rand() % 3000) + 5000);
-		//~ // }
+		// removed for demo
+		//~ if (ac.getDelay() == 0)
+		//~ {
+		 	//~ ac.setDelay((rand() % 3000) + 5000);
+		//~ }
 
-		//~ // if (currTime >= ac.getDelay())
-		//~ // {
-		//~ // 	if (!ac.Seen())
-		//~ // 	{
-		//~ // 		ac.setYPosition(rand() % 421);
-		//~ // 	}
+		//~ if (currTime >= ac.getDelay())
+		//~ {
+		 	//~ if (!ac.Seen())
+		 	//~ {
+		 		//~ ac.setYPosition(rand() % 421);
+		 	//~ }
 
-		//~ // 	ac.Render();
-		//~ // }
+		 	//~ ac.Render();
+		//~ }
 
 		//~ stars.Render(timestep);
 
@@ -671,13 +703,10 @@ int main(int argc, char* argv[]) {
 	//~ }
 	//~ if (credits)
 	//~ {
-		//~ return playCredits();
+		//~ playCredits();
 	//~ }
 
-	//~ // When the main loop ends, we can assume it is time for openGL to die
-	//~ // And yeah, should be in the close function (but it isn't because I instantiate openGL on the stack)
 	//~ openGL.Close();
-
 	//~ close();
-	//~ //return credits ? playCredits() : close();
+	//~ return -1;
 //~ }

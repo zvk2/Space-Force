@@ -217,13 +217,13 @@ void Player::IncrementHealth(int incAmount)
 	hitPoints += incAmount;
 }
 
-	//Check for collision with an enemy
+//Check for collision with an enemy
 bool Player::checkEnemyCollision(Enemy* e, double tstep)
 {
 	SDL_Rect eRect = e->getEnemyCam();
 
 	if (hasCollision(e))
-	{
+	{	
 		double newPVelocityx = phys.getxVelocity();
 		double newPVelocityy = phys.getyVelocity();
 		double newEVelocityx = e->getxVel();

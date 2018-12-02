@@ -3,7 +3,6 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 #include "INC_SDL.h"
-#include "Enemy.h"
 #include "physics.h"
 #include "attack.h"
 #include <cmath>
@@ -139,5 +138,7 @@ class Player
 
 		bool hasCollision(Enemy* e);
 };
+
+#include "Enemy.h"
 
 #endif

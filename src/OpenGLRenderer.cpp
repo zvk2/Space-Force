@@ -3,6 +3,30 @@
 // TODO INCLUDES
 #include "OpenGLRenderer.hpp"
 
+
+//For some reasons, the xocde linker will not be able to find these two functions so I just copy and paste them here
+#ifdef __APPLE__
+#define
+	mat4 translation_matrix(GLfloat x, GLfloat y, GLfloat z) {
+	    mat4 rmat = identity_matrix();
+
+	    rmat.w.x = x;
+	    rmat.w.y = y;
+	    rmat.w.z = z;
+
+	    return rmat;
+	}
+
+	mat4 identity_matrix() {
+	    mat4 rmat;
+	    rmat.x.x = 1;   rmat.y.x = 0;   rmat.z.x = 0;   rmat.w.x = 0;
+	    rmat.x.y = 0;   rmat.y.y = 1;   rmat.z.y = 0;   rmat.w.y = 0;
+	    rmat.x.z = 0;   rmat.y.z = 0;   rmat.z.z = 1;   rmat.w.z = 0;
+	    rmat.x.w = 0;   rmat.y.w = 0;   rmat.z.w = 0;   rmat.w.w = 1;
+	    return rmat;
+	}
+#endif
+
 // TODO GLOBALS? PERHAPS I SHOULD MAKE THEM MERELY ATTRBUTES?
 
 // Get coords from pixels
@@ -116,7 +140,12 @@ OpenGLRenderer::OpenGLRenderer(SDL_Window* window)
 	#endif
 
 	// NEED TO SWITCH TO DYLAN'S SHADER
-	Shader shader("ztest");
+    //Check for mac system because mac requires different format for shader files
+    #ifdef __APPLE__
+	Shader shader("ztest120");
+    #else
+    Shader shader("ztest");
+    #endif
 	program = shader.getProgram();
 
 	// If you want black
@@ -170,6 +199,8 @@ void OpenGLRenderer::PopulateTextures()
 		// TODO REVISE
 		{1, 1, "resources/imgs/chatter_box.png"},
 		{1, 4, "resources/imgs/faxanaduitis.png"},
+		// NOTE DEATH IS IN DIFFERENT FILE?
+		{1, 10, "resources/imgs/Faxanaduitis_Death.png"},
 		{1, 1, "resources/imgs/health.png"},
 		{1, 10, "resources/imgs/healthbar.png"},
 		{1, 2, "resources/imgs/kill_everything.png"},
@@ -187,6 +218,8 @@ void OpenGLRenderer::PopulateTextures()
 		{1, 6, "resources/imgs/starman_blue.png"},
 		{1, 6, "resources/imgs/starman_green.png"},
 		{1, 16, "resources/imgs/WingedShield.png"},
+		// Eventually
+		{1, 6, "resources/imgs/King.png"},
 		// For menu soon
 		{1, 1, "resources/imgs/titlescreen.png"},
 		{1, 2, "resources/imgs/start.png"},
