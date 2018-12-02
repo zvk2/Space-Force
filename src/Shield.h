@@ -3,6 +3,7 @@
 #pragma once
 #include "INC_SDL.h"
 #include "Player.h"
+#include "OpenGLRenderer.hpp"
 class Shield
 {
 	public:
@@ -12,9 +13,9 @@ class Shield
 		void NewItem();
 		void Damage(int hitsTaken);
 	private:
-		SDL_Renderer* gRenderer;
-		SDL_Texture* item; 
-		SDL_Texture* protect; 
+		OpenGLRenderer* gRenderer;
+		SDL_Texture* item;
+		SDL_Texture* protect;
 		SDL_Rect itemLoc;
 		SDL_Rect itemIm;
 		SDL_Rect protectLoc;

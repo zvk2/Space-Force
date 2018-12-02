@@ -1,17 +1,24 @@
-
-#include "INC_SDL.h"
 #include "Enemy.h"
-#include <cmath> 
-#define MAX_SPEED 50
- 
-//Public methods 
 
-Enemy::Enemy(int startingHealth, SDL_Texture* characterImages, int attac, attack* player, char _type): 
+#define MAX_SPEED 50
+
+//Public methods
+
+// Params have confusing names
+Enemy::Enemy(OpenGLRenderer *gRenderer, int startingHealth, char* characterImages, int attac, attack* player, char _type):
 	hitPoints(startingHealth), enemySheet(characterImages),
 	attackPower(attac), phys(0, 0, 300.0, 3600.0), xCoord(1280/8), yCoord(720/2), plyBlast(player), type(_type)
 	{
 		enemyRect = {0, 0, 144, 87};
 		enemyCam = {1280/2, 720/2, 144, 87};
+
+		openGL = gRenderer;
+
+		// There will only be one render object
+		render = new RenderObject(
+			enemyCam.x, enemyCam.y, 0, openGL->allBufferAttributes[characterImages]
+		);
+		openGL->AppendRenderObject(render);
 	}
 
 void Enemy::LostHealth(int damage)
@@ -54,11 +61,15 @@ void Enemy::setPosition(double x, double y)
 {
 	xCoord = x;
 	yCoord = y;
-	
+
 	CheckBoundaries();
-	
+
 	enemyCam.x = (int) xCoord;
 	enemyCam.y = (int) yCoord;
+
+	render->ChangeCoordinates(
+		enemyCam.x, enemyCam.y, render->z
+	);
 }
 
 //Sets the current velocity of the enemy
@@ -72,14 +83,18 @@ void Enemy::setVelocity(double x, double y)
 void Enemy::move(double xdvel, double ydvel, double tstep)
 {
 	phys.ChangeVelocity(xdvel, ydvel, tstep);
-	
+
 	xCoord += (phys.getxVelocity() * tstep);
 	yCoord += (phys.getyVelocity() * tstep);
-	
+
 	CheckBoundaries();
 	checkAttacked();
 	enemyCam.x = (int) xCoord;
 	enemyCam.y = (int) yCoord;
+
+	render->ChangeCoordinates(
+		enemyCam.x, enemyCam.y, render->z
+	);
 }
 void Enemy::checkAttacked()
 {
@@ -89,7 +104,8 @@ void Enemy::checkAttacked()
 // Animate jet propulsion
 void Enemy::animate(int frames)
 {
-	enemyRect.x = ((frames / 10) % 4) * enemyRect.w;
+	//~ enemyRect.x = ((frames / 10) % 4) * enemyRect.w;
+	render->IterateFrame();
 }
 
 //Check for collision with the player
@@ -101,10 +117,10 @@ void Enemy::checkPlayerCollision(Player* p, double tstep)
 		double newPVelocityy = p->getyVel();
 		double newEVelocityx = phys.getxVelocity();
 		double newEVelocityy = phys.getyVelocity();
-		
+
 		xCoord -= (newEVelocityx * tstep);
 		yCoord -= (newEVelocityy * tstep);
-		
+
 		if (std::abs(newPVelocityx) > std::abs(newEVelocityx))
 		{
 			newEVelocityx = newEVelocityx + newPVelocityx;
@@ -120,7 +136,7 @@ void Enemy::checkPlayerCollision(Player* p, double tstep)
 			newPVelocityx = 0;
 			newEVelocityx = 0;
 		}
-		
+
 		if (std::abs(newPVelocityy) > std::abs(newEVelocityy))
 		{
 			newEVelocityy = newEVelocityy + newPVelocityy;
@@ -136,13 +152,17 @@ void Enemy::checkPlayerCollision(Player* p, double tstep)
 			newPVelocityy = 0;
 			newEVelocityy = 0;
 		}
-		
+
 		phys.setxVelocity(newEVelocityx);
 		phys.setyVelocity(newEVelocityy);
 		p->setVelocity(newPVelocityx, newPVelocityy);
-		
+
 		enemyCam.x = (int) xCoord;
 		enemyCam.y = (int) yCoord;
+
+		render->ChangeCoordinates(
+			enemyCam.x, enemyCam.y, render->z
+		);
 	}
 }
 
@@ -173,10 +193,10 @@ SDL_Rect Enemy::getEnemyRect()
 }
 
 //Get the enemy sprite sheet
-SDL_Texture* Enemy::getEnemySheet()
-{
-	return enemySheet;
-}
+//~ SDL_Texture* Enemy::getEnemySheet()
+//~ {
+	//~ return enemySheet;
+//~ }
 
 //Get a pointer to the enemy cam
 SDL_Rect* Enemy::getEnemyCamLoc()
@@ -216,6 +236,10 @@ void Enemy::CheckBoundaries()
 		yCoord = 0;
 	if (yCoord + enemyCam.h > SCREEN_HEIGHT)
 		yCoord = SCREEN_HEIGHT - enemyCam.h;
+
+	render->ChangeCoordinates(
+		xCoord, yCoord, render->z
+	);
 }
 
 void Enemy::IncrementSpeed(int addedSpeed)
@@ -237,12 +261,12 @@ void Enemy::DecrementSpeed(int lostSpeed)
 bool Enemy::hasCollision(Player* p)
 {
 	SDL_Rect pRect = p->getPlayerCam();
-	
+
 	//f for faxanaduitis
 	if (type == 'f')
 	{
 		SDL_Rect result;
-		
+
 		if (SDL_IntersectRect(&pRect, &enemyCam, &result))
 		{
 			//Use algebra to calculate slopes and compare them to determine if there is collision
@@ -252,7 +276,7 @@ bool Enemy::hasCollision(Player* p)
 				{
 					double enemySlope = (double) ((enemyCam.y + enemyCam.h / 2) - enemyCam.y) / ((enemyCam.x - 1) - (enemyCam.x + 33));
 					double playerSlope = (double) ((enemyCam.y + enemyCam.h / 2) - (result.y + result.h - 1)) / ((enemyCam.x - 1) - (result.x + result.w - 1));
-					
+
 					if (playerSlope >= enemySlope)
 					{
 						return true;
@@ -266,7 +290,7 @@ bool Enemy::hasCollision(Player* p)
 				{
 					double enemySlope = (double) ((enemyCam.y + enemyCam.h / 2) - (enemyCam.y + enemyCam.h - 1)) / ((enemyCam.x - 1) - (enemyCam.x + 33));
 					double playerSlope = (double) ((enemyCam.y + enemyCam.h / 2) - (result.y)) / ((enemyCam.x - 1) - (result.x + result.w - 1));
-					
+
 					if (playerSlope <= enemySlope)
 					{
 						return true;

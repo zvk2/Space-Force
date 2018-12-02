@@ -2,25 +2,31 @@
 
 #include "Player.h"
 #define MAX_SPEED 50
-#include <iostream>
-#include <cstdlib>
-#include <climits>
 
 //Constructor: takes health, character sheet, and attack value and sets all member vars
-Player::Player(int startingHealth, SDL_Texture* characterImages, int attack, SDL_Renderer* gRend):
+Player::Player(int startingHealth, char* characterImages, int attack, OpenGLRenderer* gRend):
 	hitPoints(startingHealth), playerSheet(characterImages),
 	attackPower(attack), attackModifier(1), defenseModifier(1),
 	phys(0, 0, 300.0, 3600.0), xCoord(1280/8), yCoord(720/2), hit(gRend)
 	{
+		openGL = gRend;
+
 		playerRect = {0, 0, 240, 51};
 		playerCam = {1280/2, 720/2, 240, 51};
-		gRenderer = gRend;
+		//~ gRenderer = gRend;
 		protection = false;
+
+		// May need to rethink z index
+		render = new RenderObject(
+			SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0, openGL->allBufferAttributes[characterImages]
+		);
+
+		openGL->AppendRenderObject(render);
 	}
 
-void Player::setAttack(SDL_Texture* gAttack, SDL_Rect* attackRect)
+void Player::setAttack(SDL_Rect* attackRect)
 {
-	hit.setAttack(gAttack,attackRect);
+	hit.setAttack(attackRect);
 }
 void Player::hasShield(bool has)
 {
@@ -49,6 +55,8 @@ void Player::setPosition(int x, int y)
 {
 	playerCam.x = x;
 	playerCam.y = y;
+
+	render->ChangeCoordinates(x, y, render->z);
 }
 void Player::HealthBar(SDL_Rect* health)//needed to access healthbar other object classes
 {
@@ -62,9 +70,9 @@ void Player::damage(int hits)//other objects effect on health
 //{
 	//return *hit;
 //	}
-SDL_Renderer* Player::getRend()
+OpenGLRenderer* Player::getRend()
 {
-	return gRenderer;
+	return openGL;
 }
 //Methods that can be called from model class
 void Player::move(double xdvel, double ydvel, double tstep)
@@ -78,12 +86,15 @@ void Player::move(double xdvel, double ydvel, double tstep)
 
 	playerCam.x = (int) xCoord;
 	playerCam.y = (int) yCoord;
+
+	render->ChangeCoordinates(xCoord, yCoord, render->z);
 }
 
 // Animate jet propulsion
 void Player::animate(int frames)
 {
 	playerRect.x = (frames % 4) * 240;
+	render->IterateFrame();
 }
 
 //Sets the current velocity of the player
@@ -136,7 +147,7 @@ SDL_Rect Player::getPlayerRect()
 }
 
 //Get the player sprite sheet
-SDL_Texture* Player::getPlayerSheet()
+char* Player::getPlayerSheet()
 {
 	return playerSheet;
 }
@@ -190,6 +201,8 @@ void Player::CheckBoundaries()
 		yCoord = 0;
 	if (yCoord + 51 > SCREEN_HEIGHT)
 		yCoord = SCREEN_HEIGHT - 51;
+
+	render->ChangeCoordinates(xCoord, yCoord, render->z);
 }
 
 //Private method to decrease player health
@@ -257,6 +270,9 @@ bool Player::checkEnemyCollision(Enemy* e, double tstep)
 
 		playerCam.x = (int) xCoord;
 		playerCam.y = (int) yCoord;
+
+		render->ChangeCoordinates(xCoord, yCoord, render->z);
+
 		return true;
 	}
 	return false;
@@ -265,22 +281,22 @@ bool Player::checkEnemyCollision(Enemy* e, double tstep)
 bool Player::hasCollision(Enemy* e)
 {
 	SDL_Rect enemyCam = e->getEnemyCam();
-	
+
 	//f for faxanaduitis
 	if (e->getType() == 'f')
 	{
 		SDL_Rect result;
-		
+
 		if (SDL_IntersectRect(&playerCam, &enemyCam, &result))
 		{
 			//Use algebra to calculate slopes and compare them to determine if there is collision
 			if ((result.x + result.w - 1) < (enemyCam.x + 33))
-			{	
+			{
 				if ((result.y + result.h - 1) < (enemyCam.y + enemyCam.h / 2))
 				{
 					double enemySlope = (double) ((enemyCam.y + enemyCam.h / 2) - enemyCam.y) / ((enemyCam.x - 1) - (enemyCam.x + 33));
 					double playerSlope = (double) ((enemyCam.y + enemyCam.h / 2) - (result.y + result.h - 1)) / ((enemyCam.x - 1) - (result.x + result.w - 1));
-					
+
 					if (playerSlope >= enemySlope)
 					{
 						return true;
@@ -294,7 +310,7 @@ bool Player::hasCollision(Enemy* e)
 				{
 					double enemySlope = (double) ((enemyCam.y + enemyCam.h / 2) - (enemyCam.y + enemyCam.h - 1)) / ((enemyCam.x - 1) - (enemyCam.x + 33));
 					double playerSlope = (double) ((enemyCam.y + enemyCam.h / 2) - (result.y)) / ((enemyCam.x - 1) - (result.x + result.w - 1));
-					
+
 					if (playerSlope <= enemySlope)
 					{
 						return true;

@@ -12,6 +12,7 @@
 
 #include "INC_SDL.h"
 #include "physics.h"
+#include "OpenGLRenderer.hpp"
 
 //Our first boss class
 class VirtualPeacefulKing
@@ -31,7 +32,7 @@ public:
 
     //Damage to boss's health
     void LostHealth(int damage);
-    
+
 private:
 
 

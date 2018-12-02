@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "Enemy.h"
 #include "attack.h"
+#include "OpenGLRenderer.hpp"
 
 class AlcoholCloud
 {
@@ -12,7 +13,7 @@ class AlcoholCloud
 		void setDelay(int time);
 		int getDelay();
 		void setYPosition(int y);
-		
+
 	private:
 		int frame;
 		int delay;
@@ -26,14 +27,14 @@ class AlcoholCloud
 		SDL_Rect* enemyCam;
 		Player* ply;
 		Enemy* emy;
-		SDL_Renderer* gRenderer;
+		OpenGLRenderer* gRenderer;
 		attack* plyBlast;
 		bool onScreen;
 		bool flareUp;
-		
+
 		//Check collision with the player
 		void checkPlayerCollision();
-		
+
 		//Check collision with the enemy
 		void checkEnemyCollision();
 };

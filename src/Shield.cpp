@@ -2,7 +2,7 @@
 Shield::Shield(SDL_Texture* imItem, SDL_Texture* power, Player* main): item(imItem), protect(power),ply(main)
 {
 	gRenderer = ply->getRend();
-	plyCam = ply ->getPlayerCamLoc();
+	plyCam = ply->getPlayerCamLoc();
 	int size = 50;
 	itemLoc = {1280,720,size,size};
 	itemIm = {0,0,100,100};
@@ -18,7 +18,7 @@ Shield::Shield(SDL_Texture* imItem, SDL_Texture* power, Player* main): item(imIt
 }
 void Shield::Render()
 {
-	
+
 	if(itemScreen)
 	{
 		if(!screen)
@@ -27,7 +27,7 @@ void Shield::Render()
 			itemLoc.y = rand()%range;
 			screen = true;
 		}
-		SDL_RenderCopy(gRenderer, item, &itemIm, &itemLoc);
+		//~ SDL_RenderCopy(gRenderer, item, &itemIm, &itemLoc);
 		bool intersect = SDL_HasIntersection(&itemLoc,plyCam);
 		itemLoc.x = itemLoc.x - 1;
 		if(itemLoc.x < -itemLoc.w || intersect)
@@ -40,9 +40,9 @@ void Shield::Render()
 				ply->hasShield(true);
 				hits = hits + addStrength;
 			}
-			
+
 		}
-		
+
 	}
 	if(hits <= 0)
 	{
@@ -53,14 +53,14 @@ void Shield::Render()
 	{
 		RenderPower();
 	}
-		
+
 }
 void Shield::RenderPower()
 {
 	protectLoc.x = plyCam->x - 30;
 	protectLoc.y = plyCam->y - 125;
-	SDL_RenderCopy(gRenderer, protect, &protectIm, &protectLoc);
-	
+	//~ SDL_RenderCopy(gRenderer, protect, &protectIm, &protectLoc);
+
 }
 void Shield::Damage(int hitsTaken)
 {

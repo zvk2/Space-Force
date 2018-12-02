@@ -40,6 +40,24 @@ void RenderObject::ChangeCoordinates(GLfloat newX, GLfloat newY, GLfloat newZ)
 	ctm = translation_matrix(trX, trY, z);
 }
 
+bool RenderObject::FinalFrame()
+{
+	// If something bad happened and it iterated too far, will reset in a frame anyway
+	return currentBufferID >= bufferAttributes.bufferIDEnd;
+}
+
+void RenderObject::IterateFrame()
+{
+	if (FinalFrame())
+	{
+		currentBufferID = bufferAttributes.bufferIDStart;
+	}
+	else
+	{
+		currentBufferID += 1;
+	}
+}
+
 // Need to think about how to integrate this class with other entity classes
 // Constructor
 //~ RenderObject::RenderObject() {};

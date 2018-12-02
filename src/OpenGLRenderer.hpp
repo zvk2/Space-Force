@@ -72,6 +72,8 @@ class RenderObject
 		RenderObject(GLfloat initX, GLfloat initY, GLfloat initZ, BufferAttributes initBufferAttributes);
 		~RenderObject();
 		void ChangeCoordinates(GLfloat newX, GLfloat newY, GLfloat newZ);
+		bool FinalFrame();
+		void IterateFrame();
 	// Bad taste to make these public
 	// Also probably better to have this just be a stuct or something?
 	//~ private:
