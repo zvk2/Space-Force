@@ -98,7 +98,5 @@ private:
 
 };//end of VirtualPeacefulKing class
 
-
-
 //All the other potential future boss class
 #endif /* KING_h */

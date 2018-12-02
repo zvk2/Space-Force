@@ -28,10 +28,11 @@ AlcoholCloud::AlcoholCloud(Player* p, Enemy* e, attack* atk):ply(p), emy(e), ply
 	);
 	openGL->AppendRenderObject(cloudRender);
 
-	flareUpRender = new RenderObject(
-		alcoholCam.x, alcoholCam.y, 0.6, openGL->allBufferAttributes[flareUpTexture]
-	);
-	openGL->AppendRenderObject(flareUpRender);
+	// WHY AM I SUCH AN IDIOT? THERE SHOULD BE ONE RENDER OBJECT THAT SWAPS BETWEEN TWO DIFFERENT BUFFER ATTRIBUTES
+	//~ flareUpRender = new RenderObject(
+		//~ alcoholCam.x, alcoholCam.y, 0.6, openGL->allBufferAttributes[flareUpTexture]
+	//~ );
+	//~ openGL->AppendRenderObject(flareUpRender);
 }
 
 void AlcoholCloud::Render()
@@ -46,7 +47,7 @@ void AlcoholCloud::Render()
 	frame++;
 
 	cloudRender->IterateFrame();
-	flareUpRender->IterateFrame();
+	//~ flareUpRender->IterateFrame();
 
 	if (plyBlast->hitIntersect(&alcoholCam) > 0)
 	{
@@ -58,22 +59,34 @@ void AlcoholCloud::Render()
 	{
 		//Increase the amount of flare up time by one
 		flareTime += 1;
-		//~ SDL_RenderCopy(gRenderer, spriteFlare, &spriteBox, &alcoholCam);
-		flareUpRender->ChangeCoordinates(
+
+		// Change cloudRender to use the flare up attributes
+		cloudRender->bufferAttributes = openGL->allBufferAttributes[flareUpTexture];
+		cloudRender->currentBufferID = cloudRender->bufferAttributes.bufferIDStart;
+
+		cloudRender->ChangeCoordinates(
 			alcoholCam.x,
 			alcoholCam.y,
-			flareUpRender->z
+			cloudRender->z
 		);
+
+		//~ SDL_RenderCopy(gRenderer, spriteFlare, &spriteBox, &alcoholCam);
+		// WHY DID I DO SOMETHING SO DUMB?
+		//~ flareUpRender->ChangeCoordinates(
+			//~ alcoholCam.x,
+			//~ alcoholCam.y,
+			//~ flareUpRender->z
+		//~ );
 	}
-	//~ else
-	//~ {
+	else
+	{
 		//~ SDL_RenderCopy(gRenderer, sprite, &spriteBox, &alcoholCam);
 		cloudRender->ChangeCoordinates(
 			alcoholCam.x,
 			alcoholCam.y,
 			cloudRender->z
 		);
-	//~ }
+	}
 
 	checkPlayerCollision();
 	checkEnemyCollision();
@@ -98,11 +111,9 @@ void AlcoholCloud::Render()
 		delay = 0;
 		flareTime = 0;
 
-		flareUpRender->ChangeCoordinates(
-			alcoholCam.x,
-			alcoholCam.y,
-			flareUpRender->z
-		);
+		// Make sure it is using the normal cloud buffer again
+		cloudRender->bufferAttributes = openGL->allBufferAttributes[cloudTexture];
+		cloudRender->currentBufferID = cloudRender->bufferAttributes.bufferIDStart;
 
 		cloudRender->ChangeCoordinates(
 			alcoholCam.x,

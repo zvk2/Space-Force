@@ -67,7 +67,8 @@ void RenderObject::ChangeCoordinates(GLfloat newX, GLfloat newY, GLfloat newZ)
 bool RenderObject::FinalFrame()
 {
 	// If something bad happened and it iterated too far, will reset in a frame anyway
-	return currentBufferID >= bufferAttributes.bufferIDEnd;
+	// NOTE THIS ALSO CONSIDER FRAMES THAT ARE TOO EARLY AS "FINAL FRAMES" TO MAKE SURE IT SWAPS TO THE RIGHT ONES IN CASE OF A MISTAKE
+	return currentBufferID >= bufferAttributes.bufferIDEnd || currentBufferID < bufferAttributes.bufferIDStart;
 }
 
 void RenderObject::IterateFrame()
