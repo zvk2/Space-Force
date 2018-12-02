@@ -1,14 +1,13 @@
 #include "HyperStar.h"
-#include "music.h"
+
 #include <iostream>
 #include <cmath>
 //const int SCREEN_WIDTH = 1280;
 //const int SCREEN_HEIGHT = 720;
 	//size of image
 	int size = 100;
-	music play;
 
-	HyperStar::HyperStar(SDL_Texture* im, Player* main):starIm(im), ply(main)
+	HyperStar::HyperStar(SDL_Texture* im, Player* main, music *mus):starIm(im), ply(main), play(mus)
 	{
 		imBox = {0,0,100,100};
 		gRenderer = ply->getRend();
@@ -91,7 +90,7 @@
 				
 				if(checkShieldCol(curr->colTest))
 				{
-					play.shieldStarCollision();
+					play->shieldStarCollision();
 					killStar();
 					ply->HitShield(1);
 					continue;
@@ -148,7 +147,7 @@
 	}
 	void HyperStar::killStar()
 	{	
-		play.close();
+		
 		if(curr == end)
 		{
 			end = end->pre;
