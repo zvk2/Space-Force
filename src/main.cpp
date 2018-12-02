@@ -16,6 +16,7 @@
 #include "HyperStar.h"
 #include "music.h"
 #include "Shield.h"
+#include "Health.h"
 
 #include "OpenGLRenderer.hpp"
 
@@ -334,6 +335,7 @@ int main(int argc, char* argv[])
 	HyperStar stars(loadImage("resources/imgs/star4.png"),&ply);
 	blackhole enemyBlackhole(loadImage("resources/imgs/blackhole.png"), &ply);
 	Magnetar mag(&ply, loadImage("resources/imgs/Magnetars.png"));
+	Health health(loadImage("resources/imgs/health.png"), &ply);
 
 	//~ Removed for demo
 	// AlcoholCloud ac(&ply, &emy, loadImage("resources/imgs/Alcohol_Cloud.png"), loadImage("resources/imgs/Alcohol_Cloud_Flare_Up.png"), &ply.hit);
@@ -488,6 +490,10 @@ int main(int argc, char* argv[])
 			{
 				protect.NewItem();
 			}
+			if(currTime%4000<=20)
+			{
+				health.NewItem();
+			}
 		}
         if(currTime >= 5000)
         {
@@ -599,6 +605,7 @@ int main(int argc, char* argv[])
 		ply.hit.renderAttack(timestep);
 		SDL_RenderCopyEx(gRenderer, ply.getPlayerSheet(), &pRect, &pCam, 0.0, nullptr, flip);
 		protect.Render();
+		health.Render();
 		SDL_RenderCopyEx(gRenderer, emy.getEnemySheet(), &eRect, &eCam, 0.0, nullptr, flip);
 
 
