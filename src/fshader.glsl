@@ -1,11 +1,12 @@
-#version 130
+#version 120
 
-in vec2 texCoord;
-out vec4 fColor;
+varying vec4 color;
+varying vec3 texCoord;
 
-uniform sampler2D texture;
+uniform samplerCube cubeMap;
 
 void main()
 {
-	fColor = texture2D(texture, texCoord);
+	vec4 texel = textureCube(cubeMap, texCoord);
+	gl_FragColor = texel;
 }

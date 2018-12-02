@@ -3,17 +3,15 @@
 
 #include <stdio.h>
 #include <math.h>
-#include "INC_SDL.h"
-// #include "INC_SDL.h" i comented this out because i don't think it does anything
+#include "GL/glew.h"
 
-// For textures
+//TODO: normalize function???
+
 typedef struct vec2 {
-	GLfloat s;
-	GLfloat t;
+    GLfloat x;
+    GLfloat y;
 } vec2;
 
-// For vertices without contrived w of 1
-// (In case we ever want that)
 typedef struct vec3 {
 	GLfloat x;
 	GLfloat y;
@@ -35,6 +33,9 @@ typedef struct mat4 {
 } mat4;
 
 void print_vec4(vec4 vect); // print a 4x1 vec4
+
+GLfloat get_magnitude(vec4 v);
+vec4 unit_vector(vec4 v);
 
 void print_mat4(mat4 mat); // print a 4x4 matrix
 
@@ -73,5 +74,16 @@ mat4 x_rot_matrix(GLfloat);
 mat4 y_rot_matrix(GLfloat);
 
 mat4 z_rot_matrix(GLfloat);
+
+GLfloat v4_magnitude(vec4 v);
+
+void unit(vec4 *v, vec4 *result);
+
+mat4 look_at(GLfloat eyex, GLfloat eyey, GLfloat eyez,
+			 GLfloat atx, GLfloat aty, GLfloat atz,
+			 GLfloat upx, GLfloat upy, GLfloat upz);
+
+mat4 frustum(GLfloat left, GLfloat right, GLfloat bottom, GLfloat top,
+			 GLfloat near, GLfloat far);
 
 #endif
