@@ -5,25 +5,27 @@
 
 
 //For some reasons, the xocde linker will not be able to find these two functions so I just copy and paste them here
-mat4 translation_matrix(GLfloat x, GLfloat y, GLfloat z) {
-    mat4 rmat = identity_matrix();
-    
-    rmat.w.x = x;
-    rmat.w.y = y;
-    rmat.w.z = z;
-    
-    return rmat;
-}
+#ifdef __APPLE__
+#define
+	mat4 translation_matrix(GLfloat x, GLfloat y, GLfloat z) {
+	    mat4 rmat = identity_matrix();
+	    
+	    rmat.w.x = x;
+	    rmat.w.y = y;
+	    rmat.w.z = z;
+	    
+	    return rmat;
+	}
 
-mat4 identity_matrix() {
-    mat4 rmat;
-    rmat.x.x = 1;   rmat.y.x = 0;   rmat.z.x = 0;   rmat.w.x = 0;
-    rmat.x.y = 0;   rmat.y.y = 1;   rmat.z.y = 0;   rmat.w.y = 0;
-    rmat.x.z = 0;   rmat.y.z = 0;   rmat.z.z = 1;   rmat.w.z = 0;
-    rmat.x.w = 0;   rmat.y.w = 0;   rmat.z.w = 0;   rmat.w.w = 1;
-    return rmat;
-}
-
+	mat4 identity_matrix() {
+	    mat4 rmat;
+	    rmat.x.x = 1;   rmat.y.x = 0;   rmat.z.x = 0;   rmat.w.x = 0;
+	    rmat.x.y = 0;   rmat.y.y = 1;   rmat.z.y = 0;   rmat.w.y = 0;
+	    rmat.x.z = 0;   rmat.y.z = 0;   rmat.z.z = 1;   rmat.w.z = 0;
+	    rmat.x.w = 0;   rmat.y.w = 0;   rmat.z.w = 0;   rmat.w.w = 1;
+	    return rmat;
+	}
+#endif
 
 // TODO GLOBALS? PERHAPS I SHOULD MAKE THEM MERELY ATTRBUTES?
 
