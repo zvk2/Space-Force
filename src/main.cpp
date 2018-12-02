@@ -16,6 +16,7 @@
 #include "HyperStar.h"
 #include "music.h"
 #include "Shield.h"
+#include "VirtualPeacefulKing.h"
 
 #include "OpenGLRenderer.hpp"
 
@@ -327,6 +328,12 @@ int main(int argc, char* argv[])
 	Enemy emy(10, loadImage("resources/imgs/faxanaduitis.png"), 1,&ply.hit, 'f');
 	emy.setPosition(860, 0);
 	emy.setVelocity(0, 50);
+    
+    //Our king appears!!!!!
+    VirtualPeacefulKing king(100, loadImage("resources/imgs/King.png"),2,4);
+    
+    king.setPosition(1100, 0);
+    king.setVelocity(0, 50);
 
 	SDL_Rect healthRect = {0, 0, 177, 33};
 	SDL_Rect healthCam = {30, 30, 177, 33};
@@ -352,6 +359,7 @@ int main(int argc, char* argv[])
 	bool up = true;
 	bool credits = true;
     double emyDelta = 1;
+    double kingDelta = 1;
     int connected = 0;
 
 	while(gameOn)
@@ -416,6 +424,18 @@ int main(int argc, char* argv[])
 			emyDelta = 1;
 			emy.setVelocity(0, 10);
 		}
+        
+        //boundary check for king
+        if (king.getCamera().y + king.getCamera().h == SCREEN_HEIGHT)
+        {
+            kingDelta = -1;
+            king.setVelocity(0, -10);
+        }
+        if (king.getCamera().y == 0)
+        {
+            kingDelta = 1;
+            king.setVelocity(0, 10);
+        }
 
 		SDL_Rect pRect = ply.getPlayerRect();
 		SDL_Rect pCam = ply.getPlayerCam();
@@ -425,6 +445,9 @@ int main(int argc, char* argv[])
 
 		SDL_Rect eRect = emy.getEnemyRect();
 		SDL_Rect eCam = emy.getEnemyCam();
+        
+        SDL_Rect kRect = king.getRect();
+        SDL_Rect kCam = king.getCamera();
 
 		moveLasttime = SDL_GetTicks();
 
@@ -454,6 +477,8 @@ int main(int argc, char* argv[])
 		}
 
 		emy.animate(frames);
+        
+        king.animate(frames);
 
 
 		// Since game levels progress from L to R, no need for sprite to flip
@@ -568,6 +593,9 @@ int main(int argc, char* argv[])
 		}
 		emy.move(0, emyDelta, timestep);
 		emy.checkPlayerCollision(&ply, timestep);
+        
+        king.move(0, kingDelta, timestep);
+        
 		/*
 		collision = emy.checkPlayerCollision(&ply, timestep);
 		if (collision)
@@ -584,6 +612,8 @@ int main(int argc, char* argv[])
 		pCam2.y = transfer.y;
 
 		eCam = emy.getEnemyCam();
+        
+        kCam = king.getCamera();
 
         //attack button
 
@@ -600,6 +630,7 @@ int main(int argc, char* argv[])
 		SDL_RenderCopyEx(gRenderer, ply.getPlayerSheet(), &pRect, &pCam, 0.0, nullptr, flip);
 		protect.Render();
 		SDL_RenderCopyEx(gRenderer, emy.getEnemySheet(), &eRect, &eCam, 0.0, nullptr, flip);
+        SDL_RenderCopyEx(gRenderer, king.getSheet(), &kRect, &kCam, 0.0, nullptr, flip);
 
 
 		//~ removed for demo

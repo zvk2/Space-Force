@@ -6,7 +6,7 @@
  
 //Public methods 
 
-Enemy::Enemy(int startingHealth, SDL_Texture* characterImages, int attac, attack* player, char _type): 
+Enemy::Enemy(int startingHealth, SDL_Texture* characterImages, int attac,attack* player, char _type):
 	hitPoints(startingHealth), enemySheet(characterImages),
 	attackPower(attac), phys(0, 0, 300.0, 3600.0), xCoord(1280/8), yCoord(720/2), plyBlast(player), type(_type)
 	{
