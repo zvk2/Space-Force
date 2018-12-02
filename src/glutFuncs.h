@@ -11,8 +11,8 @@ void idle();
 void keyboard(unsigned char, int, int);
 void reshape(int, int);
 
-extern mat4 view;
-extern GLuint look_location;
+extern mat4 view, ctm;
+extern GLuint look_location, ctm_location;
 extern GLfloat eyex, eyey, eyez, atx, aty, atz;
 extern int num_vertices;
 

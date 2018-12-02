@@ -11,7 +11,7 @@
 
 #endif  // __APPLE__
 
-#include "initShader.h"
+#include "shader.h"
 #include "matrix.h"
 #include "shapes.h"
 #include "glutFuncs.h"
@@ -25,12 +25,12 @@
 vec4 vertices[4797];
 vec4 colors[4797];
 
-int num_vertices = 6;
+int num_vertices = 6, user_choice;
 
 GLfloat eyex, eyey, eyez, atx, aty, atz;
 
-GLuint look_location;
-mat4 view;
+GLuint look_location, ctm_location;
+mat4 view, ctm;
 
 vec4 *genRandomTriangleColors(int num_vertices)
 {
@@ -60,8 +60,23 @@ void init(void)
 {
     glFrontFace(GL_CCW);
 
-    GLuint program = initShader("src/vshader.glsl", "src/fshader.glsl");
-    glUseProgram(program);
+    // construct new shaders
+    Shader earth("earth");
+    GLuint earth_prog = earth.getProgram();
+    Shader polys("polys");
+    GLuint polys_prog = polys.getProgram();
+    GLuint program = 0;
+
+    // set program based on which shader we want to see
+    if (user_choice == 2)
+    {
+        glUseProgram(polys_prog);
+        program = polys_prog;
+    }
+    else {
+        glUseProgram(earth_prog);
+        program = earth_prog;
+    }
 
     /******** geometry bureaucracy ********/
     int num_cubes = 1;
@@ -164,7 +179,10 @@ void init(void)
     glEnableVertexAttribArray(vColor);
     glVertexAttribPointer(vColor, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid *) (sizeof(vec4) * size_vertices));
 
+    // IN A MORE ROBUST AND CLEAN SHADER CLASS, SHOULD PROBABLY WRAP THIS INSIDE
+    // vector<> of uniform locations??
     look_location = glGetUniformLocation(program, "look");
+    ctm_location = glGetUniformLocation(program, "ctm");
 
     GLuint cubeMap_location = glGetUniformLocation(program, "cubeMap");
     glUniform1i(cubeMap_location, 0);
@@ -192,6 +210,15 @@ int main(int argc, char **argv)
     // get_at();
 
     view = look_at(eyex, eyey, eyez, atx, aty, atz, 0.0, 1.0, 0.0);
+
+    printf("Would you like to see Earth or normals?\n");
+    printf("Please enter the number of your selection:\n");
+    printf("1. Earth\n");
+    printf("2. Normals\n");
+    printf("Default is Earth.\n");
+    printf("User choice: ");
+    printf("\n");
+    scanf("%d", &user_choice);
 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);

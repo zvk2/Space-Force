@@ -27,6 +27,14 @@ void display(void)
     // glUniformMatrix4fv(look_location, 1, GL_FALSE, (GLfloat *) &view);
     // glDrawArrays(GL_TRIANGLES, 4869, 4797);
 
+    // not particularly efficient. i think in the end we would be passing radians into the
+    // shader and doing that kind of math inside of the GPU. but for spofcon purposes, who
+    // cares
+    ctm = m_mult(m_mult(scale_matrix(0.5, 0.5, 0.5), y_rot_matrix(radians)), translation_matrix(-0.25, 0.25, -0.1));
+    radians += 0.001;
+    if (radians > 360)
+        radians = 0;
+    glUniformMatrix4fv(ctm_location, 1, GL_FALSE, (GLfloat *) &ctm);
     glUniformMatrix4fv(look_location, 1, GL_FALSE, (GLfloat *) &view);
     glDrawArrays(GL_TRIANGLES, 0, num_vertices);
 
@@ -39,6 +47,7 @@ void keyboard(unsigned char key, int mousex, int mousey)
     if(key == 'q')
     	exit(0);
 
+    // this is broken lol
     if(key == 'd')
     {
         GLfloat eyexr = cos((eyex+0.001)*M_PI/180.0);
