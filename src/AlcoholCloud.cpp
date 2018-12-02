@@ -1,9 +1,14 @@
 #include "AlcoholCloud.h"
-#include <iostream>
 
-AlcoholCloud::AlcoholCloud(Player* p, Enemy* e, SDL_Texture* i, SDL_Texture* f, attack* atk):ply(p), emy(e), sprite(i), spriteFlare(f), plyBlast(atk)
+AlcoholCloud::AlcoholCloud(Player* p, Enemy* e, attack* atk):ply(p), emy(e), plyBlast(atk)
 {
-	gRenderer = ply->getRend();
+	std::string initTexture = "resources/imgs/Alcohol_Cloud.png";
+	cloudTexture = initTexture.c_str();
+
+	initTexture = "resources/imgs/Alcohol_Cloud_Flare_Up.png";
+	flareUpTexture = initTexture.c_str();
+
+	openGL = ply->getRend();
 	spriteBox = {0, 0, 500, 300};
 
 	//Get a pointer to the player's camBox
@@ -16,6 +21,17 @@ AlcoholCloud::AlcoholCloud(Player* p, Enemy* e, SDL_Texture* i, SDL_Texture* f, 
 	flareTime = 0;
 	frame = 0;
 	delay = 0;
+
+	// Only one render for item and one for protect
+	cloudRender = new RenderObject(
+		alcoholCam.x, alcoholCam.y, 0.5, openGL->allBufferAttributes[cloudTexture]
+	);
+	openGL->AppendRenderObject(cloudRender);
+
+	flareUpRender = new RenderObject(
+		alcoholCam.x, alcoholCam.y, 0.6, openGL->allBufferAttributes[flareUpTexture]
+	);
+	openGL->AppendRenderObject(flareUpRender);
 }
 
 void AlcoholCloud::Render()
@@ -29,6 +45,9 @@ void AlcoholCloud::Render()
 	spriteBox.x = ((frame / 10) % 4) * spriteBox.w;
 	frame++;
 
+	cloudRender->IterateFrame();
+	flareUpRender->IterateFrame();
+
 	if (plyBlast->hitIntersect(&alcoholCam) > 0)
 	{
 		flareUp = true;
@@ -40,11 +59,21 @@ void AlcoholCloud::Render()
 		//Increase the amount of flare up time by one
 		flareTime += 1;
 		//~ SDL_RenderCopy(gRenderer, spriteFlare, &spriteBox, &alcoholCam);
+		flareUpRender->ChangeCoordinates(
+			alcoholCam.x,
+			alcoholCam.y,
+			flareUpRender->z
+		);
 	}
-	else
-	{
+	//~ else
+	//~ {
 		//~ SDL_RenderCopy(gRenderer, sprite, &spriteBox, &alcoholCam);
-	}
+		cloudRender->ChangeCoordinates(
+			alcoholCam.x,
+			alcoholCam.y,
+			cloudRender->z
+		);
+	//~ }
 
 	checkPlayerCollision();
 	checkEnemyCollision();
@@ -68,6 +97,18 @@ void AlcoholCloud::Render()
 		alcoholCam.y = 150;
 		delay = 0;
 		flareTime = 0;
+
+		flareUpRender->ChangeCoordinates(
+			alcoholCam.x,
+			alcoholCam.y,
+			flareUpRender->z
+		);
+
+		cloudRender->ChangeCoordinates(
+			alcoholCam.x,
+			alcoholCam.y,
+			cloudRender->z
+		);
 	}
 }
 

@@ -177,6 +177,10 @@ void OpenGLRenderer::PopulateTextures()
 		{1, 8, "resources/imgs/missile.png"},
 		{1, 1, "resources/imgs/multi.png"},
 		{1, 1, "resources/imgs/small_asteroid.png"},
+		{1, 1, "resources/imgs/shield.png"},
+		{1, 1, "resources/imgs/shield_powerup.png"},
+		{1, 4, "resources/imgs/Alcohol_Cloud.png"},
+		{1, 4, "resources/imgs/Alcohol_Cloud_Flare_Up.png"},
 		// I think?
 		{1, 16, "resources/imgs/SpeedUp.png"},
 		{1, 6, "resources/imgs/starman.png"},
