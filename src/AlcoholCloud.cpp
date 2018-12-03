@@ -2,11 +2,11 @@
 
 AlcoholCloud::AlcoholCloud(Player* p, Enemy* e, attack* atk):ply(p), emy(e), plyBlast(atk)
 {
-	std::string initTexture = "resources/imgs/Alcohol_Cloud.png";
-	cloudTexture = initTexture.c_str();
+	//~ std::string initTexture = "resources/imgs/Alcohol_Cloud.png";
+	//~ cloudTexture = initTexture.c_str();
 
-	initTexture = "resources/imgs/Alcohol_Cloud_Flare_Up.png";
-	flareUpTexture = initTexture.c_str();
+	//~ initTexture = "resources/imgs/Alcohol_Cloud_Flare_Up.png";
+	//~ flareUpTexture = initTexture.c_str();
 
 	openGL = ply->getRend();
 	spriteBox = {0, 0, 500, 300};
@@ -24,15 +24,11 @@ AlcoholCloud::AlcoholCloud(Player* p, Enemy* e, attack* atk):ply(p), emy(e), ply
 
 	// Only one render for item and one for protect
 	cloudRender = new RenderObject(
-		alcoholCam.x, alcoholCam.y, 0.5, openGL->allBufferAttributes[cloudTexture]
+		alcoholCam.x, alcoholCam.y, 0.5, openGL->allBufferAttributes["resources/imgs/Alcohol_Cloud.png"]
 	);
 	openGL->AppendRenderObject(cloudRender);
 
-	// WHY AM I SUCH AN IDIOT? THERE SHOULD BE ONE RENDER OBJECT THAT SWAPS BETWEEN TWO DIFFERENT BUFFER ATTRIBUTES
-	//~ flareUpRender = new RenderObject(
-		//~ alcoholCam.x, alcoholCam.y, 0.6, openGL->allBufferAttributes[flareUpTexture]
-	//~ );
-	//~ openGL->AppendRenderObject(flareUpRender);
+	std::cout << "Cloud Spawn" << std::endl;
 }
 
 void AlcoholCloud::Render()
@@ -60,9 +56,12 @@ void AlcoholCloud::Render()
 		//Increase the amount of flare up time by one
 		flareTime += 1;
 
-		// Change cloudRender to use the flare up attributes
-		cloudRender->bufferAttributes = openGL->allBufferAttributes[flareUpTexture];
-		cloudRender->currentBufferID = cloudRender->bufferAttributes.bufferIDStart;
+		if (flareTime == 1)
+		{
+			// Change cloudRender to use the flare up attributes
+			cloudRender->bufferAttributes = openGL->allBufferAttributes["resources/imgs/Alcohol_Cloud_Flare_Up.png"];
+			cloudRender->currentBufferID = cloudRender->bufferAttributes.bufferIDStart;
+		}
 
 		cloudRender->ChangeCoordinates(
 			alcoholCam.x,
@@ -112,7 +111,7 @@ void AlcoholCloud::Render()
 		flareTime = 0;
 
 		// Make sure it is using the normal cloud buffer again
-		cloudRender->bufferAttributes = openGL->allBufferAttributes[cloudTexture];
+		cloudRender->bufferAttributes = openGL->allBufferAttributes["resources/imgs/Alcohol_Cloud.png"];
 		cloudRender->currentBufferID = cloudRender->bufferAttributes.bufferIDStart;
 
 		cloudRender->ChangeCoordinates(

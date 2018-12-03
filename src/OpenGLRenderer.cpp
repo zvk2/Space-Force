@@ -48,6 +48,8 @@ RenderObject::RenderObject(GLfloat initX, GLfloat initY, GLfloat initZ, BufferAt
 	//~ ctm = translation_matrix(x, y, 0);
 
 	ChangeCoordinates(initX, initY, initZ);
+
+	wait = 0;
 }
 // Destructor
 // EMPTY FOR NOW
@@ -73,13 +75,22 @@ bool RenderObject::FinalFrame()
 
 void RenderObject::IterateFrame()
 {
-	if (FinalFrame())
+	if (wait <= 9)
 	{
-		currentBufferID = bufferAttributes.bufferIDStart;
+		wait += 1;
 	}
 	else
 	{
-		currentBufferID += 1;
+		if (FinalFrame())
+		{
+			currentBufferID = bufferAttributes.bufferIDStart;
+		}
+		else
+		{
+			currentBufferID += 1;
+		}
+
+		wait = 0;
 	}
 }
 
@@ -130,7 +141,7 @@ OpenGLRenderer::OpenGLRenderer(SDL_Window* window)
 
 	// Sync buffer swap with monitor vertical refresh (attempt to avoid flicker/tear)
 	// TODO REMOVE
-	//~ SDL_GL_SetSwapInterval(1);
+	SDL_GL_SetSwapInterval(1);
 
 	// Init GLEW
 	// Apparently, this is needed for Apple. Thanks to Ross Vander for letting me (headerphile) know
@@ -209,8 +220,9 @@ void OpenGLRenderer::PopulateTextures()
 		{1, 8, "resources/imgs/missile.png"},
 		{1, 1, "resources/imgs/multi.png"},
 		{1, 1, "resources/imgs/small_asteroid.png"},
-		{1, 1, "resources/imgs/shield.png"},
+		{4, 1, "resources/imgs/shield.png"},
 		{1, 1, "resources/imgs/shield_powerup.png"},
+		{2, 1, "resources/imgs/star4.png"},
 		{1, 4, "resources/imgs/Alcohol_Cloud.png"},
 		{1, 4, "resources/imgs/Alcohol_Cloud_Flare_Up.png"},
 		// I think?
@@ -522,6 +534,7 @@ void OpenGLRenderer::PopulateDefault2DBuffers(
 	while (currentRow < rows)
 	{
 		//~ std::cout << currentRowCoordinate << std::endl;
+		currentColumn = 0;
 
 		while (currentColumn < columns)
 		{
@@ -562,6 +575,8 @@ void OpenGLRenderer::PopulateDefault2DBuffers(
 		// buffer end (changed at the conclusion)
 		firstBuffer + bufferOffset - 1
 	};
+
+	//~ std::cout << textureName << " " << firstBuffer << " " << firstBuffer + bufferOffset - 1 << std::endl;
 
 	// FREE THE SURFACE
 	SDL_FreeSurface(surface);

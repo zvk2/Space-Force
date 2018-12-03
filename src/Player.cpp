@@ -4,7 +4,7 @@
 #define MAX_SPEED 50
 
 //Constructor: takes health, character sheet, and attack value and sets all member vars
-Player::Player(int startingHealth, char* characterImages, int attack, OpenGLRenderer* gRend):
+Player::Player(int startingHealth, char* characterImages, int attack, OpenGLRenderer* gRend, bool renderImmediately):
 	hitPoints(startingHealth), playerSheet(characterImages),
 	attackPower(attack), attackModifier(1), defenseModifier(1),
 	phys(0, 0, 300.0, 3600.0), xCoord(1280/8), yCoord(720/2), hit(gRend)
@@ -21,7 +21,10 @@ Player::Player(int startingHealth, char* characterImages, int attack, OpenGLRend
 			SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0, openGL->allBufferAttributes[characterImages]
 		);
 
-		openGL->AppendRenderObject(render);
+		if (renderImmediately)
+		{
+			openGL->AppendRenderObject(render);
+		}
 	}
 
 void Player::setAttack(SDL_Rect* attackRect)
@@ -58,13 +61,13 @@ void Player::setPosition(int x, int y)
 
 	render->ChangeCoordinates(x, y, render->z);
 }
-void Player::HealthBar(SDL_Rect* health)//needed to access healthbar other object classes
+void Player::HealthBar(RenderObject* health)//needed to access healthbar other object classes
 {
 	healthBar = health;
 }
 void Player::damage(int hits)//other objects effect on health
 {
-	healthBar->x = healthBar->x + hits*177;
+	healthBar->IterateFrame();
 }
 //attack* Player::attackHit()
 //{
@@ -223,7 +226,7 @@ bool Player::checkEnemyCollision(Enemy* e, double tstep)
 	SDL_Rect eRect = e->getEnemyCam();
 
 	if (hasCollision(e))
-	{	
+	{
 		double newPVelocityx = phys.getxVelocity();
 		double newPVelocityy = phys.getyVelocity();
 		double newEVelocityx = e->getxVel();

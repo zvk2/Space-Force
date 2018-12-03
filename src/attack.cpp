@@ -3,15 +3,13 @@
 
 		attack::attack(OpenGLRenderer* Renderer):openGL{Renderer}
 		{
-			std::string initTexture = "resources/imgs/attack.png";
-			attackTexture = initTexture.c_str();
-
 			//~ head = (struct Node*)malloc(sizeof(struct Node));
 			// Head is a contrived node?
 			head = new struct Node();
 			cam = {0,0,0,0};
 			end = head;
 			end->next = nullptr;
+			end->pre = nullptr;
 		}
 		void attack::setAttack(SDL_Rect* attac)
 		{
@@ -31,15 +29,17 @@
 			//~ SDL_RenderCopy(gRenderer, gAttack, attackBox, &end->attackCam);
 			//~ end->next = nullptr;
 
-			RenderObject *newAttack = new RenderObject(
-				x, y, -1, openGL->allBufferAttributes[attackTexture]
+			end->next = new struct Node();
+
+			end->next->render = new RenderObject(
+				x, y, 1, openGL->allBufferAttributes["resources/imgs/attack.png"]
 			);
 
-			openGL->AppendRenderObject(newAttack);
+			openGL->AppendRenderObject(end->next->render);
 
-			end->next = new struct Node();
-			end->next->render = newAttack;
 			end->next->attackCam = cam;
+
+			end->next->pre = end;
 
 			end = end->next;
 			end->next = nullptr;
@@ -50,13 +50,14 @@
 		void attack::renderAttack(double timestep)
 		{
 			int xDisplacement = (int) (1000 * timestep);
-			Node* pre = head;
+			//~ Node* pre = head;
+			Node* temp;
 			curr = head->next;
 			while(curr != nullptr)
 			{
 				curr->attackCam.x += xDisplacement;
 				curr->render->ChangeCoordinates(
-					curr->render->x + xDisplacement,
+					curr->attackCam.x,
 					curr->render->y,
 					curr->render->z
 				);
@@ -64,17 +65,28 @@
 				// Doing this check every time might be overkill
 				if (curr != nullptr && curr->render->x >= SCREEN_WIDTH)
 				{
-					pre->next = curr->next;
+					curr->pre->next = curr->next;
+					if (curr->next)
+					{
+						curr->next->pre = curr->pre;
+					}
+					else
+					{
+						end = curr->pre;
+						end->next = nullptr;
+					}
 
-					openGL->RemoveRenderObject(curr->render->index);
+					temp = curr;
 
-					delete curr;
+					openGL->RemoveRenderObject(temp->render->index);
+					std::cout << "Attack Die" << std::endl;
+
+					delete temp;
 				}
-				else
-				{
-					pre = curr;
-				}
-
+				//~ else
+				//~ {
+					//~ pre = curr;
+				//~ }
 				curr = curr->next;
 			}
 			//~ curr = head->next;
@@ -92,7 +104,7 @@
 		//and delete that attack
 		int attack::hitIntersect(SDL_Rect* rect)
 		{
-			Node* pre = head;
+			//~ Node* pre = head;
 			Node* temp;
 			curr = head->next;
 			int count = 0;
@@ -101,27 +113,28 @@
 				if(SDL_HasIntersection(rect, &curr->attackCam))
 				{
 					temp = curr;
-					if(curr == end)
+					if(!curr->next)
 					{
-						end = pre;
-						curr = nullptr;
+						end = curr->pre;
+						end->next = nullptr;
 					}
 					else
 					{
+						curr->pre->next = curr->next;
 						curr = curr->next;
-						pre->next = curr;
 					}
 
 					openGL->RemoveRenderObject(temp->render->index);
+					std::cout << "Attack Die" << std::endl;
 					delete temp;
 
 					count++;
 				}
 				else
 				{
-					pre = curr;
 					curr = curr->next;
 				}
 			}
+
 			return count;
 		}

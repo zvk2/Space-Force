@@ -3,8 +3,6 @@
 // NOTE AT THE MOMENT MAGNETAR JUST KEEPS SCROLLING
 Magnetar::Magnetar(Player* main):ply(main)
 {
-	char magnetarTexture[] = "resources/imgs/magnetar";
-
 	openGL = ply->getRend();
 	collBox = {0,0,1280,721};
 
@@ -16,7 +14,7 @@ Magnetar::Magnetar(Player* main):ply(main)
 
 	// There can be only one magnetar, when it isn't in use it will wait off screen
 	render = new RenderObject(
-		camBox.x, camBox.y, -1, openGL->allBufferAttributes[magnetarTexture]
+		camBox.x, camBox.y, 0.5, openGL->allBufferAttributes["resources/imgs/Magnetars.png"]
 	);
 
 	openGL->AppendRenderObject(render);
@@ -70,6 +68,12 @@ void Magnetar::Render()
 		onScreen = false;
 		camBox.x = SCREEN_WIDTH;
 	}
+
+	render->ChangeCoordinates(
+		camBox.x,
+		camBox.y,
+		render->z
+	);
 }
 //whether or not Magnetar is still on screen
 bool Magnetar::Seen()

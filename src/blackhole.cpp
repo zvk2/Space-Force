@@ -13,7 +13,7 @@
 // NOTE AT THE MOMENT BLACKHOLE JUST KEEPS SCROLLING
 		blackhole::blackhole(Player* main): ply(main)
 		{
-			char blackHoleTexture[] = "resources/imgs/blackhole.png";
+			//~ char blackHoleTexture[] = "resources/imgs/blackhole.png";
 
 			openGL = ply->getRend();
 			playerCam = ply->getPlayerCamLoc();
@@ -25,8 +25,10 @@
 
 			// There will only be one render object
 			render = new RenderObject(
-				blackholeCam.x, blackholeCam.y, -1, openGL->allBufferAttributes[blackHoleTexture]
+				blackholeCam.x, blackholeCam.y, 0, openGL->allBufferAttributes["resources/imgs/blackhole.png"]
 			);
+
+			std::cout << "Blackhole Spawn" << std::endl;
 
 			openGL->AppendRenderObject(render);
 		}

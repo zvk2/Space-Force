@@ -104,6 +104,9 @@ class RenderObject
 		mat4 ctm;
 		// Index in renderObjects (in OpenGLRenderer)
 		int index;
+
+		// Wait for animations
+		int wait;
 };
 
 // Need to think about how to integrate this class with other entity classes

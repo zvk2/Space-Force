@@ -17,7 +17,7 @@ class Player
 	public:
 		attack hit;
 		//Constructor: takes health, character sheet, and attack value and sets all member vars
-		Player(int startingHealth, char* characterImages, int attack, OpenGLRenderer* gRend);
+		Player(int startingHealth, char* characterImages, int attack, OpenGLRenderer* gRend, bool renderImmediately);
 
 		//attack* attackHit();
 		//Set the position of the player on screen
@@ -89,12 +89,15 @@ class Player
 		void ChangeMaxVelocity(double Speed);
 
 		//intracts with health bar
-		void HealthBar(SDL_Rect* health);
+		void HealthBar(RenderObject* health);
 		void damage(int hits);
 		void shieldLocation(SDL_Rect* protect, int* strength);
 		bool* shieldStatus();
 		SDL_Rect* shieldInteractions();
 		void HitShield(int hits);
+
+		// Lazy, I know
+		RenderObject* render;
 
 	private:
 
@@ -105,7 +108,7 @@ class Player
 		 */
 		SDL_Rect* shield;
 		bool protection;
-		SDL_Rect* healthBar;
+		RenderObject* healthBar;
 		double ACCEL;
 		double SPEED_LIMIT;
 		const int SCREEN_WIDTH = 1280;
@@ -119,7 +122,6 @@ class Player
 		char* playerSheet;
 		Physics phys;
 		OpenGLRenderer* openGL;
-		RenderObject* render;
 		int *shieldPoint;
 
 		SDL_Rect playerCam;

@@ -1,11 +1,11 @@
 #include "Shield.h"
 Shield::Shield(Player* main): ply(main)
 {
-	std::string initTexture = "resources/imgs/shield_powerup.png";
-	itemTexture = initTexture.c_str();
+	//~ std::string initTexture = "resources/imgs/shield_powerup.png";
+	//~ itemTexture = initTexture.c_str();
 
-	initTexture = "resources/imgs/shield.png";
-	protectTexture = initTexture.c_str();
+	//~ initTexture = "resources/imgs/shield.png";
+	//~ protectTexture = initTexture.c_str();
 
 	openGL = ply->getRend();
 	plyCam = ply->getPlayerCamLoc();
@@ -24,12 +24,12 @@ Shield::Shield(Player* main): ply(main)
 
 	// Only one render for item and one for protect
 	renderItem = new RenderObject(
-		itemLoc.x, itemLoc.y, 0, openGL->allBufferAttributes[itemTexture]
+		itemLoc.x, itemLoc.y, 1, openGL->allBufferAttributes["resources/imgs/shield_powerup.png"]
 	);
 	openGL->AppendRenderObject(renderItem);
 
 	renderProtect = new RenderObject(
-		protectLoc.x, protectLoc.y, 1, openGL->allBufferAttributes[protectTexture]
+		protectLoc.x, protectLoc.y, 1, openGL->allBufferAttributes["resources/imgs/shield.png"]
 	);
 	openGL->AppendRenderObject(renderProtect);
 }
@@ -45,11 +45,6 @@ void Shield::Render()
 			screen = true;
 		}
 		//~ SDL_RenderCopy(gRenderer, item, &itemIm, &itemLoc.;
-		renderItem->ChangeCoordinates(
-			itemLoc.x,
-			itemLoc.y,
-			renderItem->x
-		);
 		bool intersect = SDL_HasIntersection(&itemLoc, plyCam);
 		itemLoc.x = itemLoc.x - 1;
 		if(itemLoc.x < -itemLoc.w || intersect)
@@ -63,6 +58,11 @@ void Shield::Render()
 				hits = hits + addStrength;
 			}
 		}
+		renderItem->ChangeCoordinates(
+			itemLoc.x,
+			itemLoc.y,
+			renderItem->z
+		);
 	}
 	if(hits <= 0)
 	{
@@ -85,6 +85,7 @@ void Shield::RenderPower()
 		protectLoc.y,
 		renderProtect->z
 	);
+	renderProtect->IterateFrame();
 }
 void Shield::Damage(int hitsTaken)
 {
@@ -93,6 +94,11 @@ void Shield::Damage(int hitsTaken)
 	{
 		hits = 0;
 		ply->hasShield(false);
+		renderProtect->ChangeCoordinates(
+			2000,
+			2000,
+			renderProtect->z
+		);
 	}
 }
 void Shield::NewItem()

@@ -18,11 +18,11 @@ VirtualPeacefulKing::VirtualPeacefulKing(OpenGLRenderer* gRend, int initialHealt
     kingRect = {0, 0, 144, 144};
     kingCam = {1280/2, 720/2, 144, 144};
 
-	std::string initTexture = "resources/imgs/King.png";
-	kingTexture = initTexture.c_str();
+	//~ std::string initTexture = "resources/imgs/King.png";
+	//~ kingTexture = initTexture.c_str();
 
 	render = new RenderObject(
-		kingCam.x, kingCam.y, 0, openGL->allBufferAttributes[kingTexture]
+		kingCam.x, kingCam.y, 0, openGL->allBufferAttributes["resources/imgs/King.png"]
 	);
 
 	openGL->AppendRenderObject(render);

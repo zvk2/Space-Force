@@ -14,6 +14,7 @@ struct Node
 	SDL_Rect attackCam;
 	RenderObject *render;
 	struct Node *next;
+	struct Node *pre;
 };
 // What does this do?
 struct interList

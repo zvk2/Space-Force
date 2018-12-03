@@ -217,6 +217,10 @@ void Enemy::Render()
 			frame = 0;
 			nextSpawn = 0;
 			setPosition(1500, 0);
+
+			// Reset to life
+			render->bufferAttributes = openGL->allBufferAttributes["resources/imgs/faxanaduitis.png"];
+			render->currentBufferID = render->bufferAttributes.bufferIDStart;
 		}
 		else
 		{
@@ -224,8 +228,12 @@ void Enemy::Render()
 			move(0, 0, *timestep);
 			checkPlayerCollision(*timestep);
 
-			render->bufferAttributes = openGL->allBufferAttributes["resources/imgs/Faxanaduitis_Death.png"];
-			render->currentBufferID = render->bufferAttributes.bufferIDStart;
+			if (frame == 1)
+			{
+				render->bufferAttributes = openGL->allBufferAttributes["resources/imgs/Faxanaduitis_Death.png"];
+				render->currentBufferID = render->bufferAttributes.bufferIDStart;
+			}
+
 			//~ SDL_RenderCopy(gRenderer, deathSheet, &enemyRect, &enemyCam);
 		}
 	}

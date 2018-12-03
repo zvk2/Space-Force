@@ -8,9 +8,6 @@
 
 	HyperStar::HyperStar(Player* main):ply(main)
 	{
-		std::string initTexture = "resources/imgs/hyperstar.png";
-		hyperStarTexture = initTexture.c_str();
-
 		imBox = {0,0,100,100};
 		openGL = ply->getRend();
 		plyCam = ply->getPlayerCamLoc();
@@ -74,7 +71,7 @@
 		end->next = nullptr;
 
 		end->render = new RenderObject(
-			end->x, end->y, 0, openGL->allBufferAttributes[hyperStarTexture]
+			end->x, end->y, 1, openGL->allBufferAttributes["resources/imgs/star4.png"]
 		);
 		openGL->AppendRenderObject(end->render);
 	}
