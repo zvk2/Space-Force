@@ -95,6 +95,10 @@ private:
     //To actually increase the health
     void plusHealth(int amount);
     
+    //Check for collision with the player
+    bool hasCollision(Player* p);
+    
+    
     
 };//end of VirtualPeacefulKing class
 

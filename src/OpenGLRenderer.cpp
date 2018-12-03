@@ -6,7 +6,7 @@
 
 //For some reasons, the xocde linker will not be able to find these two functions so I just copy and paste them here
 #ifdef __APPLE__
-#define
+
 	mat4 translation_matrix(GLfloat x, GLfloat y, GLfloat z) {
 	    mat4 rmat = identity_matrix();
 	    
