@@ -100,8 +100,6 @@ private:
 
     //To actually increase the health
     void plusHealth(int amount);
-
-
 };//end of VirtualPeacefulKing class
 
 //All the other potential future boss class

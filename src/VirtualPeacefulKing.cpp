@@ -147,6 +147,17 @@ void VirtualPeacefulKing::plusHealth(int amount)
     hitPoints += amount;
 }
 
+bool VirtualPeacefulKing::hasCollision(Player *p)
+{
+    SDL_Rect pRect = p -> getPlayerCam();
+    
+    SDL_Rect result;
+    
+    //if (SDL_IntersectRect(<#const SDL_Rect *A#>, <#const SDL_Rect *B#>, <#SDL_Rect *result#>))
+    
+    return false;
+}
+
 
 
 
