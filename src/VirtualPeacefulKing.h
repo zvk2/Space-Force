@@ -102,6 +102,7 @@ private:
 
     //To actually increase the health
     void plusHealth(int amount);
+    bool hasCollision(Player *p);
 };//end of VirtualPeacefulKing class
 
 //All the other potential future boss class
