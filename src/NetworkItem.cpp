@@ -1,4 +1,4 @@
-#include "ServerSocket.h"
+#include "server/ServerSocket.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -14,31 +14,34 @@ string NetworkItem::SerializeData(NetworkData);
 NetworkData NetworkItem::DeSerializeData(string);
 string NetworkItem::SerializeItem(string);
 
-
 //order:
 	//players
 		//x
 		//y
 		//hitpoints
+		//direction
 	//Attack?
 		//if attack boolean is true then we know we've sent an attack, use the current x, y player position to start the attack from the client side
 
 string NetworkItem::SerializeData(NetworkData d){
 string data = "";
 int i;
-strcat(data, SerializeItem(std::to_string(numPlayers)));
-strcat(data, SerializeItem(std::to_string(numAttacks)));
+strcat(data, SerializeItem(to_string(numPlayers)));
+strcat(data, SerializeItem(to_string(numAttacks)));
 
 for(i = 0; i < numPlayers; i++){
 int x = d.Players[i].x;
-strcat(data, SerializeItem(std::to_string(x)));
+strcat(data, SerializeItem(to_string(x)));
 x = d.Players[i].y; 
-strcat(data, SerializeItem(std::to_string(x))); 
+strcat(data, SerializeItem(to_string(x))); 
 x = d.Players[i].hitpoints;
-strcat(data, SerializeItem(std::to_string(x))); 
+strcat(data, SerializeItem(to_string(x))); 
 }
+x = d.Players[i].direction;
+strcat(data, SerializeItem)
 
-if(attack){
+if(attack)
+{
 strcat(data, "0001");
 }else{
 strcat(data, "0000");
@@ -63,6 +66,8 @@ NetworkData NetworkItem::DeSerializeData(string d){
 		readItems++;
 		item.Players[i].hitpoints = substr(readItems*4, 4);
 		readItems++;
+		item.Players[i].direction = substr(readItems*4, 4);
+		readItems++;
 	}
 
 	if(substr(readItems*4, 4) == "0000"){
@@ -79,19 +84,19 @@ string NetworkItem::SerializeItem(string d){
 
 	if(d < 10)
 	{
-		data = "000" + std::to_string(d);
+		data = "000" + to_string(d);
 	}
 	else if(d < 100)
 	{
-		data = "00" + std::to_string(d);
+		data = "00" + to_string(d);
 	}
 	else if(d < 1000)
 	{
-		data = "0" + std::to_string(d);
+		data = "0" + to_string(d);
 	}
 	else
 	{
-		data = std::to_string(d);
+		data = to_string(d);
 	}
 
 	return data;
