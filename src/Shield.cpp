@@ -1,8 +1,14 @@
 #include "Shield.h"
-Shield::Shield(SDL_Texture* imItem, SDL_Texture* power, Player* main): item(imItem), protect(power),ply(main)
+Shield::Shield(Player* main): ply(main)
 {
-	gRenderer = ply->getRend();
-	plyCam = ply ->getPlayerCamLoc();
+	//~ std::string initTexture = "resources/imgs/shield_powerup.png";
+	//~ itemTexture = initTexture.c_str();
+
+	//~ initTexture = "resources/imgs/shield.png";
+	//~ protectTexture = initTexture.c_str();
+
+	openGL = ply->getRend();
+	plyCam = ply->getPlayerCamLoc();
 	int size = 50;
 	itemLoc = {1280,720,size,size};
 	itemIm = {0,0,100,100};
@@ -13,12 +19,23 @@ Shield::Shield(SDL_Texture* imItem, SDL_Texture* power, Player* main): item(imIt
 	screen = false;
 	hits = 0;
 	addStrength = 2;
-	ply -> shieldLocation(&protectLoc, &hits);
+	ply->shieldLocation(&protectLoc, &hits);
 	ply->hasShield(false);
+
+	// Only one render for item and one for protect
+	renderItem = new RenderObject(
+		itemLoc.x, itemLoc.y, 1, openGL->allBufferAttributes["resources/imgs/shield_powerup.png"]
+	);
+	openGL->AppendRenderObject(renderItem);
+
+	renderProtect = new RenderObject(
+		protectLoc.x, protectLoc.y, 1, openGL->allBufferAttributes["resources/imgs/shield.png"]
+	);
+	openGL->AppendRenderObject(renderProtect);
 }
 void Shield::Render()
 {
-	
+
 	if(itemScreen)
 	{
 		if(!screen)
@@ -27,8 +44,8 @@ void Shield::Render()
 			itemLoc.y = rand()%range;
 			screen = true;
 		}
-		SDL_RenderCopy(gRenderer, item, &itemIm, &itemLoc);
-		bool intersect = SDL_HasIntersection(&itemLoc,plyCam);
+		//~ SDL_RenderCopy(gRenderer, item, &itemIm, &itemLoc.;
+		bool intersect = SDL_HasIntersection(&itemLoc, plyCam);
 		itemLoc.x = itemLoc.x - 1;
 		if(itemLoc.x < -itemLoc.w || intersect)
 		{
@@ -40,27 +57,41 @@ void Shield::Render()
 				ply->hasShield(true);
 				hits = hits + addStrength;
 			}
-			
 		}
-		
+		renderItem->ChangeCoordinates(
+			itemLoc.x,
+			itemLoc.y,
+			renderItem->z
+		);
 	}
 	if(hits <= 0)
 	{
 		hits = 0;
 		ply->hasShield(false);
+
+		renderProtect->ChangeCoordinates(
+			2000,
+			2000,
+			renderProtect->z
+		);
 	}
 	if(hits > 0)
 	{
 		RenderPower();
 	}
-		
+
 }
 void Shield::RenderPower()
 {
 	protectLoc.x = plyCam->x - 30;
 	protectLoc.y = plyCam->y - 125;
-	SDL_RenderCopy(gRenderer, protect, &protectIm, &protectLoc);
-	
+	//~ SDL_RenderCopy(gRenderer, protect, &protectIm, &protectLoc);
+	renderProtect->ChangeCoordinates(
+		protectLoc.x,
+		protectLoc.y,
+		renderProtect->z
+	);
+	renderProtect->IterateFrame();
 }
 void Shield::Damage(int hitsTaken)
 {
@@ -69,6 +100,11 @@ void Shield::Damage(int hitsTaken)
 	{
 		hits = 0;
 		ply->hasShield(false);
+		//~ renderProtect->ChangeCoordinates(
+			//~ 2000,
+			//~ 2000,
+			//~ renderProtect->z
+		//~ );
 	}
 }
 void Shield::NewItem()

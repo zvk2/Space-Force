@@ -6,14 +6,14 @@
 
 //For some reasons, the xocde linker will not be able to find these two functions so I just copy and paste them here
 #ifdef __APPLE__
-#define
+
 	mat4 translation_matrix(GLfloat x, GLfloat y, GLfloat z) {
 	    mat4 rmat = identity_matrix();
-	    
+
 	    rmat.w.x = x;
 	    rmat.w.y = y;
 	    rmat.w.z = z;
-	    
+
 	    return rmat;
 	}
 
@@ -48,6 +48,8 @@ RenderObject::RenderObject(GLfloat initX, GLfloat initY, GLfloat initZ, BufferAt
 	//~ ctm = translation_matrix(x, y, 0);
 
 	ChangeCoordinates(initX, initY, initZ);
+
+	wait = 0;
 }
 // Destructor
 // EMPTY FOR NOW
@@ -62,6 +64,34 @@ void RenderObject::ChangeCoordinates(GLfloat newX, GLfloat newY, GLfloat newZ)
 	GLfloat trY = -CanonicalCoordinatesFromPixels(newY, SCREEN_HEIGHT) - 1;
 	z = newZ;
 	ctm = translation_matrix(trX, trY, z);
+}
+
+bool RenderObject::FinalFrame()
+{
+	// If something bad happened and it iterated too far, will reset in a frame anyway
+	// NOTE THIS ALSO CONSIDER FRAMES THAT ARE TOO EARLY AS "FINAL FRAMES" TO MAKE SURE IT SWAPS TO THE RIGHT ONES IN CASE OF A MISTAKE
+	return currentBufferID >= bufferAttributes.bufferIDEnd || currentBufferID < bufferAttributes.bufferIDStart;
+}
+
+void RenderObject::IterateFrame()
+{
+	if (wait <= 9)
+	{
+		wait += 1;
+	}
+	else
+	{
+		if (FinalFrame())
+		{
+			currentBufferID = bufferAttributes.bufferIDStart;
+		}
+		else
+		{
+			currentBufferID += 1;
+		}
+
+		wait = 0;
+	}
 }
 
 // Need to think about how to integrate this class with other entity classes
@@ -111,7 +141,7 @@ OpenGLRenderer::OpenGLRenderer(SDL_Window* window)
 
 	// Sync buffer swap with monitor vertical refresh (attempt to avoid flicker/tear)
 	// TODO REMOVE
-	//~ SDL_GL_SetSwapInterval(1);
+	SDL_GL_SetSwapInterval(1);
 
 	// Init GLEW
 	// Apparently, this is needed for Apple. Thanks to Ross Vander for letting me (headerphile) know
@@ -152,6 +182,24 @@ OpenGLRenderer::OpenGLRenderer(SDL_Window* window)
 }
 void OpenGLRenderer::PopulateTextures()
 {
+	char loadingTextureName[] = "resources/imgs/LOADING.png";
+	// Get loading image
+	PopulateDefault2DBuffers(
+		// File Name
+		loadingTextureName,
+		// Row
+		1,
+		// Columns
+		1
+	);
+
+	RenderObject *loading = new RenderObject(
+		0, 0, -1, allBufferAttributes[loadingTextureName]
+	);
+
+	AppendRenderObject(loading);
+	Display();
+
 	// Crude!
 	TextureGenerator textureGenerators[] =
 	{
@@ -163,6 +211,8 @@ void OpenGLRenderer::PopulateTextures()
 		// TODO REVISE
 		{1, 1, "resources/imgs/chatter_box.png"},
 		{1, 4, "resources/imgs/faxanaduitis.png"},
+		// NOTE DEATH IS IN DIFFERENT FILE?
+		{1, 10, "resources/imgs/Faxanaduitis_Death.png"},
 		{1, 1, "resources/imgs/health.png"},
 		{1, 10, "resources/imgs/healthbar.png"},
 		{1, 2, "resources/imgs/kill_everything.png"},
@@ -170,28 +220,35 @@ void OpenGLRenderer::PopulateTextures()
 		{1, 8, "resources/imgs/missile.png"},
 		{1, 1, "resources/imgs/multi.png"},
 		{1, 1, "resources/imgs/small_asteroid.png"},
+		{4, 1, "resources/imgs/shield.png"},
+		{1, 1, "resources/imgs/shield_powerup.png"},
+		{2, 1, "resources/imgs/star4.png"},
+		{1, 4, "resources/imgs/Alcohol_Cloud.png"},
+		{1, 4, "resources/imgs/Alcohol_Cloud_Flare_Up.png"},
 		// I think?
 		{1, 16, "resources/imgs/SpeedUp.png"},
 		{1, 6, "resources/imgs/starman.png"},
 		{1, 6, "resources/imgs/starman_blue.png"},
 		{1, 6, "resources/imgs/starman_green.png"},
 		{1, 16, "resources/imgs/WingedShield.png"},
+		// Eventually
+		{1, 6, "resources/imgs/King.png"},
 		// For menu soon
 		{1, 1, "resources/imgs/titlescreen.png"},
 		{1, 2, "resources/imgs/start.png"},
 		{1, 2, "resources/imgs/multi.png"},
 		{1, 2, "resources/imgs/credits.png"},
 		// Credits
-		//~ {1, 1, "resources/Credit_Image/carolyn_cole.png"},
-		//~ {1, 1, "resources/Credit_Image/Credit_AnthonyMartrano.png"},
-		//~ {1, 1, "resources/Credit_Image/DylanUmble.png"},
-		//~ {1, 1, "resources/Credit_Image/KevinW_credit.png"},
-		//~ {1, 1, "resources/Credit_Image/luke_malchow_bergenthal_1_3_FINAL_last_edge_lord.png"},
-		//~ {1, 1, "resources/Credit_Image/RuthDereje.png"},
-		//~ {1, 1, "resources/Credit_Image/ryan-kuhn.png"},
-		//~ {1, 1, "resources/Credit_Image/ShreeSampath.png"},
-		//~ {1, 1, "resources/Credit_Image/Zane_Credits.png"},
-		//~ {1, 1, "resources/Credit_Image/zhishengXu.png"},
+		{1, 1, "resources/Credit_Image/carolyn_cole.png"},
+		{1, 1, "resources/Credit_Image/Credit_AnthonyMartrano.png"},
+		{1, 1, "resources/Credit_Image/DylanUmble.png"},
+		{1, 1, "resources/Credit_Image/KevinW_credit.png"},
+		{1, 1, "resources/Credit_Image/luke_malchow_bergenthal_1_3_FINAL_last_edge_lord.png"},
+		{1, 1, "resources/Credit_Image/RuthDereje.png"},
+		{1, 1, "resources/Credit_Image/ryan-kuhn.png"},
+		{1, 1, "resources/Credit_Image/ShreeSampath.png"},
+		{1, 1, "resources/Credit_Image/Zane_Credits.png"},
+		{1, 1, "resources/Credit_Image/zhishengXu.png"},
 	};
 	// Iterate over every texture to generate
 	for (auto currentGenerator: textureGenerators)
@@ -209,6 +266,8 @@ void OpenGLRenderer::PopulateTextures()
 			currentGenerator.columns
 		);
 	}
+
+	TabulaRasa();
 }
 void OpenGLRenderer::Close()
 {
@@ -222,7 +281,11 @@ void OpenGLRenderer::Close()
 }
 void OpenGLRenderer::TabulaRasa()
 {
+	// Clear initially
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	// Delete vector
+	// Technically violating best practices
 	for (int i=0; i<renderObjects.size(); i++)
 	{
 		delete renderObjects[i];
@@ -471,6 +534,7 @@ void OpenGLRenderer::PopulateDefault2DBuffers(
 	while (currentRow < rows)
 	{
 		//~ std::cout << currentRowCoordinate << std::endl;
+		currentColumn = 0;
 
 		while (currentColumn < columns)
 		{
@@ -511,6 +575,8 @@ void OpenGLRenderer::PopulateDefault2DBuffers(
 		// buffer end (changed at the conclusion)
 		firstBuffer + bufferOffset - 1
 	};
+
+	//~ std::cout << textureName << " " << firstBuffer << " " << firstBuffer + bufferOffset - 1 << std::endl;
 
 	// FREE THE SURFACE
 	SDL_FreeSurface(surface);

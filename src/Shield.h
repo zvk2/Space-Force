@@ -3,18 +3,23 @@
 #pragma once
 #include "INC_SDL.h"
 #include "Player.h"
+#include "OpenGLRenderer.hpp"
 class Shield
 {
 	public:
-		Shield(SDL_Texture* imItem, SDL_Texture* power, Player* main);
+		Shield(Player* main);
 		void Render();
 		void RenderPower();
 		void NewItem();
 		void Damage(int hitsTaken);
 	private:
-		SDL_Renderer* gRenderer;
-		SDL_Texture* item; 
-		SDL_Texture* protect; 
+		OpenGLRenderer* openGL;
+		//~ SDL_Texture* item;
+		//~ SDL_Texture* protect;
+
+		const char* itemTexture;
+		const char* protectTexture;
+
 		SDL_Rect itemLoc;
 		SDL_Rect itemIm;
 		SDL_Rect protectLoc;
@@ -25,5 +30,8 @@ class Shield
 		bool screen;
 		int hits;
 		int addStrength;
+
+		RenderObject* renderItem;
+		RenderObject* renderProtect;
 };
 #endif
