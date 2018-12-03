@@ -1,5 +1,5 @@
 #include "Shield.h"
-Shield::Shield(SDL_Texture* imItem, SDL_Texture* power, Player* main): item(imItem), protect(power),ply(main)
+Shield::Shield(SDL_Texture* imItem, SDL_Texture* power, SDL_Texture* textIm, Player* main): item(imItem), protect(power), text(textIm), ply(main)
 {
 	gRenderer = ply->getRend();
 	plyCam = ply ->getPlayerCamLoc();
@@ -15,6 +15,12 @@ Shield::Shield(SDL_Texture* imItem, SDL_Texture* power, Player* main): item(imIt
 	addStrength = 2;
 	ply -> shieldLocation(&protectLoc, &hits);
 	ply->hasShield(false);
+	textH = 128;
+	textW = 837;
+	textBox = {0,0, textW, textH};
+	textScreen = {1280/2 - 700/2,720-100,700,100};
+	endMessage = 3;
+	startMessage = 5;
 }
 void Shield::Render()
 {
@@ -37,6 +43,8 @@ void Shield::Render()
 			itemLoc.x = 1280;
 			if(intersect)
 			{
+				startMessage = SDL_GetTicks();
+				endMessage = startMessage+2000;
 				ply->hasShield(true);
 				hits = hits + addStrength;
 			}
@@ -52,6 +60,11 @@ void Shield::Render()
 	if(hits > 0)
 	{
 		RenderPower();
+	}
+	if(startMessage <= endMessage)
+	{
+		startMessage = SDL_GetTicks();
+		Text();
 	}
 		
 }
@@ -74,4 +87,8 @@ void Shield::Damage(int hitsTaken)
 void Shield::NewItem()
 {
 	itemScreen = true;
+}
+void Shield::Text()
+{
+	SDL_RenderCopy(gRenderer, text, &textBox, &textScreen);
 }

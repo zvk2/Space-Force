@@ -347,7 +347,7 @@ int main(int argc, char* argv[])
 	double ACCEL = ply.GetMove();
 
 	ply.HealthBar(&healthRect);//needed healthbar in player
-	Shield protect(loadImage("resources/imgs/shield_powerup.png"), loadImage("resources/imgs/shield.png"), &ply);
+	Shield protect(loadImage("resources/imgs/shield_powerup.png"), loadImage("resources/imgs/shield.png"), loadImage("resources/imgs/Shield_FontB.png"),&ply);
 
 	mag.Multiplayer(&ply2);
 
