@@ -63,6 +63,8 @@ public:
     //Get the camera of the king
     SDL_Rect getCamera();
 
+    bool hasCollision(Player *p);
+
 private:
 
     //Some basic attributes of our king
