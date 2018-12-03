@@ -79,7 +79,7 @@
 					temp = curr;
 
 					openGL->RemoveRenderObject(temp->render->index);
-					std::cout << "Attack Die" << std::endl;
+					//~ std::cout << "Attack Die" << std::endl;
 
 					delete temp;
 				}
@@ -125,7 +125,7 @@
 					}
 
 					openGL->RemoveRenderObject(temp->render->index);
-					std::cout << "Attack Die" << std::endl;
+					//~ std::cout << "Attack Die" << std::endl;
 					delete temp;
 
 					count++;

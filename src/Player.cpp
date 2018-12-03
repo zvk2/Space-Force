@@ -274,7 +274,7 @@ bool Player::checkEnemyCollision(Enemy* e, double tstep)
 		playerCam.x = (int) xCoord;
 		playerCam.y = (int) yCoord;
 
-		render->ChangeCoordinates(xCoord, yCoord, render->z);
+		render->ChangeCoordinates(playerCam.x, playerCam.y, render->z);
 
 		return true;
 	}

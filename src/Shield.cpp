@@ -68,6 +68,12 @@ void Shield::Render()
 	{
 		hits = 0;
 		ply->hasShield(false);
+
+		renderProtect->ChangeCoordinates(
+			2000,
+			2000,
+			renderProtect->z
+		);
 	}
 	if(hits > 0)
 	{
@@ -94,11 +100,11 @@ void Shield::Damage(int hitsTaken)
 	{
 		hits = 0;
 		ply->hasShield(false);
-		renderProtect->ChangeCoordinates(
-			2000,
-			2000,
-			renderProtect->z
-		);
+		//~ renderProtect->ChangeCoordinates(
+			//~ 2000,
+			//~ 2000,
+			//~ renderProtect->z
+		//~ );
 	}
 }
 void Shield::NewItem()

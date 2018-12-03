@@ -28,7 +28,7 @@ AlcoholCloud::AlcoholCloud(Player* p, Enemy* e, attack* atk):ply(p), emy(e), ply
 	);
 	openGL->AppendRenderObject(cloudRender);
 
-	std::cout << "Cloud Spawn" << std::endl;
+	//~ std::cout << "Cloud Spawn" << std::endl;
 }
 
 void AlcoholCloud::Render()

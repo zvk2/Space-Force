@@ -28,7 +28,7 @@
 				blackholeCam.x, blackholeCam.y, 0, openGL->allBufferAttributes["resources/imgs/blackhole.png"]
 			);
 
-			std::cout << "Blackhole Spawn" << std::endl;
+			//~ std::cout << "Blackhole Spawn" << std::endl;
 
 			openGL->AppendRenderObject(render);
 		}
