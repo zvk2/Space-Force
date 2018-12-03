@@ -326,7 +326,12 @@ void OpenGLRenderer::Display()
 
 		//~ std::cout << bufferAttributes.textureID << std::endl;
 		// AREN'T SUPPOSED TO HAVE A BUNCH OF VAOS BUT WHATEVER
-		glBindVertexArray(vaoIDs[currentObject->currentBufferID]);
+        #ifdef __APPLE__
+        glBindVertexArrayAPPLE(vaoIDs[currentObject->currentBufferID]);
+        #else
+        glBindVertexArray(vaoIDs[currentObject->currentBufferID]);
+        #endif
+		
 		// Which texture to use
 		// (Somewhat crude)
 		glBindTexture(GL_TEXTURE_2D, textureIDs[bufferAttributes.textureID]);
@@ -344,6 +349,12 @@ void OpenGLRenderer::Display()
 
 		// Draw vertices in the buffer
 		glDrawArrays(GL_TRIANGLES, 0, bufferAttributes.numVertices);
+        
+        //For testing purpose
+        //std::cout << "a new object" << std::endl;
+        //std::cout << "x: " << currentObject->ctm.w.x << std::endl;
+        //std::cout << "y: " << currentObject->ctm.w.y << std::endl;
+        //std::cout << "z: " << currentObject->ctm.w.z << std::endl;
 	}
 
 	//~ // Get rid of faces in the wrong direction
@@ -377,9 +388,16 @@ GLuint OpenGLRenderer::PopulateDefault2DBuffer(
 	//~ textureIDs.push_back(currentTexture);
 	bufferIDs.push_back(currentBuffer);
 	vaoIDs.push_back(currentVao);
-
-	glGenVertexArrays(1, &vaoIDs[currentVao]);
-	glBindVertexArray(vaoIDs[currentVao]);
+    
+    //Apple needs different function calls
+    #ifdef __APPLE__
+    glGenVertexArraysAPPLE(1, &vaoIDs[currentVao]);
+    glBindVertexArrayAPPLE(vaoIDs[currentVao]);
+    #else
+    glGenVertexArrays(1, &vaoIDs[currentVao]);
+    glBindVertexArray(vaoIDs[currentVao]);
+    #endif
+	
 
 	// Texture parameters
 	// Basically, repeat if you need to and linear interpolation for texel -> pixel

@@ -147,13 +147,18 @@ void VirtualPeacefulKing::plusHealth(int amount)
     hitPoints += amount;
 }
 
+//To detect if the player collide with the king
+//If the player has contact with the king, he will lost health
 bool VirtualPeacefulKing::hasCollision(Player *p)
 {
     SDL_Rect pRect = p -> getPlayerCam();
     
     SDL_Rect result;
     
-    //if (SDL_IntersectRect(<#const SDL_Rect *A#>, <#const SDL_Rect *B#>, <#SDL_Rect *result#>))
+    if (SDL_IntersectRect(&pRect, &kingCam, &result))
+    {
+        return false;
+    }
     
     return false;
 }
