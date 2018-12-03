@@ -1,5 +1,6 @@
 #include "INC_SDL.h"
 #include "Player.h"
+#include "music.h"
 #include "OpenGLRenderer.hpp"
 class HyperStar
 {
@@ -22,7 +23,7 @@ class HyperStar
 		RenderObject *render;
 	};
 	public:
-		HyperStar(Player* main);
+		HyperStar(Player* main, music* mus);
 		HyperStar();
 		void addStar();
 		void Render(double timestep);

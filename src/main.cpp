@@ -321,7 +321,7 @@ int main(int argc, char* argv[]) {
     king.setVelocity(0, 50);
 
 	// HYPERSTAR
-	HyperStar stars(&ply);
+	HyperStar stars(&ply, &mus);
 
 	// BLACKHOLE
 	blackhole enemyBlackhole(&ply);

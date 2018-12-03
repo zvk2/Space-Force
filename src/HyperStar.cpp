@@ -7,7 +7,7 @@
 	//size of image
 	int size = 100;
 
-	HyperStar::HyperStar(Player* main):ply(main)
+	HyperStar::HyperStar(Player* main, music *mus):ply(main), play(mus)
 	{
 		imBox = {0,0,100,100};
 		openGL = ply->getRend();
