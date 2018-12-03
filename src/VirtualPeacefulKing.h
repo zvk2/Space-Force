@@ -14,6 +14,8 @@
 #include "OpenGLRenderer.hpp"
 #include "Player.h"
 #include "attack.h"
+#include <stdio.h>
+#include <cmath>
 
 //Our first boss class
 class VirtualPeacefulKing
@@ -23,7 +25,7 @@ public:
     //This boss will have a value of shield which will protect him from direct attack. The boss's health will only decrease if the shield is gone
     //Shield will generate itself throughout the time
     //This boss will also have a special skill to generate blackhole in a given Time interval
-    VirtualPeacefulKing(int initialHealth, SDL_Texture* sheet, int attack, int skillCD);
+    VirtualPeacefulKing(OpenGLRenderer* gRend, int initialHealth, int attack, int skillCD);
 
     //Damage to the shield
     //void LostShield(int damage);
@@ -56,7 +58,7 @@ public:
     SDL_Rect getRect();
 
     //Get the king's sprite sheet
-    SDL_Texture* getSheet();
+    //~ SDL_Texture* getSheet();
 
     //Get the camera of the king
     SDL_Rect getCamera();
@@ -64,6 +66,8 @@ public:
 private:
 
     //Some basic attributes of our king
+    OpenGLRenderer* openGL;
+    RenderObject* render;
 
     double ACCEL = 3600.0;
     double SPEED_LIMIT = 300.0;
@@ -76,7 +80,9 @@ private:
 
     attack* playerBlast;
 
-    SDL_Texture* kingSheet;
+    const char* kingTexture;
+
+    //~ SDL_Texture* kingSheet;
     Physics phys;
 
     SDL_Rect kingCam;

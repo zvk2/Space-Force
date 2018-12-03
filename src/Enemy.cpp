@@ -20,7 +20,7 @@ Enemy::Enemy(OpenGLRenderer *gRenderer, Player* p, int attac, attack* player, ch
 
 		// There will only be one render object
 		render = new RenderObject(
-			enemyCam.x, enemyCam.y, 0, openGL->allBufferAttributes[characterImages]
+			enemyCam.x, enemyCam.y, 0, openGL->allBufferAttributes["resources/imgs/faxanaduitis.png"]
 		);
 		openGL->AppendRenderObject(render);
 	}
@@ -136,10 +136,10 @@ SDL_Rect Enemy::getEnemyRect()
 }
 
 //Get the enemy sprite sheet
-SDL_Texture* Enemy::getEnemySheet()
-{
-	return enemySheet;
-}
+//~ SDL_Texture* Enemy::getEnemySheet()
+//~ {
+	//~ return enemySheet;
+//~ }
 
 //Get a pointer to the enemy cam
 SDL_Rect* Enemy::getEnemyCamLoc()
@@ -193,6 +193,7 @@ void Enemy::Render()
 		{
 			frame = 0;
 		}
+		render->IterateFrame();
 
 		enemyRect.x = ((frame / 10) % 4) * enemyRect.w;
 		frame++;
@@ -207,6 +208,8 @@ void Enemy::Render()
 		enemyRect.x = ((frame / 10) % 10) * enemyRect.w;
 		frame++;
 
+		render->IterateFrame();
+
 		//Despawn the enemy
 		if (frame == 100)
 		{
@@ -220,6 +223,9 @@ void Enemy::Render()
 
 			move(0, 0, *timestep);
 			checkPlayerCollision(*timestep);
+
+			render->bufferAttributes = openGL->allBufferAttributes["resources/imgs/Faxanaduitis_Death.png"];
+			render->currentBufferID = render->bufferAttributes.bufferIDStart;
 			//~ SDL_RenderCopy(gRenderer, deathSheet, &enemyRect, &enemyCam);
 		}
 	}

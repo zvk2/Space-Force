@@ -404,7 +404,7 @@ int main(int argc, char* argv[]) {
 	//~ blackhole enemyBlackhole(loadImage("resources/imgs/blackhole.png"), &ply);
 	//~ Magnetar mag(&ply, loadImage("resources/imgs/Magnetars.png"));
 
-	Removed for demo
+	//~ // Removed for demo
 	//~ AlcoholCloud ac(&ply, &emy, loadImage("resources/imgs/Alcohol_Cloud.png"), loadImage("resources/imgs/Alcohol_Cloud_Flare_Up.png"), &ply.hit);
 	//~ double ACCEL = ply.GetMove();
 

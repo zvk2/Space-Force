@@ -9,7 +9,7 @@
 #include "attack.h"
 #include <cmath>
 #include "OpenGLRenderer.hpp"
-#include "player.h"
+#include "Player.h"
 #define MAX_SPEED 50
 
 class Enemy
@@ -61,7 +61,7 @@ class Enemy
 		SDL_Rect getEnemyRect();
 
 		//Get the enemy sprite sheet
-		SDL_Texture* getEnemySheet();
+		//~ SDL_Texture* getEnemySheet();
 
 		//Get a pointer to the enemy cam
 		SDL_Rect* getEnemyCamLoc();
@@ -109,8 +109,8 @@ class Enemy
 		Player* ply;
 
 		//Not perm obviously but here as a reminder to store enemy texture here
-		const char* faxTexture;
-		const char* faxDeathTexture;
+		//~ const char* faxTexture;
+		//~ const char* faxDeathTexture;
 
 		Physics phys;
 
