@@ -47,32 +47,6 @@ strcat(data, "0000");
 return data;
 }
 
-string NetworkItem::SerializeData(NetworkData d){
-	string data = "";
-	int i;
-	strcat(data, SerializeItem(std::to_string(numPlayers)));
-	strcat(data, SerializeItem(std::to_string(numAttacks)));
-
-	for(i = 0; i < numPlayers; i++){
-		int x = d.Players[i].x;
-		strcat(data, SerializeItem(std::to_string(x)));
-		
-		x = d.Players[i].y;										
-		strcat(data, SerializeItem(std::to_string(x)));						
-																	
-		x = d.Players[i].hitpoints;
-		strcat(data, SerializeItem(std::to_string(x)));														
-	}
-
-	if(attack){
-		strcat(data, "0001");
-	}else{
-		strcat(data, "0000");
-	}
-
-	return data;
-}
-
 NetworkData NetworkItem::DeSerializeData(string d){
 	NetworkData item;
 	int readItems = 0;
