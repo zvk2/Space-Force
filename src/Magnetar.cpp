@@ -1,6 +1,6 @@
 #include "Magnetar.h"
 #include <iostream>
-Magnetar::Magnetar(Player* main, SDL_Texture* gIm):ply(main), im(gIm)
+Magnetar::Magnetar(Player* main, SDL_Texture* gIm, SDL_Texture* textIm):ply(main), im(gIm), text(textIm)
 {
 	gRenderer = ply->getRend();
 	collBox = {0,0,1280,721};
@@ -10,6 +10,11 @@ Magnetar::Magnetar(Player* main, SDL_Texture* gIm):ply(main), im(gIm)
 	camBox = {1280,0,1280,721};
 	onScreen = false;
 	frame = 0;
+	
+	textH = 78;
+	textW = 571;
+	textBox = {0,0,textW,textH};
+	textScreen = {(1280/2)-textW/2,0,textW,textH};
 }
 
 void Magnetar::Render()
@@ -46,6 +51,10 @@ void Magnetar::Render()
 	if ((inter && ACCEL > 0) || (!inter && ACCEL < 0))
 	{
 		ply->ChangeMove(-ACCEL);
+	}
+	if(inter)
+	{
+		SDL_RenderCopy(gRenderer, text, &textBox, &textScreen);
 	}
 	camBox.x = camBox.x - 1;
 	

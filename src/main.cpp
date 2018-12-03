@@ -340,7 +340,7 @@ int main(int argc, char* argv[])
 	
 	HyperStar stars(loadImage("resources/imgs/star4.png"),&ply);
 	blackhole enemyBlackhole(loadImage("resources/imgs/blackhole.png"), &ply);
-	Magnetar mag(&ply, loadImage("resources/imgs/Magnetars.png"));
+	Magnetar mag(&ply, loadImage("resources/imgs/Magnetars.png"), loadImage("resources/imgs/Mag_Font2.png"));
 
 	//~ Removed for demo
 	AlcoholCloud ac(&ply, &emy, loadImage("resources/imgs/Alcohol_Cloud.png"), loadImage("resources/imgs/Alcohol_Cloud_Flare_Up.png"), &ply.hit);
@@ -507,7 +507,7 @@ int main(int argc, char* argv[])
                 //SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
                 //bFrames = 0;
                 //blackhole vacuum(gRenderer,gBlackhole,&blackholeRect,blackholeCam);
-				enemyBlackhole.showBlackhole(xDeltav, yDeltav, timestep);
+				//enemyBlackhole.showBlackhole(xDeltav, yDeltav, timestep);
             }
          /*    else
             {

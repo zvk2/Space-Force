@@ -3,7 +3,7 @@
 class Magnetar
 {
 	public:
-		Magnetar(Player* main, SDL_Texture* gIm);
+		Magnetar(Player* main, SDL_Texture* gIm, SDL_Texture* textIm);
 		void Render();
 		void Multiplayer(Player* player2);
 		bool Seen();
@@ -12,8 +12,11 @@ class Magnetar
 	private:
 	int frame;
 	SDL_Texture* im;
+	SDL_Texture* text;
 	SDL_Rect collBox;
 	SDL_Rect camBox;
+	SDL_Rect textBox;
+	SDL_Rect textScreen;
 	SDL_Rect* playerCam;
 	SDL_Rect* player2Cam;
 	Player* ply;
@@ -21,4 +24,6 @@ class Magnetar
 	SDL_Renderer* gRenderer;
 	bool onScreen;
 	bool multiplayer;
+	int textH;
+	int textW;
 };
