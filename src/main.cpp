@@ -50,13 +50,7 @@ int close();
 
 // Globals
 SDL_Window* gWindow = nullptr;
-SDL_Renderer* gRenderer = nullptr;
-SDL_Texture* gBackground;
-SDL_Texture* gAttack;
-SDL_Texture* gBlackhole;
-SDL_Texture* gPlayerSheet;
-SDL_Texture* gHealthbar;
-std::vector<SDL_Texture*> gTex;
+OpenGLRenderer* gRenderer = nullptr;
 ClientInterface* client;
 
 music mus;
@@ -77,6 +71,7 @@ bool init()
 		std::cout << "Warning: Linear texture filtering not enabled!" << std::endl;
 	}
 
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
 	gWindow = SDL_CreateWindow(
 		"Space Force",
@@ -92,21 +87,6 @@ bool init()
 		return  false;
 	}
 
-	/* Create a renderer for our window
-	 * Use hardware acceleration (last arg)
-	 * Choose first driver that can provide hardware acceleration
-	 *   (second arg, -1)
-	 */
-	gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-	if (gRenderer == nullptr)
-	{
-		std::cout << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
-		return  false;
-	}
-
-	// Set renderer draw/clear color
-	SDL_SetRenderDrawColor( gRenderer, 0x00, 0x00, 0x00, 0xFF );
-
 	// Initialize PNG loading via SDL_image extension library
 	int imgFlags = IMG_INIT_PNG;
 	int retFlags = IMG_Init(imgFlags);
@@ -117,44 +97,15 @@ bool init()
 	}
 	client = new ClientInterface();
 
-
 	return true;
-}
-
-SDL_Texture* loadImage(std::string fname)
-{
-	SDL_Texture* newText = nullptr;
-
-	SDL_Surface* startSurf = IMG_Load(fname.c_str());
-	if (startSurf == nullptr)
-	{
-		std::cout << "Unable to load image " << fname << "! SDL Error: " << SDL_GetError() << std::endl;
-		return nullptr;
-	}
-
-	newText = SDL_CreateTextureFromSurface(gRenderer, startSurf);
-	if (newText == nullptr)
-	{
-		std::cout << "Unable to create texture from " << fname << "! SDL Error: " << SDL_GetError() << std::endl;
-	}
-
-	SDL_FreeSurface(startSurf);
-
-	return newText;
 }
 
 int close()
 {
-	for (auto i : gTex)
-	{
-		SDL_DestroyTexture(i);
-		i = nullptr;
-	}
-
 	mus.close();
 
-	SDL_DestroyRenderer(gRenderer);
-    SDL_GL_DeleteContext(gContext);
+	//~ SDL_DestroyRenderer(gRenderer);
+	SDL_GL_DeleteContext(gContext);
 	SDL_DestroyWindow(gWindow);
 	gWindow = nullptr;
 	gRenderer = nullptr;
@@ -167,83 +118,107 @@ int close()
 }
 
 // CREDITS
-int playCredits()
+int playCredits(OpenGLRenderer *openGL)
 {
-	struct dirent *entry;
-	DIR *dp;
+	// Your compiler may complain because you are not supposed to do this
+	// Credits to play
+	std::string creditNames[] = {
+		"resources/Credit_Image/carolyn_cole.png",
+		"resources/Credit_Image/Credit_AnthonyMartrano.png",
+		"resources/Credit_Image/DylanUmble.png",
+		"resources/Credit_Image/KevinW_credit.png",
+		"resources/Credit_Image/luke_malchow_bergenthal_1_3_FINAL_last_edge_lord.png",
+		"resources/Credit_Image/RuthDereje.png",
+		"resources/Credit_Image/ryan-kuhn.png",
+		"resources/Credit_Image/ShreeSampath.png",
+		"resources/Credit_Image/Zane_Credits.png",
+		"resources/Credit_Image/zhishengXu.png"
+	};
 
-	dp = opendir(CREDITS_FOLDER);
-	if (dp == NULL)
-	{
-		perror("opendir: Path does not exist or could not be read.");
-		return -1;
-	}
-
-	while ((entry = readdir(dp)))
-	{
-
-		int dNameLength = strlen(entry->d_name);
-
-		// Crude
-		if (dNameLength > 4 && entry->d_name[dNameLength - 4] == '.')
-		{
-			// Crude
-			char currentImageBuffer[2000];
-			strcpy(currentImageBuffer, CREDITS_FOLDER);
-			strcat(currentImageBuffer, entry->d_name);
-
-			// Puts the image on the buffer queue
-			gTex.push_back(loadImage(currentImageBuffer));
-		}
-	}
-
-	// Close the directory
-	closedir(dp);
-
-	bool quit = false;
+	int index = 0;
+	bool creditsContinue = true;
 	SDL_Event e;
 
-	for (auto i : gTex)
+	Uint32 startTime = SDL_GetTicks();
+	double timeDelta = 0;
+
+	std::cout << creditNames[index].c_str() << std::endl;
+	RenderObject *currentCreditImage = new RenderObject(
+		0, 0, 1, openGL->allBufferAttributes[creditNames[index].c_str()]
+	);
+	openGL->AppendRenderObject(currentCreditImage);
+
+	openGL->Display();
+
+	// Magic number length
+	while (index < 10 && creditsContinue)
 	{
-		// does the user want to quit?
-		while(SDL_PollEvent(&e) != 0)
+		while(SDL_PollEvent(&e))
 		{
 			if (e.type == SDL_QUIT)
 			{
-				quit = true;
+				creditsContinue = false;
 			}
-		 	if(e.type == SDL_KEYDOWN)
-		 	{
+			if (e.type == SDL_KEYDOWN)
+			{
 				if (e.key.keysym.sym == SDLK_ESCAPE)
 				{
-					quit = true;
+					creditsContinue = false;
 				}
-		 	}
+				if (e.key.keysym.sym == SDLK_q)
+				{
+					creditsContinue = false;
+				}
+			}
 		}
-		if (quit)
-		{
-			break;
-		}
-		// Clear
-		SDL_RenderClear(gRenderer);
-		// Render the image
-		SDL_RenderCopy(gRenderer, i, NULL, NULL);
-		// Display rendering
-		SDL_RenderPresent(gRenderer);
+
 		// Wait 3 seconds
-		SDL_Delay(3000);
+		if (timeDelta >= 3000)
+		{
+			index++;
+			// Magic number length
+			if (index > 9)
+			{
+				break;
+			}
+
+			const char *currentCreditName = creditNames[index].c_str();
+
+			startTime = SDL_GetTicks();
+			timeDelta = 0;
+
+			// Kill image
+			openGL->RemoveRenderObject(currentCreditImage->index);
+
+			// Get new
+			std::cout << currentCreditName << std::endl;
+			currentCreditImage = new RenderObject(
+				0, 0, 1, openGL->allBufferAttributes[currentCreditName]
+			);
+			openGL->AppendRenderObject(currentCreditImage);
+
+			openGL->Display();
+		}
+		else
+		{
+			timeDelta = SDL_GetTicks() - startTime;
+		}
 	}
-	// Clear the renderer one last time
-	SDL_RenderClear(gRenderer);
+
+	if (currentCreditImage) {
+		// Kill image
+		openGL->RemoveRenderObject(currentCreditImage->index);
+	}
 
 	//close();
-    return 0;
+	return 0;
 }
 
-int main(int argc, char* argv[])
-{
-
-	bool Multiplayer = false;
+// Test main
+int main(int argc, char* argv[]) {
+	// Multiplayer stuff
+	bool multiplayer = false;
+	int connected = 0;
 
 	if (!init())
 	{
@@ -251,20 +226,23 @@ int main(int argc, char* argv[])
 		close();
 		return 1;
 	}
-	// MENU
 
+	// Music
+	mus = music();
+	mus.init();
+	//~ mus.playMusic();
+
+	// OpenGL init
 	OpenGLRenderer openGL = OpenGLRenderer(gWindow);
 
+	// Menu
 	Menu menu = Menu(&openGL);
 	int selection = menu.runMenu();
 	//std::cout << selection << std::endl;
 	while (selection == 2)
 	{
-		playCredits();
-		// TEMPORARY, WILL RESTORE SOON
-		//~ selection = menu.runMenu();
-		close();
-		return 0;
+		playCredits(&openGL);
+		selection = menu.runMenu();
 	}
 	if (selection == 0)
 	{
@@ -274,7 +252,7 @@ int main(int argc, char* argv[])
 	if (selection == 1 || selection == 3)
 	{
 		if(selection == 3){
-			Multiplayer = true;
+			multiplayer = true;
 		}
 		cout << "SELECTION " << selection << endl;
 	}
@@ -282,23 +260,12 @@ int main(int argc, char* argv[])
 	// Now that we are ready to start the game, clean the openGLRenderer
 	openGL.TabulaRasa();
 
-	// GAME
-	/*
-	- Controls: WASD for movement, Spacebar to shoot
-	- Can be terminated by x'ing out or pressing 'esc' to credits
-	- Starman sprite's dimensions are 300 x 51
-	*/
-	//used to call playMusic
-	mus = music();
-	mus.init();
-	mus.playMusic();
+	// FPS params
+	Uint32 fpsLasttime = SDL_GetTicks();
+	Uint32 fpsCurtime = 0;
+	Uint32 moveLasttime = SDL_GetTicks();
+	double timestep = 0;
 
-	gBackground = loadImage("resources/imgs/space_2_background.png");
-	gAttack = loadImage("resources/imgs/attack.png");
-    gBlackhole = loadImage("resources/imgs/blackhole.png");
-	gHealthbar = loadImage("resources/imgs/healthbar.png");
-
-	int scrollOffset = 0;
 	int rem = 0;
 	double xDeltav = 0.0;
 	double yDeltav = 0.0;
@@ -311,62 +278,85 @@ int main(int argc, char* argv[])
 	int frames = 0;
 	int frameCount = 0;
 
-	SDL_Rect bgRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+	// THE BACKGROUND
+	RenderObject *background1 = new RenderObject(
+		0, 0, -1, openGL.allBufferAttributes["resources/imgs/space_2_background.png"]
+	);
 
-	Uint32 fpsLasttime = SDL_GetTicks();
-	Uint32 fpsCurtime = 0;
-	Uint32 moveLasttime = SDL_GetTicks();
-	double timestep = 0;
-	SDL_Rect attackRect = {0, 0, 60, 10};
-	SDL_Rect attackRect2 = {0, 0, 60, 10};
-	//SDL_Rect attackCam = {SCREEN_WIDTH+80, SCREEN_HEIGHT/2+51/2, 80, 20};
-	SDL_Rect blackholeRect = {0, 0, 300, 300};
-	SDL_Rect blackholeCam = {SCREEN_WIDTH,SCREEN_HEIGHT/2, 300, 300};
-	Player ply(10, loadImage("resources/imgs/starman.png"), 1, gRenderer);
-	Player ply2(10, loadImage("resources/imgs/starman_blue.png"), 1, gRenderer);
+	RenderObject *background2 = new RenderObject(
+		SCREEN_WIDTH, 0, -1, openGL.allBufferAttributes["resources/imgs/space_2_background.png"]
+	);
 
+	// ADD THE BACKGROUND IMAGES TO THE QUEUE
+	openGL.AppendRenderObject(background1);
+	openGL.AppendRenderObject(background2);
 
-	Enemy emy(&ply, loadImage("resources/imgs/faxanaduitis.png"), loadImage("resources/imgs/Faxanaduitis_Death.png"), 1, &ply.hit, 'f', &timestep);
-    
-    //Our king appears!!!!!
-    VirtualPeacefulKing king(100, loadImage("resources/imgs/King.png"),2,4);
-    
-    king.setPosition(1100, 0);
-    king.setVelocity(0, 50);
-
-
-	SDL_Rect healthRect = {0, 0, 177, 33};
-	SDL_Rect healthCam = {30, 30, 177, 33};
-	
-	HyperStar stars(loadImage("resources/imgs/star4.png"),&ply);
-	blackhole enemyBlackhole(loadImage("resources/imgs/blackhole.png"), &ply);
-	Magnetar mag(&ply, loadImage("resources/imgs/Magnetars.png"));
-
-	//~ Removed for demo
-	AlcoholCloud ac(&ply, &emy, loadImage("resources/imgs/Alcohol_Cloud.png"), loadImage("resources/imgs/Alcohol_Cloud_Flare_Up.png"), &ply.hit);
+	// THE PLAYER(S)
+	char player1Texture[] = "resources/imgs/starman.png";
+	char player2Texture[] = "resources/imgs/starman_blue.png";
+	Player ply(10, player1Texture, 1, &openGL, true);
+	Player ply2(10, player2Texture, 1, &openGL, multiplayer);
 	double ACCEL = ply.GetMove();
 
-	ply.HealthBar(&healthRect);//needed healthbar in player
-	Shield protect(loadImage("resources/imgs/shield_powerup.png"), loadImage("resources/imgs/shield.png"), &ply);
+	// PLAYER ATTACKS
+	SDL_Rect attackRect = {0, 0, 60, 10};
+	SDL_Rect attackRect2 = {0, 0, 60, 10};
+	ply.hit.setAttack(&attackRect);
+	if (multiplayer)
+	{
+		ply2.hit.setAttack(&attackRect2);
+	}
 
-	mag.Multiplayer(&ply2);
+	// FAXANDUITIS
+	Enemy emy(&openGL, &ply, 1, &ply.hit, 'f', &timestep);
+	double emyDelta = 1;
 
-	//the beginning/default image and attack box
-	ply.hit.setAttack(gAttack,&attackRect);
-	ply2.hit.setAttack(gAttack, &attackRect2);
+	// THE KING
+	//Our king appears!!!!!
+	VirtualPeacefulKing king(&openGL, 100, 2, 4);
+	double kingDelta = 1;
+
+	// Guess this should be in the class file?
+	king.setPosition(1100, 0);
+    king.setVelocity(0, 50);
+
+	// HYPERSTAR
+	HyperStar stars(&ply);
+
+	// BLACKHOLE
+	blackhole enemyBlackhole(&ply);
+
+	// MAGNETAR
+	Magnetar mag(&ply);
+
+	if (multiplayer)
+	{
+		mag.Multiplayer(&ply2);
+	}
+
+	// ALCOHOL CLOUD
+	AlcoholCloud ac(&ply, &emy, &ply.hit);
+
+	// SHIELD
+	Shield protect(&ply);
+
+	// PLAYER HEALTHBAR
+	// THIS OCCURS LATER FOR A REASON
+	RenderObject* healthBar = new RenderObject(
+		30, 30, 1, openGL.allBufferAttributes["resources/imgs/healthbar.png"]
+	);
+	ply.HealthBar(healthBar);
+	openGL.AppendRenderObject(healthBar);
+
+	// LOOP STUFF
 	SDL_Event e;
 	bool gameOn = true;
 	bool up = true;
 	bool credits = true;
 
-    double emyDelta = 1;
-    double kingDelta = 1;
-
-    int connected = 0;
-
-	while(gameOn)
+	while (gameOn)
 	{
-		if(selection == 3 && !connected){
+		if(selection == 3 && !connected) {
 			connected = client->Connect();
 		}
 
@@ -389,7 +379,7 @@ int main(int argc, char* argv[])
 					gameOn = false;
 				}
 			}
-			if(up == false && e.type == SDL_KEYUP && e.key.repeat == 0)
+			if (up == false && e.type == SDL_KEYUP && e.key.repeat == 0)
 			{
 				if(e.key.keysym.sym == SDLK_SPACE)
 				{
@@ -398,8 +388,13 @@ int main(int argc, char* argv[])
 			}
 		}
 
+		// Modify ACCEL
 		ACCEL = ply.GetMove();
+
+		// Increment timestep
 		timestep = (SDL_GetTicks() - moveLasttime) / 1000.0;
+
+		// Physics stuff
 		xDeltav = 0.0;
 		yDeltav = 0.0;
 		x2DeltaV = 0.0;
@@ -415,56 +410,38 @@ int main(int argc, char* argv[])
 			yDeltav -= (ACCEL * timestep);
 		if (keyState[SDL_SCANCODE_S])
 			yDeltav += (ACCEL * timestep);
-        
-        //boundary check for king
-        if (king.getCamera().y + king.getCamera().h == SCREEN_HEIGHT)
-        {
-            kingDelta = -1;
-            king.setVelocity(0, -10);
-        }
-        if (king.getCamera().y == 0)
-        {
-            kingDelta = 1;
-            king.setVelocity(0, 10);
-        }
 
+		// RECTS I GUESS
 		SDL_Rect pRect = ply.getPlayerRect();
 		SDL_Rect pCam = ply.getPlayerCam();
 		SDL_Rect pRect2 = ply2.getPlayerRect();
 		SDL_Rect pCam2 = ply.getPlayerCam();
 		SDL_Rect transfer;
-        SDL_Rect kRect = king.getRect();
-        SDL_Rect kCam = king.getCamera();
+		SDL_Rect kRect = king.getRect();
+		SDL_Rect kCam = king.getCamera();
 
 		moveLasttime = SDL_GetTicks();
 
-		// Scrolling background
-		++scrollOffset;
-		if (scrollOffset > bgRect.w)
-		{
-			scrollOffset = 0;
-		}
-
-		SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
-		SDL_RenderClear(gRenderer);
-
-		rem = scrollOffset % SCREEN_WIDTH;
-		bgRect.x = -rem;
-
-
-		SDL_RenderCopy(gRenderer, gBackground, nullptr, &bgRect);
-		bgRect.x += SCREEN_WIDTH;
-		SDL_RenderCopy(gRenderer, gBackground, nullptr, &bgRect);
-
-		frames += 1 % 1000000000;
-
+		// ANIMATE THE PLAYER(S)
 		ply.animate(frames);
-		if(connected){
+		if (connected){
 			ply2.animate(frames);
 		}
-        
-        king.animate(frames);
 
+		// Animate king (test)
+		//boundary check for king
+		if (king.getCamera().y + king.getCamera().h == SCREEN_HEIGHT)
+		{
+			kingDelta = -1;
+			king.setVelocity(0, -10);
+		}
+		if (king.getCamera().y == 0)
+		{
+			kingDelta = 1;
+			king.setVelocity(0, 10);
+		}
+
+		king.animate(frames);
 
 		// Since game levels progress from L to R, no need for sprite to flip
 		// Code for flipping remains here if theres a change of plan
@@ -475,19 +452,15 @@ int main(int argc, char* argv[])
 		else if (ply.getxVel() < 0 && flip == SDL_FLIP_NONE)
 			flip = SDL_FLIP_HORIZONTAL;*/
 
-		pRect = ply.getPlayerRect();
-		pCam = ply.getPlayerCam();
+		// CURRENT TIME
+		Uint32 currTime = SDL_GetTicks();
 
-		pRect2 = ply2.getPlayerRect();
-
-        Uint32 currTime = SDL_GetTicks();
-		
-        if(currTime>=6000)
+		// TIME BASED ACTIONS: TO BE REVISED
+		if(currTime>=6000)
 		{
-            //std::cout << currTime % 3000 << std::endl;
+			//std::cout << currTime % 3000 << std::endl;
 			if((currTime % 10000 <= 50 && !mag.Seen()) ||mag.Seen())
 			{
-
 				mag.Render();
 			}
 			if(currTime%3000<=20)
@@ -499,104 +472,66 @@ int main(int argc, char* argv[])
 				protect.NewItem();
 			}
 		}
-        if(currTime >= 5000)
-        {
-            //int bFrames;
-            if((currTime % 5000 < 50 && !enemyBlackhole.seen()) || enemyBlackhole.seen())
-            {
-                //SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
-                //bFrames = 0;
-                //blackhole vacuum(gRenderer,gBlackhole,&blackholeRect,blackholeCam);
+		if(currTime >= 5000)
+		{
+			//int bFrames;
+			if((currTime % 5000 < 50 && !enemyBlackhole.seen()) || enemyBlackhole.seen())
+			{
+				//SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
+				//bFrames = 0;
+				//blackhole vacuum(gRenderer,gBlackhole,&blackholeRect,blackholeCam);
 				enemyBlackhole.showBlackhole(xDeltav, yDeltav, timestep);
-            }
-         /*    else
-            {
-                bFrames++;
-
-                if (bFrames / 12 > 5)
-                    bFrames = 0;
-
-                blackholeRect.x = (bFrames / 12) * 300;
-                blackholeCam.x = blackholeCam.x - 1;
-                SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
-
-                if(blackholeCam.x < SCREEN_WIDTH && blackholeCam.x > 0)
-                {
-                    if(blackholeCam.x + 150 > pCam.x)
-                    {
-                        if(blackholeCam.y + 150 > pCam.y)
-                        {
-                            yDeltav = yDeltav + 20;
-                        }
-                        if(blackholeCam.y + 150 < pCam.y)
-                        {
-                            yDeltav = yDeltav - 20;
-                        }
-                        xDeltav = xDeltav + 20;
-                    }
-                    else if(blackholeCam.x + 150 < pCam.x)
-                    {
-                        if(blackholeCam.y + 150 > pCam.y)
-                        {
-                            yDeltav = yDeltav + 20;
-                        }
-                        if(blackholeCam.y + 150 < pCam.y)
-                        {
-                            yDeltav = yDeltav - 20;
-                        }
-                        xDeltav = xDeltav - 20;
-                    }
-                }
-            }
-
-            if(blackholeCam.x == -300)
-            {
-                blackholeCam = {SCREEN_WIDTH,rand() % (SCREEN_HEIGHT-300), 300, 300};
-                bFrames = 0;
-            } */
-        }
+			}
+		}
 
 		ply.move(xDeltav, yDeltav, timestep);
-		
+
 		if (emy.Exists())
-		{	
+		{
 			bool collision = ply.checkEnemyCollision(&emy, timestep);
-			
+
 			emy.Render();
-			
+
 			if (collision && emy.GetHealth() > 0)
 			{
 				//ply.LostHealth(1);
-				if (healthRect.x == 1770)
+				//~ if (healthRect.x == 1770)
+				if (healthBar->currentBufferID == healthBar->bufferAttributes.bufferIDEnd)
 				{
-					return playCredits();
+					//~ return playCredits();
+					gameOn = false;
+					credits = true;
 				}
 				else
 				{
-					healthRect.x += 177;
+					//~ healthRect.x += 177;
+					healthBar->IterateFrame();
 				}
 			}
 		}
 		else
-		{	
+		{
 			if (emy.getNextSpawn() == 0)
 			{
-				emy.setNextSpawn((rand() % 5001) + 5000 + currTime); 
+				emy.setNextSpawn((rand() % 5001) + 5000 + currTime);
 			}
-			
+
 			if (currTime >= emy.getNextSpawn())
 			{
 				emy.Spawn();
-			}	
+			}
 		}
 
-		if(healthRect.x >= 1598)//will now play credits when health is gone
+		//~ if(healthRect.x >= 1598)//will now play credits when health is gone
+		if (healthBar->currentBufferID == healthBar->bufferAttributes.bufferIDEnd)
 		{
-			return playCredits();
+			//~ return playCredits();
+			gameOn = false;
+			credits = true;
 		}
-        
-        king.move(0, kingDelta, timestep);
-        
+
+		king.move(0, kingDelta, timestep);
+
 		/*
 		collision = emy.checkPlayerCollision(&ply, timestep);
 		if (collision)
@@ -611,28 +546,25 @@ int main(int argc, char* argv[])
 		}
 		pCam2.x = transfer.x;
 		pCam2.y = transfer.y;
-        
-        kCam = king.getCamera();
 
-        //attack button
+		kCam = king.getCamera();
+
+		//attack button
 
 		if(keyState[SDL_SCANCODE_SPACE] && up == true)
 		{
 			up = false;
-			ply.hit.addAttack(pCam.x + 240,pCam.y + 51/2);
+			ply.hit.addAttack(pCam.x + 240, pCam.y + 51/2);
 
 			//play fire sound effect
 			mus.fireSound();
 		}
 		//lets the attack move across the screen
 		ply.hit.renderAttack(timestep);
-		SDL_RenderCopyEx(gRenderer, ply.getPlayerSheet(), &pRect, &pCam, 0.0, nullptr, flip);
 
 		protect.Render();
-        SDL_RenderCopyEx(gRenderer, king.getSheet(), &kRect, &kCam, 0.0, nullptr, flip);
 
-
-		//~ removed for demo
+		//~ ALCOHOL CLOUD STUFF
 		if (ac.getDelay() == 0)
 		{
 		 	ac.setDelay((rand() % 3000) + 5000);
@@ -648,26 +580,46 @@ int main(int argc, char* argv[])
 		 	ac.Render();
 		}
 
+		// MODIFY STARS
 		stars.Render(timestep);
 
-		if(Multiplayer){
-			SDL_RenderCopyEx(gRenderer, ply2.getPlayerSheet(), &pRect2, &pCam2, 0.0, nullptr, flip);
+		// THE BG THE BG
+		// Move the background
+		background1->ChangeCoordinates(
+			background1->x - 1,
+			background1->y,
+			background1->z
+		);
+		background2->ChangeCoordinates(
+			background2->x - 1,
+			background2->y,
+			background2->z
+		);
+
+		// Reset the background as necessary
+		if (background1->x < -SCREEN_WIDTH)
+		{
+			background1->ChangeCoordinates(0, background1->y, background1->z);
+			background2->ChangeCoordinates(SCREEN_WIDTH, background2->y, background2->z);
 		}
 
-		SDL_RenderCopy(gRenderer, gHealthbar, &healthRect, &healthCam);
-
-		SDL_RenderPresent(gRenderer);
-
+		// Displays stuff
+		openGL.Display();
 	}
+
+	// Contrivance for memory leak
+	// (In this case, multiplayer render is not freed because not in queue)
+	//~ if (!multiplayer)
+	//~ {
+		//~ delete ply2.render;
+	//~ }
+
 	if (credits)
 	{
-		return playCredits();
+		playCredits(&openGL);
 	}
 
-	// When the main loop ends, we can assume it is time for openGL to die
-	// And yeah, should be in the close function (but it isn't because I instantiate openGL on the stack)
 	openGL.Close();
-
 	close();
-	//return credits ? playCredits() : close();
+	return -1;
 }

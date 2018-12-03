@@ -1,7 +1,10 @@
 #include "INC_SDL.h"
 #include "Player.h"
+#include "OpenGLRenderer.hpp"
 class HyperStar
 {
+	//~ static constexpr char hyperStarTexture[] = "resources/imgs/hyperstar.png";
+
 	struct StarNode
 	{
 		HyperStar on();
@@ -15,9 +18,11 @@ class HyperStar
 		struct StarNode* next;
 		struct StarNode* pre;
 		bool hitPly;
+
+		RenderObject *render;
 	};
 	public:
-		HyperStar(SDL_Texture* im, Player* main);
+		HyperStar(Player* main);
 		HyperStar();
 		void addStar();
 		void Render(double timestep);
@@ -25,7 +30,7 @@ class HyperStar
 		bool checkCirCol(SDL_Rect circle);
 		bool checkShieldCol(SDL_Rect circle);
 		void killStar();
-	
+
 	private:
 		int getShield;
 		bool* hasShield;
@@ -34,10 +39,12 @@ class HyperStar
 		Player* ply;
 		SDL_Rect imBox;
 		SDL_Rect* plyCam;
-		SDL_Renderer* gRenderer;
+		OpenGLRenderer* openGL;
 		struct StarNode* head;
 		struct StarNode* curr;
 		struct StarNode* end;
 		int count;
 		int countKill;
+
+		const char *hyperStarTexture;
 };

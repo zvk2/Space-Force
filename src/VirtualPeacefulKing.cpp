@@ -6,18 +6,26 @@
 //  Copyright © 2018 XuZhisheng. All rights reserved.
 //
 
-#include <stdio.h>
-#include <cmath>
 #include "VirtualPeacefulKing.h"
 
 //Public methods
 
 
-VirtualPeacefulKing::VirtualPeacefulKing(int initialHealth, SDL_Texture* sheet, int attack,int skillCD):hitPoints(initialHealth),kingSheet(sheet),attackPower(attack),phys(0,0,300.0,3600.0),xCoord(1280/10),yCoord(720/2),cd(skillCD)
+VirtualPeacefulKing::VirtualPeacefulKing(OpenGLRenderer* gRend, int initialHealth, int attack,int skillCD):hitPoints(initialHealth),attackPower(attack),phys(0,0,300.0,3600.0),xCoord(1280/10),yCoord(720/2),cd(skillCD)
 {
+	openGL = gRend;
+
     kingRect = {0, 0, 144, 144};
     kingCam = {1280/2, 720/2, 144, 144};
-    
+
+	//~ std::string initTexture = "resources/imgs/King.png";
+	//~ kingTexture = initTexture.c_str();
+
+	render = new RenderObject(
+		kingCam.x, kingCam.y, 0, openGL->allBufferAttributes["resources/imgs/King.png"]
+	);
+
+	openGL->AppendRenderObject(render);
 }
 
 //Causing damage to the boss
@@ -31,11 +39,17 @@ void VirtualPeacefulKing::setPosition(double x, double y)
 {
     xCoord = x;
     yCoord = y;
-    
+
     checkBoundary();
-    
+
     kingCam.x = (int) xCoord;
     kingCam.y = (int) yCoord;
+
+    render->ChangeCoordinates(
+		kingCam.x,
+		kingCam.y,
+		render->z
+    );
 }
 
 //set the current velocity of the king
@@ -56,27 +70,40 @@ void VirtualPeacefulKing::checkBoundary()
         yCoord = 0;
     if (yCoord + kingCam.h > SCREEN_HEIGHT)
         yCoord = SCREEN_HEIGHT - kingCam.h;
+
+    render->ChangeCoordinates(
+		kingCam.x,
+		kingCam.y,
+		render->z
+    );
 }
 
 //Move the king
 void VirtualPeacefulKing::move(double deltax, double deltay, double step)
 {
     phys.ChangeVelocity(deltax, deltay, step);
-    
+
     xCoord += (phys.getxVelocity() * step);
     yCoord += (phys.getyVelocity() * step);
-    
+
     //Our king will not move pass the screen
     checkBoundary();
-    
+
     kingCam.x = (int) xCoord;
     kingCam.y = (int) yCoord;
+
+    render->ChangeCoordinates(
+		kingCam.x,
+		kingCam.y,
+		render->z
+    );
 }
 
 //Animate the king
 void VirtualPeacefulKing::animate(int frames)
 {
-    kingRect.x = ((frames / 10) % 6) * kingRect.w;
+    //~ kingRect.x = ((frames / 10) % 6) * kingRect.w;
+    render->IterateFrame();
 }
 
 //Some accessors
@@ -95,10 +122,10 @@ SDL_Rect VirtualPeacefulKing::getRect()
     return kingRect;
 }
 
-SDL_Texture* VirtualPeacefulKing::getSheet()
-{
-    return kingSheet;
-}
+//~ SDL_Texture* VirtualPeacefulKing::getSheet()
+//~ {
+    //~ return kingSheet;
+//~ }
 
 SDL_Rect VirtualPeacefulKing::getCamera()
 {

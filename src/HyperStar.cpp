@@ -6,15 +6,17 @@
 	//size of image
 	int size = 100;
 
-	HyperStar::HyperStar(SDL_Texture* im, Player* main):starIm(im), ply(main)
+	HyperStar::HyperStar(Player* main):ply(main)
 	{
 		imBox = {0,0,100,100};
-		gRenderer = ply->getRend();
-		plyCam = ply ->getPlayerCamLoc();
-		
+		openGL = ply->getRend();
+		plyCam = ply->getPlayerCamLoc();
+
 		hasShield = ply->shieldStatus();
 		getShield = 0;
-		head = (struct StarNode*)malloc(sizeof(struct StarNode));
+		//~ head = (struct StarNode*)malloc(sizeof(struct StarNode));
+		// Head appears to be a contrived node
+		head = new struct StarNode();
 		head->pre = nullptr;
 		head->next = nullptr;
 		end = head;
@@ -28,7 +30,8 @@
 	{
 		//random y
 		int upOrDown = rand() % 2; // 0 to 1
-		end->next = (struct StarNode*)malloc(sizeof(struct StarNode));
+		//~ end->next = (struct StarNode*)malloc(sizeof(struct StarNode));
+		end->next = new struct StarNode();
 
 		//random angle
 		end->next->angle = (((double)(rand()%50 + 15))/180)*3.14; //10 to 60
@@ -41,6 +44,7 @@
 		int y;
 
 		//random x
+		// Should try to avoid magic numbers
 		int x = rand()%426 + 852;
 		if(x > 1280)
 		{
@@ -65,6 +69,11 @@
 		end->x = (double)x;
 		end->y = (double)y;
 		end->next = nullptr;
+
+		end->render = new RenderObject(
+			end->x, end->y, 1, openGL->allBufferAttributes["resources/imgs/star4.png"]
+		);
+		openGL->AppendRenderObject(end->render);
 	}
 
 	//places star on screen
@@ -85,21 +94,21 @@
 			imBox.y = (curr->frame%2)*100;
 			curr->frame++;
 			if(*hasShield && checkCol(*shield, curr->colTest))
-			{	
-				
+			{
+
 				if(checkShieldCol(curr->colTest))
 				{
 					killStar();
 					ply->HitShield(1);
 					continue;
 				}
-				
+
 			}
-			
+
 			//checks rectangle intersection first
 			if(checkCol(*plyCam, curr->colTest)&& !(curr->hitPly))
 			{
-				
+
 				//then checks circle
 				if(checkCirCol(curr->colTest))
 				{
@@ -111,11 +120,11 @@
 			if(curr->colTest.x <= -size)
 			{
 				killStar();
-				
+
 			}
 			else
 			{
-				SDL_RenderCopy(gRenderer, starIm, &imBox, &curr->colTest);
+				//~ SDL_RenderCopy(gRenderer, starIm, &imBox, &curr->colTest);
 				if(curr->y>= 720-size && curr->math==0)
 				{
 					curr->math =1;//star will goes up
@@ -136,6 +145,11 @@
 				{
 					curr->y = curr->y - newY;
 				}
+
+				curr->render->ChangeCoordinates(
+					curr->x, curr->y, curr->render->z
+				);
+
 				curr->colTest.x = (int)curr->x;
 				curr->colTest.y = (int)curr->y;
 				curr = curr->next;
@@ -144,14 +158,16 @@
 
 	}
 	void HyperStar::killStar()
-	{	
-		
+	{
+
 		if(curr == end)
 		{
 			end = end->pre;
 			end->next = nullptr;
-			free(curr);
-			curr = nullptr;;
+			//~ free(curr);
+			openGL->RemoveRenderObject(curr->render->index);
+			delete curr;
+			curr = nullptr;
 		}
 		else
 		{
@@ -159,12 +175,14 @@
 			curr->pre->next = curr->next;
 			StarNode* temp = curr;
 			curr = curr->next;
-			free(temp);
+			openGL->RemoveRenderObject(temp->render->index);
+			delete temp;
+			//~ free(temp);
 		}
 	}
 	bool HyperStar::checkCol(SDL_Rect other, SDL_Rect star)
 	{
-		
+
 		if(other.y + other.h <= star.y)
 			return false;
 		if(other.y >= star.y + star.h)
@@ -173,7 +191,7 @@
 			return false;
 		if(other.x + other.w <= star.x)
 			return false;
-		
+
 		return true;
 	}
 	//circle collision test
@@ -213,10 +231,10 @@
 		int distance =  d_x * d_x + d_y * d_y;
 		if(distance <=(r * r))
 			return true;
-		
+
 		return false;
 	}
-	
+
 	bool HyperStar::checkShieldCol(SDL_Rect circle)
 	{
 		int rsum = (circle.h/2) + (shield->h);
@@ -236,7 +254,7 @@
 			y = y + shield->h;
 			circle.y = circle.y + shield->h;
 		}
-			
+
 		xDistance = x - circle.x;
 		yDistance = y - circle.y;
 		squDist = (xDistance * xDistance) + (yDistance* yDistance);
