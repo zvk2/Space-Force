@@ -15,8 +15,8 @@ VirtualPeacefulKing::VirtualPeacefulKing(OpenGLRenderer* gRend, int initialHealt
 {
 	openGL = gRend;
 
-    kingRect = {0, 0, 144, 144};
-    kingCam = {1280/2, 720/2, 144, 144};
+    kingRect = {0, 0, 288, 288};
+    kingCam = {1280/2, 720/2, 288, 288};
 
 	//~ std::string initTexture = "resources/imgs/King.png";
 	//~ kingTexture = initTexture.c_str();

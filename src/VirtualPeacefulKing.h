@@ -80,7 +80,7 @@ private:
     int cd;
     double attackPower;
 
-    attack* playerBlast;
+    
 
     const char* kingTexture;
 
