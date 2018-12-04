@@ -5,6 +5,7 @@
 	Physics::Physics(double* x_v, double *y_v, double* x_d, double* y_d,double max_speed, double accel):
 	BACK_LIMIT{-max_speed}, FOR_LIMIT{max_speed},ACCEL{accel}, x_velp{x_v},y_velp{y_v},x_delp{x_d}, y_delp{y_d}
 	{
+		move = ACCEL;
 	}
 	Physics::Physics(double x_v, double y_v, double max_speed, double accel):
 	BACK_LIMIT{-max_speed}, FOR_LIMIT{max_speed},ACCEL{accel}, x_vel{x_v},y_vel{y_v}
@@ -111,7 +112,7 @@
 	{
 		move = ac;
 	}
-	
+
 	double Physics::GetMove()
 	{
 		return move;
@@ -122,7 +123,7 @@
 		BACK_LIMIT = -speed;
 		FOR_LIMIT = speed;
 	}
-	
+
 	//Set the current x velocity
 	void Physics::setxVelocity(double x)
 	{

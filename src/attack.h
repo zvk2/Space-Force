@@ -47,6 +47,6 @@ class attack
 
 		const char* attackTexture;
 
-		//~ std::vector<RenderObject*> attackVector;
+		std::vector<RenderObject*> attackVector;
 };
 #endif

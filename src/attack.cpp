@@ -10,6 +10,8 @@
 			end = head;
 			end->next = nullptr;
 			end->pre = nullptr;
+
+			attackVector = std::vector<RenderObject*>();
 		}
 		void attack::setAttack(SDL_Rect* attac)
 		{
@@ -18,122 +20,92 @@
 			cam.w = attac->w;
 			cam.h = attac->h;
 		}
-		//new attacks are added to the end of the list
+
+		// new attacks are added to the end of the list
 		void attack::addAttack(int x, int y)
 		{
 			cam.x = x;
 			cam.y = y;
-			//~ end->next = (struct Node*)malloc(sizeof(struct Node));
-			//~ end >next->attackCam = cam;
-			//~ end = end->next;
-			//~ SDL_RenderCopy(gRenderer, gAttack, attackBox, &end->attackCam);
-			//~ end->next = nullptr;
 
-			end->next = new struct Node();
-
-			end->next->render = new RenderObject(
-				x, y, 1, openGL->allBufferAttributes["resources/imgs/attack.png"]
+			attackVector.push_back(
+				new RenderObject(
+					x, y, 1, openGL->allBufferAttributes["resources/imgs/attack.png"]
+				)
 			);
 
-			openGL->AppendRenderObject(end->next->render);
-
-			end->next->attackCam = cam;
-
-			end->next->pre = end;
-
-			end = end->next;
-			end->next = nullptr;
+			openGL->AppendRenderObject(attackVector[attackVector.size() - 1]);
 		}
+
 		//when the currently first attack hits the end of the screen than
 		//it will free that information and delete it from the list
 		//then it will continue to render all other attacks further across the screen
 		void attack::renderAttack(double timestep)
 		{
 			int xDisplacement = (int) (1000 * timestep);
-			//~ Node* pre = head;
-			Node* temp;
-			curr = head->next;
-			while(curr != nullptr)
+
+			int index = 0;
+			int vectorSize = attackVector.size();
+			while(index < vectorSize)
 			{
-				curr->attackCam.x += xDisplacement;
-				curr->render->ChangeCoordinates(
-					curr->attackCam.x,
-					curr->render->y,
-					curr->render->z
+				RenderObject* currentAttack = attackVector[index];
+				//~ std::cout << currentAttack->index << std::endl;
+
+				currentAttack->ChangeCoordinates(
+					currentAttack->x + xDisplacement,
+					currentAttack->y,
+					currentAttack->z
 				);
 
 				// Doing this check every time might be overkill
-				if (curr != nullptr && curr->render->x >= SCREEN_WIDTH)
+				if (currentAttack->x >= SCREEN_WIDTH)
 				{
-					curr->pre->next = curr->next;
-					if (curr->next)
-					{
-						curr->next->pre = curr->pre;
-					}
-					else
-					{
-						end = curr->pre;
-						end->next = nullptr;
-					}
-
-					temp = curr;
-
-					openGL->RemoveRenderObject(temp->render->index);
+					openGL->RemoveRenderObject(currentAttack->index);
 					//~ std::cout << "Attack Die" << std::endl;
 
-					delete temp;
+					attackVector.erase(attackVector.begin() + index);
+					vectorSize = attackVector.size();
 				}
-				//~ else
-				//~ {
-					//~ pre = curr;
-				//~ }
-				curr = curr->next;
+				else {
+					index += 1;
+				}
+
+				vectorSize = attackVector.size();
 			}
-			//~ curr = head->next;
-			//~ if(curr != nullptr && curr->render->x >= SCREEN_WIDTH)
-			//~ {
-				//~ head->next = curr->next;
-				//~ if(curr == end)
-				//~ {
-					//~ end = head;
-				//~ }
-				//~ free(curr);
-			//~ }
 		}
-		//will count how many times an attack hit that object
-		//and delete that attack
+
+		// TODO TODO TODO
 		int attack::hitIntersect(SDL_Rect* rect)
 		{
-			//~ Node* pre = head;
-			Node* temp;
-			curr = head->next;
 			int count = 0;
-			while(curr != nullptr)
+			int index = 0;
+			int vectorSize = attackVector.size();
+			while(index < vectorSize)
 			{
-				if(SDL_HasIntersection(rect, &curr->attackCam))
-				{
-					temp = curr;
-					if(!curr->next)
-					{
-						end = curr->pre;
-						end->next = nullptr;
-					}
-					else
-					{
-						curr->pre->next = curr->next;
-						curr = curr->next;
-					}
+				RenderObject* currentAttack = attackVector[index];
 
-					openGL->RemoveRenderObject(temp->render->index);
+				SDL_Rect currentRect = {
+					(int)currentAttack->x,
+					(int)currentAttack->y,
+					(int)currentAttack->bufferAttributes.width,
+					(int)currentAttack->bufferAttributes.height
+				};
+
+				if(SDL_HasIntersection(rect, &currentRect))
+				{
+					openGL->RemoveRenderObject(currentAttack->index);
 					//~ std::cout << "Attack Die" << std::endl;
-					delete temp;
+
+					attackVector.erase(attackVector.begin() + index);
+					vectorSize = attackVector.size();
 
 					count++;
 				}
 				else
 				{
-					curr = curr->next;
+					index += 1;
 				}
+
+				vectorSize = attackVector.size();
 			}
 
 			return count;

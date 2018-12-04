@@ -331,7 +331,7 @@ void OpenGLRenderer::Display()
         #else
         glBindVertexArray(vaoIDs[currentObject->currentBufferID]);
         #endif
-		
+
 		// Which texture to use
 		// (Somewhat crude)
 		glBindTexture(GL_TEXTURE_2D, textureIDs[bufferAttributes.textureID]);
@@ -349,7 +349,7 @@ void OpenGLRenderer::Display()
 
 		// Draw vertices in the buffer
 		glDrawArrays(GL_TRIANGLES, 0, bufferAttributes.numVertices);
-        
+
         //For testing purpose
         //std::cout << "a new object" << std::endl;
         //std::cout << "x: " << currentObject->ctm.w.x << std::endl;
@@ -388,7 +388,7 @@ GLuint OpenGLRenderer::PopulateDefault2DBuffer(
 	//~ textureIDs.push_back(currentTexture);
 	bufferIDs.push_back(currentBuffer);
 	vaoIDs.push_back(currentVao);
-    
+
     //Apple needs different function calls
     #ifdef __APPLE__
     glGenVertexArraysAPPLE(1, &vaoIDs[currentVao]);
@@ -397,7 +397,7 @@ GLuint OpenGLRenderer::PopulateDefault2DBuffer(
     glGenVertexArrays(1, &vaoIDs[currentVao]);
     glBindVertexArray(vaoIDs[currentVao]);
     #endif
-	
+
 
 	// Texture parameters
 	// Basically, repeat if you need to and linear interpolation for texel -> pixel
