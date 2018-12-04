@@ -18,6 +18,21 @@ class Multiplayer
 {
 
 public:
+
+	Multiplayer();
+
+	void FlipPlayer2();
+
+	void DamagePlayer1();
+
+	void DamagePlayer2();
+
+	void AttackCollision1();
+
+	void AttackCollision1();
+
+	void AttackCollision2();
+
     
 
 private:
