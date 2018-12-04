@@ -1,88 +1,112 @@
 #include "attack.h"
 		//will keep track of all attacks on screen
 
-		attack::attack(SDL_Renderer* Renderer):gRenderer{Renderer}
+		attack::attack(OpenGLRenderer* Renderer):openGL{Renderer}
 		{
-			head = (struct Node*)malloc(sizeof(struct Node));
+			//~ head = (struct Node*)malloc(sizeof(struct Node));
+			// Head is a contrived node?
+			head = new struct Node();
 			cam = {0,0,0,0};
 			end = head;
 			end->next = nullptr;
+			end->pre = nullptr;
+
+			attackVector = std::vector<RenderObject*>();
 		}
-		void attack::setAttack(SDL_Texture* gAtt, SDL_Rect* attac)
+		void attack::setAttack(SDL_Rect* attac)
 		{
 			attackBox = attac;
-			gAttack = gAtt;
+			//~ gAttack = gAtt;
 			cam.w = attac->w;
 			cam.h = attac->h;
 		}
-		//new attacks are added to the end of the list
+
+		// new attacks are added to the end of the list
 		void attack::addAttack(int x, int y)
 		{
 			cam.x = x;
 			cam.y = y;
-			end->next = (struct Node*)malloc(sizeof(struct Node));
-			end ->next->attackCam = cam;
-			end = end->next;
-			SDL_RenderCopy(gRenderer, gAttack, attackBox, &end->attackCam);
-			end->next = nullptr;
+
+			attackVector.push_back(
+				new RenderObject(
+					x, y, 1, openGL->allBufferAttributes["resources/imgs/attack.png"]
+				)
+			);
+
+			openGL->AppendRenderObject(attackVector[attackVector.size() - 1]);
 		}
+
 		//when the currently first attack hits the end of the screen than
 		//it will free that information and delete it from the list
 		//then it will continue to render all other attacks further across the screen
 		void attack::renderAttack(double timestep)
 		{
-			Node* pre = head;
-			curr = head->next;
-			while(curr != nullptr)
-			{
-				curr->attackCam.x +=(int) (1000 * timestep);
-				SDL_RenderCopy(gRenderer, gAttack, attackBox, &curr->attackCam);
-				pre = curr;
-				curr = curr->next;
-			}
-			curr = head->next;
-			if(curr != nullptr && curr -> attackCam.x>= 1280)
-			{
+			int xDisplacement = (int) (1000 * timestep);
 
-				head->next = curr->next;
-				if(curr == end)
+			int index = 0;
+			int vectorSize = attackVector.size();
+			while(index < vectorSize)
+			{
+				RenderObject* currentAttack = attackVector[index];
+				//~ std::cout << currentAttack->index << std::endl;
+
+				currentAttack->ChangeCoordinates(
+					currentAttack->x + xDisplacement,
+					currentAttack->y,
+					currentAttack->z
+				);
+
+				// Doing this check every time might be overkill
+				if (currentAttack->x >= SCREEN_WIDTH)
 				{
-					end = head;
+					openGL->RemoveRenderObject(currentAttack->index);
+					//~ std::cout << "Attack Die" << std::endl;
+
+					attackVector.erase(attackVector.begin() + index);
+					vectorSize = attackVector.size();
 				}
-				free(curr);
+				else {
+					index += 1;
+				}
+
+				vectorSize = attackVector.size();
 			}
 		}
-		//will count how many times an attack hit that object
-		//and delete that attack
+
+		// TODO TODO TODO
 		int attack::hitIntersect(SDL_Rect* rect)
 		{
-			Node* pre = head;
-			//~ Node* temp;
-			curr = head->next;
 			int count = 0;
-			while(curr != nullptr)
+			int index = 0;
+			int vectorSize = attackVector.size();
+			while(index < vectorSize)
 			{
-				if(SDL_HasIntersection(rect, &curr->attackCam))
+				RenderObject* currentAttack = attackVector[index];
+
+				SDL_Rect currentRect = {
+					(int)currentAttack->x,
+					(int)currentAttack->y,
+					(int)currentAttack->bufferAttributes.width,
+					(int)currentAttack->bufferAttributes.height
+				};
+
+				if(SDL_HasIntersection(rect, &currentRect))
 				{
-					//~ temp = curr;
-					if(curr == end)
-					{
-						end = pre;
-						curr = nullptr;
-					}
-					else
-					{
-						curr = curr->next;
-						pre->next = curr;
-					}
-					//~ free(temp);
+					openGL->RemoveRenderObject(currentAttack->index);
+					//~ std::cout << "Attack Die" << std::endl;
+
+					attackVector.erase(attackVector.begin() + index);
+					vectorSize = attackVector.size();
+
 					count++;
 				}
 				else
 				{
-					pre = curr;
-					curr = curr->next;
+					index += 1;
 				}
+
+				vectorSize = attackVector.size();
 			}
+
 			return count;
 		}

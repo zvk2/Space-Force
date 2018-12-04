@@ -3,10 +3,13 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 #include "INC_SDL.h"
-#include "Enemy.h"
 #include "physics.h"
 #include "attack.h"
 #include <cmath>
+#include "OpenGLRenderer.hpp"
+#include <iostream>
+#include <cstdlib>
+#include <climits>
 #define MAX_SPEED 50
 
 class Player
@@ -14,7 +17,7 @@ class Player
 	public:
 		attack hit;
 		//Constructor: takes health, character sheet, and attack value and sets all member vars
-		Player(int startingHealth, SDL_Texture* characterImages, int attack, SDL_Renderer* gRend);
+		Player(int startingHealth, char* characterImages, int attack, OpenGLRenderer* gRend, bool renderImmediately);
 
 		//attack* attackHit();
 		//Set the position of the player on screen
@@ -43,7 +46,7 @@ class Player
 		//Return the current y velocity
 		double getyVel();
 
-		void setAttack(SDL_Texture* gAtt, SDL_Rect* attac);
+		void setAttack(SDL_Rect* attac);
 
 		//Get the player camera rectangle
 		SDL_Rect getPlayerCam();
@@ -53,7 +56,7 @@ class Player
 
 
 		//Get the player sprite sheet
-		SDL_Texture* getPlayerSheet();
+		char* getPlayerSheet();
 
 
 		//Subract hit points from the player
@@ -69,7 +72,7 @@ class Player
 
 		//Reset the attack and defence modifiers to normal
 		void PowerupEnd();
-		
+
 
 		//Return the player's current health points
 		int GetHealth();
@@ -77,22 +80,25 @@ class Player
 
 		//Return the player's current attack
 		int GetAttack();
-		SDL_Renderer* getRend();
-		
+		OpenGLRenderer* getRend();
+
 		//Get a pointer to the player cam
 		SDL_Rect* getPlayerCamLoc();
 		double GetMove();
 		void ChangeMove(double Accel);
 		void ChangeMaxVelocity(double Speed);
-		
+
 		//intracts with health bar
-		void HealthBar(SDL_Rect* health);
+		void HealthBar(RenderObject* health);
 		void damage(int hits);
 		void shieldLocation(SDL_Rect* protect, int* strength);
 		bool* shieldStatus();
 		SDL_Rect* shieldInteractions();
 		void HitShield(int hits);
-		
+
+		// Lazy, I know
+		RenderObject* render;
+
 	private:
 
 		/* Member variables:
@@ -102,7 +108,7 @@ class Player
 		 */
 		SDL_Rect* shield;
 		bool protection;
-		SDL_Rect* healthBar;
+		RenderObject* healthBar;
 		double ACCEL;
 		double SPEED_LIMIT;
 		const int SCREEN_WIDTH = 1280;
@@ -113,9 +119,9 @@ class Player
 		double attackModifier;
 		double defenseModifier;
 		//Not perm obviously but here as a reminder to store player texture here
-		SDL_Texture* playerSheet;
+		char* playerSheet;
 		Physics phys;
-		SDL_Renderer* gRenderer;
+		OpenGLRenderer* openGL;
 		int *shieldPoint;
 
 		SDL_Rect playerCam;
@@ -131,8 +137,10 @@ class Player
 
 		//Private method to increase player health
 		void IncrementHealth(int incAmount);
-		
+
 		bool hasCollision(Enemy* e);
 };
+
+#include "Enemy.h"
 
 #endif

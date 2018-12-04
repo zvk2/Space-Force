@@ -3,6 +3,30 @@
 // TODO INCLUDES
 #include "OpenGLRenderer.hpp"
 
+
+//For some reasons, the xocde linker will not be able to find these two functions so I just copy and paste them here
+#ifdef __APPLE__
+
+	mat4 translation_matrix(GLfloat x, GLfloat y, GLfloat z) {
+	    mat4 rmat = identity_matrix();
+
+	    rmat.w.x = x;
+	    rmat.w.y = y;
+	    rmat.w.z = z;
+
+	    return rmat;
+	}
+
+	mat4 identity_matrix() {
+	    mat4 rmat;
+	    rmat.x.x = 1;   rmat.y.x = 0;   rmat.z.x = 0;   rmat.w.x = 0;
+	    rmat.x.y = 0;   rmat.y.y = 1;   rmat.z.y = 0;   rmat.w.y = 0;
+	    rmat.x.z = 0;   rmat.y.z = 0;   rmat.z.z = 1;   rmat.w.z = 0;
+	    rmat.x.w = 0;   rmat.y.w = 0;   rmat.z.w = 0;   rmat.w.w = 1;
+	    return rmat;
+	}
+#endif
+
 // TODO GLOBALS? PERHAPS I SHOULD MAKE THEM MERELY ATTRBUTES?
 
 // Get coords from pixels
@@ -24,6 +48,8 @@ RenderObject::RenderObject(GLfloat initX, GLfloat initY, GLfloat initZ, BufferAt
 	//~ ctm = translation_matrix(x, y, 0);
 
 	ChangeCoordinates(initX, initY, initZ);
+
+	wait = 0;
 }
 // Destructor
 // EMPTY FOR NOW
@@ -38,6 +64,43 @@ void RenderObject::ChangeCoordinates(GLfloat newX, GLfloat newY, GLfloat newZ)
 	GLfloat trY = -CanonicalCoordinatesFromPixels(newY, SCREEN_HEIGHT) - 1;
 	z = newZ;
 	ctm = translation_matrix(trX, trY, z);
+}
+
+bool RenderObject::FinalFrame()
+{
+	// If something bad happened and it iterated too far, will reset in a frame anyway
+	// NOTE THIS ALSO CONSIDER FRAMES THAT ARE TOO EARLY AS "FINAL FRAMES" TO MAKE SURE IT SWAPS TO THE RIGHT ONES IN CASE OF A MISTAKE
+	return currentBufferID >= bufferAttributes.bufferIDEnd || currentBufferID < bufferAttributes.bufferIDStart;
+}
+
+// Really just for healthbar, I think
+void RenderObject::ForceFrame()
+{
+	if (!FinalFrame())
+	{
+		currentBufferID += 1;
+	}
+}
+
+void RenderObject::IterateFrame()
+{
+	if (wait <= 9)
+	{
+		wait += 1;
+	}
+	else
+	{
+		if (FinalFrame())
+		{
+			currentBufferID = bufferAttributes.bufferIDStart;
+		}
+		else
+		{
+			currentBufferID += 1;
+		}
+
+		wait = 0;
+	}
 }
 
 // Need to think about how to integrate this class with other entity classes
@@ -87,7 +150,7 @@ OpenGLRenderer::OpenGLRenderer(SDL_Window* window)
 
 	// Sync buffer swap with monitor vertical refresh (attempt to avoid flicker/tear)
 	// TODO REMOVE
-	//~ SDL_GL_SetSwapInterval(1);
+	SDL_GL_SetSwapInterval(1);
 
 	// Init GLEW
 	// Apparently, this is needed for Apple. Thanks to Ross Vander for letting me (headerphile) know
@@ -98,7 +161,12 @@ OpenGLRenderer::OpenGLRenderer(SDL_Window* window)
 	#endif
 
 	// NEED TO SWITCH TO DYLAN'S SHADER
-	Shader shader("ztest");
+    //Check for mac system because mac requires different format for shader files
+    #ifdef __APPLE__
+	Shader shader("ztest120");
+    #else
+    Shader shader("ztest");
+    #endif
 	program = shader.getProgram();
 
 	// If you want black
@@ -123,6 +191,24 @@ OpenGLRenderer::OpenGLRenderer(SDL_Window* window)
 }
 void OpenGLRenderer::PopulateTextures()
 {
+	char loadingTextureName[] = "resources/imgs/LOADING.png";
+	// Get loading image
+	PopulateDefault2DBuffers(
+		// File Name
+		loadingTextureName,
+		// Row
+		1,
+		// Columns
+		1
+	);
+
+	RenderObject *loading = new RenderObject(
+		0, 0, -1, allBufferAttributes[loadingTextureName]
+	);
+
+	AppendRenderObject(loading);
+	Display();
+
 	// Crude!
 	TextureGenerator textureGenerators[] =
 	{
@@ -134,6 +220,8 @@ void OpenGLRenderer::PopulateTextures()
 		// TODO REVISE
 		{1, 1, "resources/imgs/chatter_box.png"},
 		{1, 4, "resources/imgs/faxanaduitis.png"},
+		// NOTE DEATH IS IN DIFFERENT FILE?
+		{1, 10, "resources/imgs/Faxanaduitis_Death.png"},
 		{1, 1, "resources/imgs/health.png"},
 		{1, 10, "resources/imgs/healthbar.png"},
 		{1, 2, "resources/imgs/kill_everything.png"},
@@ -141,28 +229,35 @@ void OpenGLRenderer::PopulateTextures()
 		{1, 8, "resources/imgs/missile.png"},
 		{1, 1, "resources/imgs/multi.png"},
 		{1, 1, "resources/imgs/small_asteroid.png"},
+		{4, 1, "resources/imgs/shield.png"},
+		{1, 1, "resources/imgs/shield_powerup.png"},
+		{2, 1, "resources/imgs/star4.png"},
+		{1, 4, "resources/imgs/Alcohol_Cloud.png"},
+		{1, 4, "resources/imgs/Alcohol_Cloud_Flare_Up.png"},
 		// I think?
 		{1, 16, "resources/imgs/SpeedUp.png"},
 		{1, 6, "resources/imgs/starman.png"},
 		{1, 6, "resources/imgs/starman_blue.png"},
 		{1, 6, "resources/imgs/starman_green.png"},
 		{1, 16, "resources/imgs/WingedShield.png"},
+		// Eventually
+		{1, 6, "resources/imgs/King.png"},
 		// For menu soon
 		{1, 1, "resources/imgs/titlescreen.png"},
 		{1, 2, "resources/imgs/start.png"},
 		{1, 2, "resources/imgs/multi.png"},
 		{1, 2, "resources/imgs/credits.png"},
 		// Credits
-		//~ {1, 1, "resources/Credit_Image/carolyn_cole.png"},
-		//~ {1, 1, "resources/Credit_Image/Credit_AnthonyMartrano.png"},
-		//~ {1, 1, "resources/Credit_Image/DylanUmble.png"},
-		//~ {1, 1, "resources/Credit_Image/KevinW_credit.png"},
-		//~ {1, 1, "resources/Credit_Image/luke_malchow_bergenthal_1_3_FINAL_last_edge_lord.png"},
-		//~ {1, 1, "resources/Credit_Image/RuthDereje.png"},
-		//~ {1, 1, "resources/Credit_Image/ryan-kuhn.png"},
-		//~ {1, 1, "resources/Credit_Image/ShreeSampath.png"},
-		//~ {1, 1, "resources/Credit_Image/Zane_Credits.png"},
-		//~ {1, 1, "resources/Credit_Image/zhishengXu.png"},
+		{1, 1, "resources/Credit_Image/carolyn_cole.png"},
+		{1, 1, "resources/Credit_Image/Credit_AnthonyMartrano.png"},
+		{1, 1, "resources/Credit_Image/DylanUmble.png"},
+		{1, 1, "resources/Credit_Image/KevinW_credit.png"},
+		{1, 1, "resources/Credit_Image/luke_malchow_bergenthal_1_3_FINAL_last_edge_lord.png"},
+		{1, 1, "resources/Credit_Image/RuthDereje.png"},
+		{1, 1, "resources/Credit_Image/ryan-kuhn.png"},
+		{1, 1, "resources/Credit_Image/ShreeSampath.png"},
+		{1, 1, "resources/Credit_Image/Zane_Credits.png"},
+		{1, 1, "resources/Credit_Image/zhishengXu.png"},
 	};
 	// Iterate over every texture to generate
 	for (auto currentGenerator: textureGenerators)
@@ -180,6 +275,8 @@ void OpenGLRenderer::PopulateTextures()
 			currentGenerator.columns
 		);
 	}
+
+	TabulaRasa();
 }
 void OpenGLRenderer::Close()
 {
@@ -193,7 +290,11 @@ void OpenGLRenderer::Close()
 }
 void OpenGLRenderer::TabulaRasa()
 {
+	// Clear initially
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	// Delete vector
+	// Technically violating best practices
 	for (int i=0; i<renderObjects.size(); i++)
 	{
 		delete renderObjects[i];
@@ -234,7 +335,12 @@ void OpenGLRenderer::Display()
 
 		//~ std::cout << bufferAttributes.textureID << std::endl;
 		// AREN'T SUPPOSED TO HAVE A BUNCH OF VAOS BUT WHATEVER
-		glBindVertexArray(vaoIDs[currentObject->currentBufferID]);
+        #ifdef __APPLE__
+        glBindVertexArrayAPPLE(vaoIDs[currentObject->currentBufferID]);
+        #else
+        glBindVertexArray(vaoIDs[currentObject->currentBufferID]);
+        #endif
+
 		// Which texture to use
 		// (Somewhat crude)
 		glBindTexture(GL_TEXTURE_2D, textureIDs[bufferAttributes.textureID]);
@@ -252,6 +358,12 @@ void OpenGLRenderer::Display()
 
 		// Draw vertices in the buffer
 		glDrawArrays(GL_TRIANGLES, 0, bufferAttributes.numVertices);
+
+        //For testing purpose
+        //std::cout << "a new object" << std::endl;
+        //std::cout << "x: " << currentObject->ctm.w.x << std::endl;
+        //std::cout << "y: " << currentObject->ctm.w.y << std::endl;
+        //std::cout << "z: " << currentObject->ctm.w.z << std::endl;
 	}
 
 	//~ // Get rid of faces in the wrong direction
@@ -286,8 +398,15 @@ GLuint OpenGLRenderer::PopulateDefault2DBuffer(
 	bufferIDs.push_back(currentBuffer);
 	vaoIDs.push_back(currentVao);
 
-	glGenVertexArrays(1, &vaoIDs[currentVao]);
-	glBindVertexArray(vaoIDs[currentVao]);
+    //Apple needs different function calls
+    #ifdef __APPLE__
+    glGenVertexArraysAPPLE(1, &vaoIDs[currentVao]);
+    glBindVertexArrayAPPLE(vaoIDs[currentVao]);
+    #else
+    glGenVertexArrays(1, &vaoIDs[currentVao]);
+    glBindVertexArray(vaoIDs[currentVao]);
+    #endif
+
 
 	// Texture parameters
 	// Basically, repeat if you need to and linear interpolation for texel -> pixel
@@ -442,6 +561,7 @@ void OpenGLRenderer::PopulateDefault2DBuffers(
 	while (currentRow < rows)
 	{
 		//~ std::cout << currentRowCoordinate << std::endl;
+		currentColumn = 0;
 
 		while (currentColumn < columns)
 		{
@@ -482,6 +602,8 @@ void OpenGLRenderer::PopulateDefault2DBuffers(
 		// buffer end (changed at the conclusion)
 		firstBuffer + bufferOffset - 1
 	};
+
+	//~ std::cout << textureName << " " << firstBuffer << " " << firstBuffer + bufferOffset - 1 << std::endl;
 
 	// FREE THE SURFACE
 	SDL_FreeSurface(surface);

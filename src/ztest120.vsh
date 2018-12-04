@@ -9,6 +9,6 @@ uniform mat4 ctm;
 
 void main()
 {
-	texCoord = vTexCoord;
-	gl_Position = ctm * vPosition;
+    texCoord = vTexCoord;
+    gl_Position = ctm * vPosition;
 }

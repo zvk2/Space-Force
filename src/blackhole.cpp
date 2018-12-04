@@ -10,7 +10,18 @@
 #include <cstring>
 
 #define PI 3.14159265
+// NOTE AT THE MOMENT BLACKHOLE JUST KEEPS SCROLLING
+		blackhole::blackhole(Player* main): ply(main)
+		{
+			//~ char blackHoleTexture[] = "resources/imgs/blackhole.png";
 
+			openGL = ply->getRend();
+			playerCam = ply->getPlayerCamLoc();
+			blackholeRect = {0, 0, 300, 300};
+			blackholeCam = {1680, 720/2, 300, 300};
+			blackholeExists = false;
+			bFrames = 0;
+			gravAccel = 1;
 
 		blackhole::blackhole(SDL_Texture* textBlackhole, Player* main): ply(main), gBlackhole(textBlackhole)
         {

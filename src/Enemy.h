@@ -2,11 +2,14 @@
 
 #ifndef ENEMY_H
 #define ENEMY_H
-#include "Player.h"
+#include <iostream>
+#include <cmath>
 #include "INC_SDL.h"
 #include "physics.h"
-#include "Player.h"
 #include "attack.h"
+#include <cmath>
+#include "OpenGLRenderer.hpp"
+#include "Player.h"
 #define MAX_SPEED 50
 
 class Enemy
@@ -14,7 +17,8 @@ class Enemy
 	public:
 
 		//Constructor: takes health, character sheet, and attack value and sets all member vars
-		Enemy(int startingHealth, SDL_Texture* characterImages, int attac, attack* player, char _type);
+		//~ Enemy(OpenGLRenderer *gRenderer, int startingHealth, char* characterImages, int attac, attack* player, char _type);
+		Enemy(OpenGLRenderer *gRenderer, Player* p, int attac, attack* player, char _type, double* tstep);
 
 		//Subract hit points from the enemy
 		void LostHealth(int damage);
@@ -34,20 +38,15 @@ class Enemy
 
 		int GetSpeed();
 
+		Uint32 getNextSpawn();
+
+		void setNextSpawn(Uint32 s);
+
 		//Set the position of the enemy on screen
 		void setPosition(double x, double y);
 
 		//Sets the current velocity of the enemy
 		void setVelocity(double x, double y);
-
-		//Methods that can be called from model class
-		void move(double xdvel, double ydvel, double tstep);
-
-		// Animate jet propulsion
-		void animate(int frames);
-
-		//Check for collision with the player
-		void checkPlayerCollision(class Player* p, double tstep);
 
 		//Return the current x velocity
 		double getxVel();
@@ -62,17 +61,23 @@ class Enemy
 		SDL_Rect getEnemyRect();
 
 		//Get the enemy sprite sheet
-		SDL_Texture* getEnemySheet();
+		//~ SDL_Texture* getEnemySheet();
 
 		//Get a pointer to the enemy cam
 		SDL_Rect* getEnemyCamLoc();
 
 		void ChangeMaxVelocity(double Speed);
-		
+
 		char getType();
+
+		bool Exists();
 
 		//counts how many times an enemy has been hit
 		void checkAttacked();
+
+		void Spawn();
+
+		void Render();
 
 	private:
 
@@ -89,21 +94,40 @@ class Enemy
 		int hitPoints;
 		int speed;
 		double attackPower;
-		
+
+		double emyDelta;
+		double* timestep;
+		int frame;
+		bool exists;
+		bool life;
+		Uint32 nextSpawn;
+
 		//Determine the type of enemy
 		char type;
 
 		attack* plyBlast;
+		Player* ply;
 
 		//Not perm obviously but here as a reminder to store enemy texture here
-		SDL_Texture* enemySheet;
+		//~ const char* faxTexture;
+		//~ const char* faxDeathTexture;
+
 		Physics phys;
 
 		SDL_Rect enemyCam;
 		SDL_Rect enemyRect;
 
+		OpenGLRenderer *openGL;
+		RenderObject *render;
+
 		double xCoord;
 		double yCoord;
+
+		//Check for collision with the player
+		void checkPlayerCollision(double tstep);
+
+		//Methods that can be called from model class
+		void move(double xdvel, double ydvel, double tstep);
 
 		void DecrementHealth(int decAmount);
 
@@ -115,6 +139,6 @@ class Enemy
 
 		void DecrementSpeed(int lostSpeed);
 
-		bool hasCollision(Player* p);
+		bool hasCollision();
 };
 #endif

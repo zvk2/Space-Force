@@ -11,6 +11,8 @@
 // checking for apple, else everyone else
 #ifdef __APPLE__
 #include <SDL2/SDL.h>
+#include <OpenGL/gl.h>
+#include <OpenGL/gl3.h>
 #include <SDL2_image/SDL_image.h>
 #else
 #include <GL/glew.h>
@@ -18,16 +20,18 @@
 #include <SDL_image.h>
 #endif
 
-// OpenGL / glew Headers
-// ONLY TESTED ON LINUX
-#define GL3_PROTOTYPES 1
-
-
 // For type definitions etc.
 #include "matrix.h"
 
 // For getting the shaders
 #include "shader.h"
+
+// OpenGL / glew Headers
+// ONLY TESTED ON LINUX
+#define GL3_PROTOTYPES 1
+
+
+
 
 #ifdef CreateWindow
 #undef CreateWindow
@@ -72,6 +76,9 @@ class RenderObject
 		RenderObject(GLfloat initX, GLfloat initY, GLfloat initZ, BufferAttributes initBufferAttributes);
 		~RenderObject();
 		void ChangeCoordinates(GLfloat newX, GLfloat newY, GLfloat newZ);
+		bool FinalFrame();
+		void IterateFrame();
+		void ForceFrame();
 	// Bad taste to make these public
 	// Also probably better to have this just be a stuct or something?
 	//~ private:
@@ -98,6 +105,9 @@ class RenderObject
 		mat4 ctm;
 		// Index in renderObjects (in OpenGLRenderer)
 		int index;
+
+		// Wait for animations
+		int wait;
 };
 
 // Need to think about how to integrate this class with other entity classes

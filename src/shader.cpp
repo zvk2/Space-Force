@@ -27,7 +27,7 @@ Shader::~Shader()
     glDeleteShader(vShader);
     glDetachShader(program, fShader);
     glDeleteShader(fShader);
- 
+
     glDeleteProgram(program);
 }
 
@@ -46,7 +46,7 @@ const std::string Shader::readShaderSource(const std::string name)
 	while(file.good())
 	{
 		getline(file, line);
-		text.append(line + "\n");	
+		text.append(line + "\n");
 	}
 
 	file.close();
@@ -106,7 +106,7 @@ void Shader::checkLinkError()
 {
     GLint status;
     glGetProgramiv(program, GL_LINK_STATUS, &status);
-    
+
     if (status != GL_TRUE)
     {
         GLint length;
