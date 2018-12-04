@@ -78,6 +78,7 @@ class RenderObject
 		void ChangeCoordinates(GLfloat newX, GLfloat newY, GLfloat newZ);
 		bool FinalFrame();
 		void IterateFrame();
+		void ForceFrame();
 	// Bad taste to make these public
 	// Also probably better to have this just be a stuct or something?
 	//~ private:

@@ -73,6 +73,15 @@ bool RenderObject::FinalFrame()
 	return currentBufferID >= bufferAttributes.bufferIDEnd || currentBufferID < bufferAttributes.bufferIDStart;
 }
 
+// Really just for healthbar, I think
+void RenderObject::ForceFrame()
+{
+	if (!FinalFrame())
+	{
+		currentBufferID += 1;
+	}
+}
+
 void RenderObject::IterateFrame()
 {
 	if (wait <= 9)

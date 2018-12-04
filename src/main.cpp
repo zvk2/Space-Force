@@ -505,7 +505,7 @@ int main(int argc, char* argv[]) {
 				else
 				{
 					//~ healthRect.x += 177;
-					healthBar->IterateFrame();
+					healthBar->ForceFrame();
 				}
 			}
 		}
