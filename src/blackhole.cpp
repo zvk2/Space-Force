@@ -1,5 +1,5 @@
 #include "blackhole.h"
-#include<stdlib.h>
+#include <stdlib.h>
 #include "INC_SDL.h"
 #include "Player.h"
 #include <math.h>
@@ -8,31 +8,27 @@
 #include <vector>
 #include <string>
 #include <cstring>
+#include "OpenGLRenderer.hpp"
 
 #define PI 3.14159265
-// NOTE AT THE MOMENT BLACKHOLE JUST KEEPS SCROLLING
+
+
 		blackhole::blackhole(Player* main): ply(main)
-		{
-			//~ char blackHoleTexture[] = "resources/imgs/blackhole.png";
-
-			openGL = ply->getRend();
-			playerCam = ply->getPlayerCamLoc();
-			blackholeRect = {0, 0, 300, 300};
-			blackholeCam = {1680, 720/2, 300, 300};
-			blackholeExists = false;
-			bFrames = 0;
-			gravAccel = 1;
-
-		blackhole::blackhole(SDL_Texture* textBlackhole, Player* main): ply(main), gBlackhole(textBlackhole)
         {
-            gRenderer = ply->getRend();
+            openGL = ply->getRend();
             playerCam = ply->getPlayerCamLoc();
             blackholeRect = {0, 0, 300, 300};
             blackholeCam = {1680, 720/2, 300, 300};
             blackholeExists = false;
             bFrames = 0;
             gravAccel = 1;
-            
+
+			// There will only be one render object
+			render = new RenderObject(
+				blackholeCam.x, blackholeCam.y, 0, openGL->allBufferAttributes["resources/imgs/blackhole.png"]
+			);
+
+			openGL->AppendRenderObject(render);
         }
 
         bool blackhole::seen()
@@ -43,7 +39,7 @@
         void blackhole::showBlackhole(double xDeltav, double yDeltav, double timestep)
         {
             bFrames++;
-            
+
             if (bFrames / 12 > 5)
             {
                 bFrames = 0;
@@ -56,16 +52,23 @@
                 blackholeCam.y = rand() % (720-300);
                 blackholeCam.x = 1580;
             }
-            
+
             attractPlayer(xDeltav, yDeltav, timestep);
-            SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
+            //~ SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
             blackholeCam.x = blackholeCam.x - 1;
-            
+
             if(blackholeCam.x < -300)
             {
                 blackholeExists = false;
             }
-            
+
+            render->ChangeCoordinates(
+				blackholeCam.x,
+				blackholeCam.y,
+				render->z
+			);
+
+			render->IterateFrame();
         }
 
         void blackhole::attractPlayer(double xDeltav, double yDeltav, double timestep)
@@ -90,7 +93,7 @@
 			double GM = 5000000;
 			double m = 10;
 			double maxSpeed = 70;
-            
+
             if(blackholeCam.x < 1680 && blackholeCam.x > 0)
             {
                 //player to the left
@@ -101,27 +104,27 @@
                     {
                         x1 = abs(bx - px);
                         y1 = abs(by - py);
-                        
+
                         r = sqrt(pow(x1,2) + pow(y1,2)); 	//getting z
-                        
+
                         angleH = acos(x1/r) * 180.0 / PI; 	//getting angle H
-						
+
 						z1 = GM*m/(pow(r,2));
-						
+
 						Fx = cos(angleH) * z1;
 						Fy = sin(angleH) * z1;
-						
+
 						angleN = 90 - angleH; 				//getting angle N
-                        
+
 						z2 = sqrt(GM/r);
-						
+
                         Vx = cos(angleN) * z2;			//getting y2
-                        
+
                         Vy = sin(angleN) * z2;
-                        
+
                         newX = (abs(Fx) + abs(Vx)) / 2;
                         newY = (abs(Fy) + (-Vy)) / 2;
-						
+
 						if(newX > maxSpeed)
 						{
 							newX = maxSpeed;
@@ -130,7 +133,7 @@
 						{
 							newY = maxSpeed;
 						}
-                        					
+
 						std::cout << "r = " << r << std::endl;
 						std::cout << "x1 = " << x1 << std::endl;
 						std::cout << "y1 = " << y1 << std::endl;
@@ -144,7 +147,7 @@
 						std::cout << "newY = " << newY << std::endl;
 						std::cout << "----------" << std::endl;
 
-                        
+
                         //newX = newX + pow(gravAccel, 2);
                         //newY = newY / (newY - 1);
                     }
@@ -153,27 +156,27 @@
                     {
                          x1 = abs(bx - px);
                         y1 = abs(by - py);
-                        
+
                         r = sqrt(pow(x1,2) + pow(y1,2)); 	//getting z
-                        
+
                         angleH = acos(x1/r) * 180.0 / PI; 	//getting angle H
-						
+
 						z1 = GM*m/(pow(r,2));
-						
+
 						Fx = cos(angleH) * z1;
 						Fy = sin(angleH) * z1;
-						
+
 						angleN = 90 - angleH; 				//getting angle N
-                        
+
 						z2 = sqrt(GM/r);
-						
+
                         Vx = cos(angleN) * z2;			//getting y2
-                        
+
                         Vy = sin(angleN) * z2;
-                        
+
                         newX = (abs(Fx) + (-Vx)) / 2;
                         newY = ((-Fy) + (-Vy)) / 2;
-						
+
 						if(newX > maxSpeed)
 						{
 							newX = maxSpeed;
@@ -182,13 +185,13 @@
 						{
 							newY = maxSpeed;
 						}
-                        
+
                         //gravAccel++;
-                        
+
                         //newX = newX + pow(gravAccel, 2);
                         //newY = newY / (newY - 1);
                     }
-                    
+
                 }
                 //player to the right
                 else if(blackholeCam.x + 150 < playerCam->x)
@@ -198,27 +201,27 @@
                     {
                          x1 = abs(bx - px);
                         y1 = abs(by - py);
-                        
+
                         r = sqrt(pow(x1,2) + pow(y1,2)); 	//getting z
-                        
+
                         angleH = acos(x1/r) * 180.0 / PI; 	//getting angle H
-						
+
 						z1 = GM*m/(pow(r,2));
-						
+
 						Fx = cos(angleH) * z1;
 						Fy = sin(angleH) * z1;
-						
+
 						angleN = 90 - angleH; 				//getting angle N
-                        
+
 						z2 = sqrt(GM/r);
-						
+
                         Vx = cos(angleN) * z2;			//getting y2
-                        
+
                         Vy = sin(angleN) * z2;
-                        
+
                         newX = ((-Fx) + abs(Vx)) / 2;
                         newY = (abs(Fy) + abs(Vy)) / 2;
-						
+
 						if(newX > maxSpeed)
 						{
 							newX = maxSpeed;
@@ -227,9 +230,9 @@
 						{
 							newY = maxSpeed;
 						}
-                        
+
                         //gravAccel++;
-                        
+
                         //newX = newX + pow(gravAccel, 2);
                         //newY = newY / (newY - 1);
                     }
@@ -238,27 +241,27 @@
                     {
                         x1 = abs(bx - px);
                         y1 = abs(by - py);
-                        
+
                         r = sqrt(pow(x1,2) + pow(y1,2)); 	//getting z
-                        
+
                         angleH = acos(x1/r) * 180.0 / PI; 	//getting angle H
-						
+
 						z1 = GM*m/(pow(r,2));
-						
+
 						Fx = cos(angleH) * z1;
 						Fy = sin(angleH) * z1;
-						
+
 						angleN = 90 - angleH; 				//getting angle N
-                        
+
 						z2 = sqrt(GM/r);
-						
+
                         Vx = cos(angleN) * z2;			//getting y2
-                        
+
                         Vy = sin(angleN) * z2;
-                        
+
                         newX = ((-Fy) + (-Fx)) / 2;
                         newY = ((-Vy) + abs(Vx)) / 2;
-						
+
 						if(newX > maxSpeed)
 						{
 							newX = maxSpeed;
@@ -267,25 +270,25 @@
 						{
 							newY = maxSpeed;
 						}
-                        
+
                         //gravAccel++;
-                        
+
                         //newX = newX + pow(gravAccel, 2);
                         //newY = newY / (newY - 1);
                     }
-                    
+
                 }
-                
+
                 xDeltav = xDeltav + newX;
                 yDeltav = yDeltav + newY;
-                
+
                 //std::cout << "newX = " << newX << std::endl;
                 //std::cout << "newY = " << newY << std::endl;
 
 
                 ply->move(xDeltav, yDeltav, timestep);
-                
+
             }
-            
-            
+
+
         }
