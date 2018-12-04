@@ -50,6 +50,24 @@ RenderObject::RenderObject(GLfloat initX, GLfloat initY, GLfloat initZ, BufferAt
 	ChangeCoordinates(initX, initY, initZ);
 
 	wait = 0;
+
+	flipped = false;
+}
+RenderObject::RenderObject(GLfloat initX, GLfloat initY, GLfloat initZ, BufferAttributes initBufferAttributes, bool flipped)
+//~ RenderObject::RenderObject(GLfloat initX, GLfloat initY, GLfloat initWidth, GLfloat initHeight, int vertices, GLuint initTextureID, GLuint initBufferID)
+{
+	// I guess I am supposed to use an initializer list, but hey
+	bufferAttributes = initBufferAttributes;
+
+	currentBufferID = bufferAttributes.bufferIDStart;
+
+	//~ ctm = translation_matrix(x, y, 0);
+
+	ChangeCoordinates(initX, initY, initZ);
+
+	wait = 0;
+
+	flipped = true;
 }
 // Destructor
 // EMPTY FOR NOW
@@ -358,7 +376,7 @@ void OpenGLRenderer::Display()
 		glUniform1i(glGetUniformLocation(program, "texture"), 0);
 
 		// Contrived at moment
-		glUniform1i(glGetUniformLocation(program, "flipped"), false);
+		glUniform1i(glGetUniformLocation(program, "flipped"), currentObject->flipped);
 
 		// Draw vertices in the buffer
 		glDrawArrays(GL_TRIANGLES, 0, bufferAttributes.numVertices);

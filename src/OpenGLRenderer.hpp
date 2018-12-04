@@ -74,6 +74,7 @@ class RenderObject
 	public:
 		// Constructor
 		RenderObject(GLfloat initX, GLfloat initY, GLfloat initZ, BufferAttributes initBufferAttributes);
+		RenderObject(GLfloat initX, GLfloat initY, GLfloat initZ, BufferAttributes initBufferAttributes, bool flipped);
 		~RenderObject();
 		void ChangeCoordinates(GLfloat newX, GLfloat newY, GLfloat newZ);
 		bool FinalFrame();
@@ -108,6 +109,8 @@ class RenderObject
 
 		// Wait for animations
 		int wait;
+
+		bool flipped;
 };
 
 // Need to think about how to integrate this class with other entity classes

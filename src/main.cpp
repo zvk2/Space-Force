@@ -305,6 +305,7 @@ int main(int argc, char* argv[]) {
 	if (multiplayer)
 	{
 		ply2.hit.setAttack(&attackRect2);
+		ply2.render->flipped = true;
 	}
 
 	// FAXANDUITIS
