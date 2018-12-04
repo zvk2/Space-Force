@@ -177,6 +177,9 @@ class OpenGLRenderer
 		SDL_GLContext mainContext;
 		// CTM Location
 		GLuint ctmLocation;
+
+		GLuint flippedLocation;
+
 		// The "program" (shaders) used
 		GLuint program;
 

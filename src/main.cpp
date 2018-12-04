@@ -230,7 +230,7 @@ int main(int argc, char* argv[]) {
 	// Music
 	mus = music();
 	mus.init();
-	//~ mus.playMusic();
+	mus.playMusic();
 
 	// OpenGL init
 	OpenGLRenderer openGL = OpenGLRenderer(gWindow);

@@ -185,6 +185,7 @@ OpenGLRenderer::OpenGLRenderer(SDL_Window* window)
 
 	// Transformation matrix
 	ctmLocation = glGetUniformLocation(program, "ctm");
+	flippedLocation = glGetUniformLocation(program, "flipped");
 
 	// Get the textures
 	PopulateTextures();
@@ -355,6 +356,9 @@ void OpenGLRenderer::Display()
 		// TECHNICALLY CAN BE USED TO SWAP TEXTURES IN AN ARRAY
 		// HOWEVER, YOU CAN ALSO JUST CHANGE WHAT TEXTURE IS BOUND
 		glUniform1i(glGetUniformLocation(program, "texture"), 0);
+
+		// Contrived at moment
+		glUniform1i(glGetUniformLocation(program, "flipped"), false);
 
 		// Draw vertices in the buffer
 		glDrawArrays(GL_TRIANGLES, 0, bufferAttributes.numVertices);
