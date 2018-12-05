@@ -19,7 +19,7 @@ ClientInterface::ClientInterface(string ip)
 	try
 	{
 		// Initialize client socket with server address, port number, max message size
-		cs = new ClientSocket(ip, 1234, 512);
+		cs = new ClientSocket("localhost", 1234, 512);
 	}
 	catch (SocketException e)
 	{
