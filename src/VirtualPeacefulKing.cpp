@@ -11,7 +11,7 @@
 //Public methods
 
 
-VirtualPeacefulKing::VirtualPeacefulKing(OpenGLRenderer* gRend, int initialHealth, int attack,int skillCD):hitPoints(initialHealth),attackPower(attack),phys(0,0,300.0,3600.0),xCoord(1280/10),yCoord(720/2),cd(skillCD)
+VirtualPeacefulKing::VirtualPeacefulKing(OpenGLRenderer* gRend, int initialHealth, int attack,int skillCD, Player* main):hitPoints(initialHealth),attackPower(attack),phys(0,0,300.0,3600.0),xCoord(1280/10),yCoord(720/2),cd(skillCD), ply(main)
 {
 	openGL = gRend;
 
@@ -22,7 +22,7 @@ VirtualPeacefulKing::VirtualPeacefulKing(OpenGLRenderer* gRend, int initialHealt
 	//~ kingTexture = initTexture.c_str();
 
 	render = new RenderObject(
-		kingCam.x, kingCam.y, 0, openGL->allBufferAttributes["resources/imgs/King.png"]
+		kingCam.x, kingCam.y, 0.5, openGL->allBufferAttributes["resources/imgs/King.png"]
 	);
 
 	openGL->AppendRenderObject(render);

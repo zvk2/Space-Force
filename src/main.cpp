@@ -314,13 +314,14 @@ int main(int argc, char* argv[]) {
 
 	// THE KING
 	//Our king appears!!!!!
-	VirtualPeacefulKing king(&openGL, 100, 2, 4);
+	
+	ply.setAttackColSound(&mus);
+	VirtualPeacefulKing king(&openGL, 100, 2, 4, &ply);
 	double kingDelta = 1;
 
 	// Guess this should be in the class file?
 	king.setPosition(1100, 0);
     king.setVelocity(0, 50);
-	ply.setAttackColSound(&mus);
 	// HYPERSTAR
 	HyperStar stars(&ply, &mus);
 
