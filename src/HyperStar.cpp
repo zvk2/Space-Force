@@ -72,7 +72,7 @@
 		end->next = nullptr;
 
 		end->render = new RenderObject(
-			end->x, end->y, 1, openGL->allBufferAttributes["resources/imgs/star4.png"]
+			end->colTest.x, end->colTest.y, 1, openGL->allBufferAttributes["resources/imgs/star4.png"]
 		);
 		openGL->AppendRenderObject(end->render);
 	}
@@ -147,13 +147,12 @@
 				{
 					curr->y = curr->y - newY;
 				}
-
-				curr->render->ChangeCoordinates(
-					curr->x, curr->y, curr->render->z
-				);
+		
 
 				curr->colTest.x = (int)curr->x;
 				curr->colTest.y = (int)curr->y;
+				curr->render->ChangeCoordinates(
+					curr->colTest.x, curr->colTest.y, curr->render->z);
 				curr = curr->next;
 			}
 		}
