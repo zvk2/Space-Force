@@ -249,7 +249,7 @@ int main(int argc, char* argv[]) {
     	myfile.close();
     }
 
-    if(ip != "2"){
+    if(ip != "localhost"){
 		imPlayer2 = true;
     }
 	client = new ClientInterface(ip);
