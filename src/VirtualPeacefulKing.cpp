@@ -126,6 +126,11 @@ void VirtualPeacefulKing::move(double step,bool showTime)
 		kingCam.y,
 		render->z
     );
+	int gotPlayer = missile.hitIntersect(plyCam);
+	if(gotPlayer > 0)
+	{
+		ply->damage(2);
+	}
 	if(SDL_GetTicks()%1000 < 50)
 	{
 		missile.addAttack(kingCam.x,kingCam.y+(kingCam.h)/3,2);

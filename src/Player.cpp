@@ -89,9 +89,10 @@ void Player::damage(int hits)//other objects effect on health
 {
 	if (!invincible)
 	{
-		healthBar->ForceFrame();
+		for(int i = 0; i <hits; i++)
+			healthBar->ForceFrame();
 		invincible = true;
-		iframe = SDL_GetTicks() + 3000;
+		iframe = SDL_GetTicks() + 1500;
 	}
 }
 //attack* Player::attackHit()
