@@ -19,24 +19,31 @@ class Multiplayer
 
 public:
 
-	Multiplayer();
+	Multiplayer(Player* p1, Player* p2, attack* atk1, attack* atk2);
 
-	void FlipPlayer2();
+	void PlayerCollision();
 
-	void DamagePlayer1();
+	void CheckPlayerCollision(Player* player2, double tstep);
 
-	void DamagePlayer2();
+	void TotalDamagePlayer1();
 
-	void AttackCollision1();
+	void TotalDamagePlayer2();
 
 	void AttackCollision1();
 
 	void AttackCollision2();
 
+	void DecrementHealthPlayer1(int decAmount1)
+
+	void DecrementHealthPlayer2(int decAmount2);
+
     
 
 private:
    
+   SDL_Rect playerCam1;
+   SDL_Rect playerCam2;
+
 
 };
 #endif

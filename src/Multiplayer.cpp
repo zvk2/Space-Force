@@ -29,7 +29,7 @@ void Multiplayer::PlayerCollision()
 	return false;	
 }
 
-bool Player::CheckPlayerCollision(Player* player2, double tstep)
+bool Multiplayer::CheckPlayerCollision(Player* player2, double tstep)
 {
 	SDL_Rect p2Rect = player2->getPlayerCam();
 
@@ -92,7 +92,7 @@ bool Player::CheckPlayerCollision(Player* player2, double tstep)
 	return false;
 }
 
-int Multiplayer::TotalDamagePlayer1()
+void Multiplayer::TotalDamagePlayer1()
 {
 	if(hitPoints1 > 0)
 	{
@@ -104,7 +104,7 @@ int Multiplayer::TotalDamagePlayer1()
 	}
 }
 
-int Multiplayer::TotalDamagePlayer2();
+void Multiplayer::TotalDamagePlayer2();
 {
 	if(hitPoints2 > 0)
 	{
@@ -116,14 +116,14 @@ int Multiplayer::TotalDamagePlayer2();
 	}
 }
 
-bool Mulitplayer::AttackCollision1()
+void Mulitplayer::AttackCollision1()
 {
 	//referring to enemy class
 	int hits = plyBlast1->hitIntersect(&playerCam2);
 	DecrementHealthPlayer2(hits*ply2->GetAttack());
 }
 
-bool Mulitplayer::AttackCollision2()
+void Mulitplayer::AttackCollision2()
 {
 	int hits = plyBlast2->hitIntersect(&playerCam1);
 	DecrementHealthPlayer1(hits*ply1->GetAttack());
