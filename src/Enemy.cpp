@@ -160,32 +160,21 @@ void Enemy::Spawn()
 {
 	SDL_Rect pRect = ply->getPlayerCam();
 
-	setPosition(640 + (rand() % 554), 0);
+	setPosition(1280-enemyCam.w, (rand() % (721-enemyCam.h)));
 
 	while (SDL_HasIntersection(&pRect, &enemyCam))
 	{
-		setPosition(640 + (rand() % 554), 0);
+		setPosition(1280-enemyCam.w, (rand() % 634));
 	}
 
-	setVelocity(0, 50);
-	hitPoints = 10;
+	setVelocity(-5, 0);
+	hitPoints = 5;
 	exists = true;
 	life = true;
 }
 
 void Enemy::Render()
 {
-	if (enemyCam.y + enemyCam.h == SCREEN_HEIGHT)
-	{
-		emyDelta = -1;
-		setVelocity(0, -10);
-	}
-	if (enemyCam.y == 0)
-	{
-		emyDelta = 1;
-		setVelocity(0, 10);
-	}
-
 	if (hitPoints > 0)
 	{
 		// Animate jet propulsion
@@ -198,7 +187,7 @@ void Enemy::Render()
 		enemyRect.x = ((frame / 10) % 4) * enemyRect.w;
 		frame++;
 
-		move(0, emyDelta, *timestep);
+		move(-1, 0, *timestep);
 		checkPlayerCollision(*timestep);
 
 		//~ SDL_RenderCopy(gRenderer, enemySheet, &enemyRect, &enemyCam);
@@ -224,7 +213,6 @@ void Enemy::Render()
 		}
 		else
 		{
-
 			move(0, 0, *timestep);
 			checkPlayerCollision(*timestep);
 
@@ -336,13 +324,23 @@ void Enemy::IncrementHealth(int incAmount)
 void Enemy::CheckBoundaries()
 {
 	// Boundary checks against the window
-	if (xCoord < 0)
-		xCoord = 0;
-	if (xCoord + enemyCam.w > SCREEN_WIDTH)
+	if (xCoord+enemyCam.w <= 0)
+	{	
+		life = false;
+		exists = false;
+		frame = 0;
+		nextSpawn = 0;
+		setPosition(1500, 0);
+
+		// Reset to life
+		render->bufferAttributes = openGL->allBufferAttributes["resources/imgs/faxanaduitis.png"];
+		render->currentBufferID = render->bufferAttributes.bufferIDStart;
+	}
+	else if (xCoord + enemyCam.w > SCREEN_WIDTH)
 		xCoord = SCREEN_WIDTH - enemyCam.w;
 	if (yCoord < 0)
 		yCoord = 0;
-	if (yCoord + enemyCam.h > SCREEN_HEIGHT)
+	else if (yCoord + enemyCam.h > SCREEN_HEIGHT)
 		yCoord = SCREEN_HEIGHT - enemyCam.h;
 
 	render->ChangeCoordinates(

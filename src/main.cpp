@@ -482,6 +482,7 @@ int main(int argc, char* argv[]) {
 				//SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
 				//bFrames = 0;
 				//blackhole vacuum(gRenderer,gBlackhole,&blackholeRect,blackholeCam);
+        
 				blackholeHit = enemyBlackhole.showBlackhole(xDeltav, yDeltav, timestep);
 				if(blackholeHit)
 				{
