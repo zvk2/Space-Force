@@ -16,8 +16,15 @@ Magnetar::Magnetar(Player* main):ply(main)
 	render = new RenderObject(
 		camBox.x, camBox.y, 0.5, openGL->allBufferAttributes["resources/imgs/Magnetars.png"]
 	);
+	
+	textH = 78;
+	textW = 571;
+	textBox = {0,0,textW,textH};
+	textScreen = {(1280/2)-textW/2,720+textH,textW,textH};
+	textRender = new RenderObject(textScreen.x, textScreen.y,1,openGL->allBufferAttributes["resources/imgs/Mag_Font2.png"]);
 
 	openGL->AppendRenderObject(render);
+	openGL->AppendRenderObject(textRender);
 }
 
 void Magnetar::Render()
@@ -57,6 +64,20 @@ void Magnetar::Render()
 		ply->ChangeMove(-ACCEL);
 	}
 	camBox.x = camBox.x - 1;
+	if(inter && ACCEL > 0)
+	{
+		textRender->ChangeCoordinates(
+		textScreen.x,
+		0,
+		textRender->z);
+	}
+	else if(!inter && ACCEL < 0)
+	{
+		textRender->ChangeCoordinates(
+		textScreen.x,
+		textScreen.y,
+		textRender->z);
+	}
 
 	//Used to determine how long to call Magnetar for
 	if(camBox.x + SCREEN_WIDTH > 0)

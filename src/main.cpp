@@ -3,6 +3,8 @@
 #include <vector>
 #include <string>
 #include <cstring>
+#include <ctime>
+#include <cstdlib>
 #include "INC_SDL.h"
 #include "Magnetar.h"
 #include "AlcoholCloud.h"
@@ -17,6 +19,7 @@
 #include "music.h"
 #include "Shield.h"
 #include "VirtualPeacefulKing.h"
+#include "GameOver.h"
 
 #include "OpenGLRenderer.hpp"
 
@@ -35,6 +38,14 @@ const int TILE_SIZE = 100;
 
 // Constant for acceleration
 //const double ACCEL = 3600.0;
+
+//Boolean value to control when the boss got rendered
+bool showTime = false;
+bool bossOn = false;
+//The variables that will be used by timer
+double timePassed = 0.0;
+double timeLimit = 4.0;//Subjust to be changed
+
 
 // Parent folder for credit images
 // Not const due to contrivance (can pass immediately if not const)
@@ -95,7 +106,6 @@ bool init()
 		std::cout << "SDL_image could not initialize! SDL_image Error: " << IMG_GetError() << std::endl;
 		return false;
 	}
-	client = new ClientInterface();
 
 	return true;
 }
@@ -142,7 +152,7 @@ int playCredits(OpenGLRenderer *openGL)
 	Uint32 startTime = SDL_GetTicks();
 	double timeDelta = 0;
 
-	std::cout << creditNames[index].c_str() << std::endl;
+	//std::cout << creditNames[index].c_str() << std::endl;
 	RenderObject *currentCreditImage = new RenderObject(
 		0, 0, 1, openGL->allBufferAttributes[creditNames[index].c_str()]
 	);
@@ -191,7 +201,7 @@ int playCredits(OpenGLRenderer *openGL)
 			openGL->RemoveRenderObject(currentCreditImage->index);
 
 			// Get new
-			std::cout << currentCreditName << std::endl;
+			//std::cout << currentCreditName << std::endl;
 			currentCreditImage = new RenderObject(
 				0, 0, 1, openGL->allBufferAttributes[currentCreditName]
 			);
@@ -219,6 +229,24 @@ int main(int argc, char* argv[]) {
 	// Multiplayer stuff
 	bool multiplayer = false;
 	int connected = 0;
+	bool imPlayer2 = false;
+	printf("%d",argc);
+	
+	string ip;
+	std::ifstream myfile ("config.txt");
+	if (myfile.is_open())
+	{
+		while ( getline (myfile,ip) )
+		{
+			//cout << line << '\n';
+		}
+    	myfile.close();
+    }
+
+    if(ip != "localhost"){
+		imPlayer2 = true;
+    }
+	client = new ClientInterface(ip);
 
 	if (!init())
 	{
@@ -254,7 +282,7 @@ int main(int argc, char* argv[]) {
 		if(selection == 3){
 			multiplayer = true;
 		}
-		cout << "SELECTION " << selection << endl;
+		//cout << "SELECTION " << selection << endl;
 	}
 
 	// Now that we are ready to start the game, clean the openGLRenderer
@@ -321,12 +349,14 @@ int main(int argc, char* argv[]) {
 
 	// Guess this should be in the class file?
 	king.setPosition(1280-288, 0);
+
     king.setVelocity(0, 50);
 	// HYPERSTAR
 	HyperStar stars(&ply, &mus);
 
 	// BLACKHOLE
 	blackhole enemyBlackhole(&ply);
+	bool blackholeHit = false;
 
 	// MAGNETAR
 	Magnetar mag(&ply);
@@ -353,14 +383,21 @@ int main(int argc, char* argv[]) {
 	// LOOP STUFF
 	SDL_Event e;
 	bool gameOn = true;
+    bool gameOver = false;
 	bool up = true;
 	bool credits = true;
+	bool attacked = false;
 
+    //Set up the timer
+    clock_t startTimeForBoss = clock();
+    
 	while (gameOn)
 	{
-		if(selection == 3 && !connected) {
+		if(multiplayer && !connected) {
 			connected = client->Connect();
 		}
+        
+        
 
 		while(SDL_PollEvent(&e))
 		{
@@ -423,14 +460,21 @@ int main(int argc, char* argv[]) {
 		moveLasttime = SDL_GetTicks();
 
 		// ANIMATE THE PLAYER(S)
-		ply.animate(frames);
-		if (connected){
+		if(!imPlayer2){
+			ply.animate(frames);
+			if (connected){
+				ply2.animate(frames);
+			}
+		}
+		else{
 			ply2.animate(frames);
+			if (connected){
+				ply.animate(frames);
+			}
 		}
 
 		// Animate king (test)
 		//boundary check for king
-
 
 		king.animate(frames);
 
@@ -450,7 +494,7 @@ int main(int argc, char* argv[]) {
 		if(currTime>=6000)
 		{
 			//std::cout << currTime % 3000 << std::endl;
-			if((currTime % 10000 <= 50 && !mag.Seen()) ||mag.Seen())
+			if((currTime % 11000 <= 50 && !mag.Seen()) ||mag.Seen())
 			{
 				mag.Render();
 			}
@@ -466,17 +510,32 @@ int main(int argc, char* argv[]) {
 		if(currTime >= 5000)
 		{
 			//int bFrames;
-			if((currTime % 5000 < 50 && !enemyBlackhole.seen()) || enemyBlackhole.seen())
+			if((currTime % 15000 < 50 && !enemyBlackhole.seen()) || enemyBlackhole.seen())
 			{
 				//SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
 				//bFrames = 0;
 				//blackhole vacuum(gRenderer,gBlackhole,&blackholeRect,blackholeCam);
-				enemyBlackhole.showBlackhole(xDeltav, yDeltav, timestep);
+        
+				blackholeHit = enemyBlackhole.showBlackhole(xDeltav, yDeltav, timestep);
+				if(blackholeHit)
+				{
+					gameOn = false;
+					gameOver = true;
+				}
 			}
 		}
 
+		if(!imPlayer2){
+			ply.move(xDeltav, yDeltav, timestep);
+		}
+		else{
+			ply2.move(xDeltav, yDeltav, timestep);
+		}
 		ply.move(xDeltav, yDeltav, timestep);
 		ply.checkInvincibility(moveLasttime);
+
+
+
         
         
         
@@ -490,8 +549,7 @@ int main(int argc, char* argv[]) {
             ply.LostHealth(1);
             ply.damage(1);
         }
-		
-		
+
 		if (emy.Exists())
 		{
 			bool collision = ply.checkEnemyCollision(&emy, timestep);
@@ -522,7 +580,7 @@ int main(int argc, char* argv[]) {
 		{
 			//~ return playCredits();
 			gameOn = false;
-			credits = true;
+			gameOver = true;
 		}
 
 		king.move(timestep);
@@ -534,28 +592,57 @@ int main(int argc, char* argv[]) {
 			//Minor enemies should be destroyed in event of collision
 		}
 		*/
-		pCam = ply.getPlayerCam();
+		int sendAttack = 0;
+		if(keyState[SDL_SCANCODE_SPACE] && up == true){
+			sendAttack = 1;
+		}
 
 		if(connected){
-			transfer = client->Communicate(pCam);
+			if(imPlayer2){
+				pCam2 = ply2.getPlayerCam();
+				transfer = client->Communicate(pCam2, sendAttack);
+				pCam.x = transfer.x;
+				pCam.y = transfer.y;
+				attacked = transfer.w;
+				ply.render->ChangeCoordinates(pCam.x, pCam.y, ply.render->z);
+			}
+			else{
+				pCam = ply.getPlayerCam();
+				transfer = client->Communicate(pCam, sendAttack);
+				pCam2.x = transfer.x;
+				pCam2.y = transfer.y;
+				attacked = transfer.w;
+				ply2.render->ChangeCoordinates(pCam2.x, pCam2.y, ply2.render->z);
+			}
 		}
+
 		pCam2.x = transfer.x;
 		pCam2.y = transfer.y;
 
-
 		//attack button
-
 		if(keyState[SDL_SCANCODE_SPACE] && up == true)
 		{
 			up = false;
+
 			ply.hit.addAttack(pCam.x + 240, pCam.y + 51/2,1);
 
 			//play fire sound effect
 			mus.fireSound();
 		}
 		//lets the attack move across the screen
-		ply.hit.renderAttack(timestep);
+		if(attacked){
+			if(!imPlayer2){
+				ply2.hit.addAttack(pCam2.x, pCam2.y + 51/2);
+			}
+			else{
+				ply.hit.addAttack(pCam.x, pCam.y + 51/2);
+			}
+		}
 
+		ply.hit.renderAttack(timestep, 0);
+		ply.hit.hitIntersect(&pCam2);
+		ply2.hit.renderAttack(timestep, 1);
+		ply2.hit.hitIntersect(&pCam);
 		protect.Render();
 
 		//~ ALCOHOL CLOUD STUFF
@@ -577,9 +664,9 @@ int main(int argc, char* argv[]) {
 		if (healthBar->currentBufferID == healthBar->bufferAttributes.bufferIDEnd)
 		{
 			gameOn = false;
-			credits = true;
+			gameOver = true;
 		}
-		
+
 		// MODIFY STARS
 		stars.Render(timestep);
 
@@ -613,7 +700,23 @@ int main(int argc, char* argv[]) {
 	//~ {
 		//~ delete ply2.render;
 	//~ }
-
+    if (gameOver)
+	{	
+		openGL.TabulaRasa();
+		GameOver screen = GameOver(&openGL);
+		int selection = screen.runScreen();
+		if (selection == 0 || selection == 2)
+		{
+			openGL.Close();
+			close();
+			return 0;
+		}
+		if (selection == 1)
+		{
+			playCredits(&openGL);
+			selection = screen.runScreen();	
+		}
+	}
 	if (credits)
 	{
 		playCredits(&openGL);

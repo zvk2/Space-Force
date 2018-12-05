@@ -40,12 +40,13 @@ public:
     void animate(int frames);
 
     //set the position of the king
-    void setPosition(double x, double y);
+    void setPosition(double x, double y,bool showTime);
 
     //Set the moving speed of the king
     void setVelocity(double x, double y);
 
     //a method which can be called from model class
+
     void move(double step);
 
     //return x position
