@@ -396,6 +396,8 @@ int main(int argc, char* argv[]) {
 	bool up = true;
 	bool credits = false;
 	bool attacked = false;
+	bool dead = false;
+	bool god = dead;
     //Set up the timer
     clock_t startTimeForBoss = clock();
     int player2DeadCount = 0;
@@ -425,6 +427,11 @@ int main(int argc, char* argv[]) {
 				if (e.key.keysym.sym == SDLK_q)
 				{
 					gameOn = false;
+				}
+				if (e.key.keysym.sym == SDLK_g)
+				{
+					// toggle god mode
+					god = !god;
 				}
 			}
 			if (up == false && e.type == SDL_KEYUP && e.key.repeat == 0)
@@ -538,7 +545,7 @@ int main(int argc, char* argv[]) {
 				//blackhole vacuum(gRenderer,gBlackhole,&blackholeRect,blackholeCam);
 
 				blackholeHit = enemyBlackhole.showBlackhole(xDeltav, yDeltav, timestep);
-				if(blackholeHit)
+				if(blackholeHit && !god)
 				{
 					gameOn = false;
 					gameOver = true;
@@ -591,7 +598,7 @@ int main(int argc, char* argv[]) {
 		}
 
 		//~ if(healthRect.x >= 1598)//will now play credits when health is gone
-		if (healthBar->currentBufferID == healthBar->bufferAttributes.bufferIDEnd)
+		if (healthBar->currentBufferID == healthBar->bufferAttributes.bufferIDEnd && !god)
 		{
 			//~ return playCredits();
 			gameOn = false;
@@ -696,7 +703,7 @@ int main(int argc, char* argv[]) {
 		 	ac.Render();
 		}
 
-		if (healthBar->currentBufferID == healthBar->bufferAttributes.bufferIDEnd)
+		if (healthBar->currentBufferID == healthBar->bufferAttributes.bufferIDEnd && !god)
 		{
 			gameOn = false;
 			gameOver = true;
