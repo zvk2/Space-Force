@@ -621,9 +621,13 @@ int main(int argc, char* argv[]) {
 		}
 
 		ply.hit.renderAttack(timestep, 0);
-		ply.hit.hitIntersect(&pCam2);
+		if(imPlayer2){
+			ply.hit.hitIntersect(&pCam2);
+		}
 		ply2.hit.renderAttack(timestep, 1);
-		ply2.hit.hitIntersect(&pCam);
+		if(!imPlayer2){
+			ply2.hit.hitIntersect(&pCam);
+		}
 		protect.Render();
 
 		//~ ALCOHOL CLOUD STUFF
