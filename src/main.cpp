@@ -326,6 +326,7 @@ int main(int argc, char* argv[]) {
 
 	// BLACKHOLE
 	blackhole enemyBlackhole(&ply);
+	bool blackholeHit = false;
 
 	// MAGNETAR
 	Magnetar mag(&ply);
@@ -481,12 +482,19 @@ int main(int argc, char* argv[]) {
 				//SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
 				//bFrames = 0;
 				//blackhole vacuum(gRenderer,gBlackhole,&blackholeRect,blackholeCam);
-				//enemyBlackhole.showBlackhole(xDeltav, yDeltav, timestep);
+        
+				blackholeHit = enemyBlackhole.showBlackhole(xDeltav, yDeltav, timestep);
+				if(blackholeHit)
+				{
+					gameOn = false;
+					credits = true;
+				}
 			}
 		}
 
 		ply.move(xDeltav, yDeltav, timestep);
-
+		ply.checkInvincibility(moveLasttime);
+		
 		if (emy.Exists())
 		{
 			bool collision = ply.checkEnemyCollision(&emy, timestep);
@@ -495,19 +503,8 @@ int main(int argc, char* argv[]) {
 
 			if (collision && emy.GetHealth() > 0)
 			{
-				//ply.LostHealth(1);
-				//~ if (healthRect.x == 1770)
-				if (healthBar->currentBufferID == healthBar->bufferAttributes.bufferIDEnd)
-				{
-					//~ return playCredits();
-					gameOn = false;
-					credits = true;
-				}
-				else
-				{
-					//~ healthRect.x += 177;
-					healthBar->ForceFrame();
-				}
+				ply.LostHealth(1);
+				ply.damage(1);
 			}
 		}
 		else
@@ -581,6 +578,12 @@ int main(int argc, char* argv[]) {
 		 	ac.Render();
 		}
 
+		if (healthBar->currentBufferID == healthBar->bufferAttributes.bufferIDEnd)
+		{
+			gameOn = false;
+			credits = true;
+		}
+		
 		// MODIFY STARS
 		stars.Render(timestep);
 

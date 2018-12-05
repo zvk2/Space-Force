@@ -26,6 +26,9 @@
 // For getting the shaders
 #include "shader.h"
 
+// For the sphere and the cube
+#include "shapes.h"
+
 // OpenGL / glew Headers
 // ONLY TESTED ON LINUX
 #define GL3_PROTOTYPES 1

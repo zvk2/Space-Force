@@ -114,6 +114,7 @@
 				//then checks circle
 				if(checkCirCol(curr->colTest))
 				{
+					ply->LostHealth(1);
 					ply->damage(1);
 					curr->hitPly = true;//hits player only once
 				}

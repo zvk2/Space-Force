@@ -236,6 +236,8 @@ void OpenGLRenderer::PopulateTextures()
 		{1, 1, "resources/imgs/space_2_background.png"},
 		{1, 1, "resources/imgs/attack.png"},
 		{1, 6, "resources/imgs/blackhole.png"},
+		{1, 1, "resources/imgs/Mag_Font2.png"},
+		{1, 1, "resources/imgs/Shield_FontB.png"},
 		// TODO REVISE
 		{1, 1, "resources/imgs/chatter_box.png"},
 		{1, 4, "resources/imgs/faxanaduitis.png"},
