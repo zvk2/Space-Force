@@ -133,7 +133,7 @@
 						{
 							newY = maxSpeed;
 						}
-
+/*
 						std::cout << "r = " << r << std::endl;
 						std::cout << "x1 = " << x1 << std::endl;
 						std::cout << "y1 = " << y1 << std::endl;
@@ -146,7 +146,7 @@
 						std::cout << "newX = " << newX << std::endl;
 						std::cout << "newY = " << newY << std::endl;
 						std::cout << "----------" << std::endl;
-
+*/
 
                         //newX = newX + pow(gravAccel, 2);
                         //newY = newY / (newY - 1);
