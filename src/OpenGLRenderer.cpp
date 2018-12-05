@@ -301,10 +301,6 @@ void OpenGLRenderer::PopulateTextures()
 		);
 	}
 
-	// START CHATTER BOX
-
-	// END CHATTER BOX
-
 	// START HARBINGER
 
 	// Get texture
@@ -482,6 +478,171 @@ void OpenGLRenderer::PopulateTextures()
 
 	SDL_FreeSurface(surface);
 	// END HARBINGER
+
+	// START CHATTER BOX
+
+	// Get texture
+	currentTexture = textureIDs.size();
+	textureIDs.push_back(currentTexture);
+
+	// Get a cstyle string for loading the image
+	//~ char textureName[] = fileName;
+
+	// Debug output the name of the texture (make sure stuff isn't broken)
+	//~ std::cout << textureName << std::endl;
+
+	// Load the image as a surface (don't need a texture, can be surface for the pixel data)
+	surface = IMG_Load("resources/imgs/chatter_box.png");
+
+	// If something bad happened
+	if (surface == nullptr)
+	{
+		std::cout << "Unable to load image " << "chatter box!" << "! SDL Error: " << SDL_GetError() << std::endl;
+	}
+
+	// Indicate we want to make a new texture
+	glGenTextures(1, &textureIDs[currentTexture]);
+	// Indicate where this new texture will be bound
+	glBindTexture(GL_TEXTURE_2D, textureIDs[currentTexture]);
+
+	// Default to RGB
+	mode = GL_RGB;
+
+	// Otherwise account for alpha channel (we will probably usually have alpha)
+	if(surface->format->BytesPerPixel == 4) {
+		mode = GL_RGBA;
+	}
+
+	width = surface->w;
+	height = surface->h;
+
+	// Slam in the texture
+	glTexImage2D(
+		// Target: Here we just say to make it a 2D texture (there are other complicated things for like cubes and stuff)
+		GL_TEXTURE_2D,
+		// Level of detail (basically for mipmapping an image (shrinking it)
+		// 0 here means don't mipmap to reduce it (ie, the base image)
+		0,
+		// Internal format: how the bytes represent the colors
+		mode,
+		// Width
+		surface->w,
+		// Height
+		surface->h,
+		// The width of the border? Apparently this should *always* be 0
+		0,
+		// The format for the texels ("3D" texture pixels)
+		mode,
+		// How exactly the texels should be passed to OpenGL
+		GL_UNSIGNED_BYTE,
+		// The pixels data itself, we rip it from the surface
+		surface->pixels
+	);
+
+	//~ int currentTexture = textureIDs.size();
+	currentBuffer = bufferIDs.size();
+	currentVao = vaoIDs.size();
+	//~ textureIDs.push_back(currentTexture);
+	bufferIDs.push_back(currentBuffer);
+	vaoIDs.push_back(currentVao);
+
+    //Apple needs different function calls
+    #ifdef __APPLE__
+    glGenVertexArraysAPPLE(1, &vaoIDs[currentVao]);
+    glBindVertexArrayAPPLE(vaoIDs[currentVao]);
+    #else
+    glGenVertexArrays(1, &vaoIDs[currentVao]);
+    glBindVertexArray(vaoIDs[currentVao]);
+    #endif
+
+
+	// Texture parameters
+	// Basically, repeat if you need to and linear interpolation for texel -> pixel
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	// Contrived for six rectangle
+	numVertices = 36;
+	verticesSize = numVertices * sizeof(vec4);
+
+	vec4 cubeVertices[36];
+	vec2 cubeTexCoords[36];
+
+	GLfloat leftX = -1;
+	GLfloat rightX = CanonicalCoordinatesFromPixels(250, SCREEN_WIDTH);
+	GLfloat topY = 1;
+	GLfloat bottomY = -CanonicalCoordinatesFromPixels(250, SCREEN_HEIGHT);
+
+	vec4 initialCubeVertices[8] =
+		{{leftX, bottomY,  0.2, 1.0},	// front bottom left
+		 {leftX,  topY,  0.2, 1.0},	// front top left
+		 { rightX,  topY,  0.2, 1.0},	// front top right
+		 { rightX, bottomY,  0.2, 1.0},	// front bottom right
+		 {leftX, bottomY, -0.2, 1.0},	// back bottom left
+		 {leftX,  topY, -0.2, 1.0},	// back top left
+		 { rightX,  topY, -0.2, 1.0},	// back top right
+		 { rightX, bottomY, -0.2, 1.0}};	// back bottom left
+
+	int refs[36] = {1,0,3,1,3,2, 2,3,7,2,7,6, 3,0,4,3,4,7, 6,5,1,6,1,2, 4,5,6,4,6,7, 5,4,0,5,0,1};	// Order of vertices
+
+	//~ {texLeft, texTop},
+	//~ {texLeft, texBottom},
+	//~ {texRight, texBottom},
+	//~ {texLeft, texTop},
+	//~ {texRight, texBottom},
+	//~ {texRight, texTop},
+
+    vec2 texCoordRefs[6] = {{0.0, 0.0}, {0.0, 1.0}, {1.0, 1.0}, {0.0, 0.0}, {1.0, 1.0}, {1.0, 0.0}};
+
+	int vertexIndex = 0;
+    for(int i = 0; i < 36; i++)
+    {
+		cubeVertices[vertexIndex] = initialCubeVertices[refs[i]];
+		cubeTexCoords[vertexIndex] = texCoordRefs[i % 6];
+		vertexIndex++;
+    }
+
+	// Describes how we will be sending data out to be rendered
+	glGenBuffers(1, &bufferIDs[currentBuffer]);
+	glBindBuffer(GL_ARRAY_BUFFER, bufferIDs[currentBuffer]);
+	// Full buffer
+	glBufferData(GL_ARRAY_BUFFER, verticesSize + sizeof(cubeTexCoords), NULL, GL_STATIC_DRAW);
+	// Vertices
+	glBufferSubData(GL_ARRAY_BUFFER, 0, verticesSize, cubeVertices);
+	// Texture stuff
+	glBufferSubData(GL_ARRAY_BUFFER, verticesSize, sizeof(cubeTexCoords), cubeTexCoords);
+
+	// Info for position (vec4 at the moment)
+	vPosition = glGetAttribLocation(program, "vPosition");
+	glEnableVertexAttribArray(vPosition);
+	glVertexAttribPointer(vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+
+	// Info for the texture (vec2 at the moment)
+	vTexCoord = glGetAttribLocation(program, "vTexCoord");
+	glEnableVertexAttribArray(vTexCoord);
+	glVertexAttribPointer(vTexCoord, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid *) verticesSize);
+
+	allBufferAttributes["chatter_box"] = {
+		// Width
+		(GLfloat)surface->w,
+		// Height
+		(GLfloat)surface->h,
+		// verts
+		// contrived for now to 2d (3d will be individually defined, methinks)
+		36,
+		// texture
+		(GLuint)currentTexture,
+		// buffer start
+		(GLuint)currentBuffer,
+		// buffer end
+		(GLuint)currentBuffer
+	};
+
+	SDL_FreeSurface(surface);
+
+	// END CHATTER BOX
 
 	// May be causing problems
 	//~ TabulaRasa();

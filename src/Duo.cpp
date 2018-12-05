@@ -26,7 +26,7 @@ Duo::Duo(OpenGLRenderer *gRenderer, Player* p):
 	openGL->AppendRenderObject(renderHarbinger);
 
 	currentRot = 0;
-	//~ GetNewLocation();
+	GetNewLocation();
 }
 
 void Duo::Move()
@@ -57,11 +57,30 @@ void Duo::Move()
 	);
 
 	renderChatterBox->ChangeCoordinates(
-		miasmaRect.x,
-		miasmaRect.y,
-		renderChatterBox->z
+		SCREEN_WIDTH / 2 - 125,
+		SCREEN_HEIGHT / 2 - 125,
+		0
 	);
 
+	rot = m_mult(y_rot_matrix(currentRot), z_rot_matrix(currentRot));
+	rot.x.x *= 0.25;
+	rot.y.y *= 0.25;
+	rot.z.z *= 0.25;
+	rot = m_mult(x_rot_matrix(currentRot), rot);
+	rot = m_mult(renderChatterBox->ctm, rot);
+
+	renderChatterBox->ChangeCoordinates(
+		miasmaRect.x - 500,
+		miasmaRect.y - 250,
+		0
+	);
+
+	renderChatterBox->ctm = m_mult(
+		rot,
+		renderChatterBox->ctm
+	);
+
+	// Miasma
 	renderMiasma->ChangeCoordinates(
 		miasmaRect.x,
 		miasmaRect.y,
@@ -77,7 +96,7 @@ void Duo::Move()
 		ply->damage(1);
 	}
 
-	currentRot += 0.1;
+	currentRot += 0.05;
 
 	if (currentRot > 3.14159265 * 2) {
 		currentRot = 0;
@@ -87,8 +106,9 @@ void Duo::Move()
 // Get new location
 void Duo::GetNewLocation()
 {
+	srand(time(0));
 	int randX = rand() % SCREEN_WIDTH;
-	int randY = rand() % 6000 + 2000;
+	int randY = rand() % 4000 + 2000;
 
 	miasmaRect.x = randX;
 	miasmaRect.y = randY;

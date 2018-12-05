@@ -5,6 +5,7 @@
 #include "INC_SDL.h"
 #include "OpenGLRenderer.hpp"
 #include "Player.h"
+#include <ctime>
 
 class Duo
 {
