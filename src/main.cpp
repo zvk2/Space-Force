@@ -314,7 +314,6 @@ int main(int argc, char* argv[]) {
 	char player2Texture[] = "resources/imgs/starman_blue.png";
 	Player ply(10, player1Texture, 1, &openGL, true);
 	Player ply2(10, player2Texture, 1, &openGL, multiplayer);
-	Multiplayer multCollision(&ply, &ply2, &ply.hit, &ply2.hit);
 	double ACCEL = ply.GetMove();
 
 	// PLAYER ATTACKS
@@ -622,9 +621,9 @@ int main(int argc, char* argv[]) {
 		}
 
 		ply.hit.renderAttack(timestep, 0);
-		multCollision.AttackCollision1();
+		ply.hit.hitIntersect(&pCam2);
 		ply2.hit.renderAttack(timestep, 1);
-		multCollision.AttackCollision2();
+		ply2.hit.hitIntersect(&pCam);
 		protect.Render();
 
 		//~ ALCOHOL CLOUD STUFF
