@@ -122,6 +122,8 @@ SDL_Rect VirtualPeacefulKing::getRect()
     return kingRect;
 }
 
+
+
 //~ SDL_Texture* VirtualPeacefulKing::getSheet()
 //~ {
     //~ return kingSheet;
@@ -132,6 +134,31 @@ SDL_Rect VirtualPeacefulKing::getCamera()
     kingCam.x = (int) xCoord;
     kingCam.y = (int) yCoord;
     return kingCam;
+}
+
+SDL_Rect* VirtualPeacefulKing::getCameraLoc()
+{
+    kingCam.x = (int) xCoord;
+    kingCam.y = (int) yCoord;
+    return &kingCam;
+}
+
+bool VirtualPeacefulKing::checkRectCollision(SDL_Rect *a, SDL_Rect *b)
+{
+    // Check vertical overlap
+    if (a->y + a->h <= b->y)
+        return false;
+    if (a->y >= b->y + b->h)
+        return false;
+    
+    // Check horizontal overlap
+    if (a->x >= b->x + b->w)
+        return false;
+    if (a->x + a->w <= b->x)
+        return false;
+    
+    // Must overlap in both
+    return true;
 }
 
 
@@ -147,21 +174,10 @@ void VirtualPeacefulKing::plusHealth(int amount)
     hitPoints += amount;
 }
 
-//To detect if the player collide with the king
-//If the player has contact with the king, he will lost health
-bool VirtualPeacefulKing::hasCollision(Player *p)
-{
-    SDL_Rect pRect = p -> getPlayerCam();
-    
-    SDL_Rect result;
-    
-    if (SDL_IntersectRect(&pRect, &kingCam, &result))
-    {
-        return false;
-    }
-    
-    return false;
-}
+
+
+
+
 
 
 

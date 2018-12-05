@@ -495,6 +495,30 @@ int main(int argc, char* argv[]) {
 		ply.move(xDeltav, yDeltav, timestep);
 		ply.checkInvincibility(moveLasttime);
 
+
+
+        
+        
+        
+        //Check for king's collision
+        if (SDL_HasIntersection(king.getCameraLoc(), ply.getPlayerCamLoc()) || king.checkRectCollision(king.getCameraLoc(), ply.getPlayerCamLoc()))
+        {
+            
+            if (ply.getPlayerCam().y < 0 || (ply.getPlayerCam().y + 50 > SCREEN_HEIGHT))
+            {
+                ply.getPlayerCamLoc()->y -= yDeltav;
+            }
+            
+            if (ply.getPlayerCam().x < 0 || (ply.getPlayerCamLoc()->x + 240 > SCREEN_WIDTH))
+            {
+                ply.getPlayerCamLoc()->x -= xDeltav;
+            }
+            
+            
+            ply.LostHealth(1);
+            ply.damage(1);
+        }
+
 		if (emy.Exists())
 		{
 			bool collision = ply.checkEnemyCollision(&emy, timestep);
