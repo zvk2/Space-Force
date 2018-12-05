@@ -239,7 +239,8 @@ void OpenGLRenderer::PopulateTextures()
 		{1, 1, "resources/imgs/Mag_Font2.png"},
 		{1, 1, "resources/imgs/Shield_FontB.png"},
 		// TODO REVISE
-		{1, 1, "resources/imgs/chatter_box.png"},
+		//~ {1, 1, "resources/imgs/chatter_box.png"},
+		{1, 4, "resources/imgs/miasma.png"},
 		{1, 4, "resources/imgs/faxanaduitis.png"},
 		// NOTE DEATH IS IN DIFFERENT FILE?
 		{1, 10, "resources/imgs/Faxanaduitis_Death.png"},
@@ -299,6 +300,188 @@ void OpenGLRenderer::PopulateTextures()
 			currentGenerator.columns
 		);
 	}
+
+	// START CHATTER BOX
+
+	// END CHATTER BOX
+
+	// START HARBINGER
+
+	// Get texture
+	GLuint currentTexture = textureIDs.size();
+	textureIDs.push_back(currentTexture);
+
+	// Get a cstyle string for loading the image
+	//~ char textureName[] = fileName;
+
+	// Debug output the name of the texture (make sure stuff isn't broken)
+	//~ std::cout << textureName << std::endl;
+
+	// Load the image as a surface (don't need a texture, can be surface for the pixel data)
+	SDL_Surface* surface = IMG_Load("resources/imgs/asteroid_cubemap_face.png");
+
+	// If something bad happened
+	if (surface == nullptr)
+	{
+		std::cout << "Unable to load image " << "harbinger!" << "! SDL Error: " << SDL_GetError() << std::endl;
+	}
+
+	// Indicate we want to make a new texture
+	glGenTextures(1, &textureIDs[currentTexture]);
+	// Indicate where this new texture will be bound
+	glBindTexture(GL_TEXTURE_2D, textureIDs[currentTexture]);
+
+	// Default to RGB
+	int mode = GL_RGB;
+
+	// Otherwise account for alpha channel (we will probably usually have alpha)
+	if(surface->format->BytesPerPixel == 4) {
+		mode = GL_RGBA;
+	}
+
+	int width = surface->w;
+	int height = surface->h;
+
+	// Slam in the texture
+	glTexImage2D(
+		// Target: Here we just say to make it a 2D texture (there are other complicated things for like cubes and stuff)
+		GL_TEXTURE_2D,
+		// Level of detail (basically for mipmapping an image (shrinking it)
+		// 0 here means don't mipmap to reduce it (ie, the base image)
+		0,
+		// Internal format: how the bytes represent the colors
+		mode,
+		// Width
+		surface->w,
+		// Height
+		surface->h,
+		// The width of the border? Apparently this should *always* be 0
+		0,
+		// The format for the texels ("3D" texture pixels)
+		mode,
+		// How exactly the texels should be passed to OpenGL
+		GL_UNSIGNED_BYTE,
+		// The pixels data itself, we rip it from the surface
+		surface->pixels
+	);
+
+	//~ int currentTexture = textureIDs.size();
+	int currentBuffer = bufferIDs.size();
+	int currentVao = vaoIDs.size();
+	//~ textureIDs.push_back(currentTexture);
+	bufferIDs.push_back(currentBuffer);
+	vaoIDs.push_back(currentVao);
+
+    //Apple needs different function calls
+    #ifdef __APPLE__
+    glGenVertexArraysAPPLE(1, &vaoIDs[currentVao]);
+    glBindVertexArrayAPPLE(vaoIDs[currentVao]);
+    #else
+    glGenVertexArrays(1, &vaoIDs[currentVao]);
+    glBindVertexArray(vaoIDs[currentVao]);
+    #endif
+
+
+	// Texture parameters
+	// Basically, repeat if you need to and linear interpolation for texel -> pixel
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	// Contrived for two rectangle
+	int numVertices = 12;
+	int verticesSize = numVertices * sizeof(vec4);
+
+	GLfloat bottom = -CanonicalCoordinatesFromPixels(height, SCREEN_HEIGHT);
+	GLfloat right = CanonicalCoordinatesFromPixels(width, SCREEN_WIDTH);
+	GLfloat top = 1;
+	GLfloat left = -1;
+
+	// z is 0 due to a contrivance
+	GLfloat z = 0;
+
+	// One rectangle
+	// WE SHOULD PROBABLY HAVE A USER-DEFINED z
+	vec4 vertices[12] = {
+		{left,  top,  z, 1.0},	// front top left
+		{left, bottom,  z, 1.0},	// front bottom left
+		{ right, bottom,  z, 1.0},	// front bottom right
+		{left,  top,  z, 1.0},	// front top left
+		{ right, bottom,  z, 1.0},	// front bottom right
+		{ right,  top,  z, 1.0},	// front top right
+		{left,  top,  z, 1.0},	// back top left
+		{ right, bottom,  z, 1.0},	// back bottom right
+		{left, bottom,  z, 1.0},	// back bottom left
+		{left,  top,  z, 1.0},	// back top left
+		{ right,  top,  z, 1.0},	// back top right
+		{ right, bottom,  z, 1.0},	// back bottom right
+	};
+
+	//~ std::cout << "Left: " << left << " Top: " << top << std::endl;
+	//~ std::cout << "Right: " << right << " Bottom: " << bottom << std::endl;
+
+	// **PLEASE NOTE THIS IS UPSIDE DOWN**
+	// Why? I think (though I am not sure) that the surface pixels from SDL are upside down
+	// That is, (0, 0) is top left from SDL's perspective, HOWEVER (0, 1) is top left from OpenGL's perspective
+	GLfloat texLeft = 0;
+	GLfloat texRight = 1;
+	GLfloat texBottom = 1;
+	GLfloat texTop = 0;
+	vec2 texCoord[12] = {
+		{texLeft, texTop},
+		{texLeft, texBottom},
+		{texRight, texBottom},
+		{texLeft, texTop},
+		{texRight, texBottom},
+		{texRight, texTop},
+
+		{-texRight, texTop},
+		{-texLeft, texBottom},
+		{-texRight, texBottom},
+		{-texRight, texTop},
+		{-texLeft, texTop},
+		{-texLeft, texBottom},
+	};
+
+	// Describes how we will be sending data out to be rendered
+	glGenBuffers(1, &bufferIDs[currentBuffer]);
+	glBindBuffer(GL_ARRAY_BUFFER, bufferIDs[currentBuffer]);
+	// Full buffer
+	glBufferData(GL_ARRAY_BUFFER, verticesSize + sizeof(texCoord), NULL, GL_STATIC_DRAW);
+	// Vertices
+	glBufferSubData(GL_ARRAY_BUFFER, 0, verticesSize, vertices);
+	// Texture stuff
+	glBufferSubData(GL_ARRAY_BUFFER, verticesSize, sizeof(texCoord), texCoord);
+
+	// Info for position (vec4 at the moment)
+	GLuint vPosition = glGetAttribLocation(program, "vPosition");
+	glEnableVertexAttribArray(vPosition);
+	glVertexAttribPointer(vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+
+	// Info for the texture (vec2 at the moment)
+	GLuint vTexCoord = glGetAttribLocation(program, "vTexCoord");
+	glEnableVertexAttribArray(vTexCoord);
+	glVertexAttribPointer(vTexCoord, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid *) verticesSize);
+
+	allBufferAttributes["harbinger"] = {
+		// Width
+		(GLfloat)surface->w,
+		// Height
+		(GLfloat)surface->h,
+		// verts
+		// contrived for now to 2d (3d will be individually defined, methinks)
+		12,
+		// texture
+		(GLuint)currentTexture,
+		// buffer start
+		(GLuint)currentBuffer,
+		// buffer end
+		(GLuint)currentBuffer
+	};
+
+	SDL_FreeSurface(surface);
+	// END HARBINGER
 
 	// May be causing problems
 	//~ TabulaRasa();
