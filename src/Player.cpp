@@ -96,6 +96,13 @@ OpenGLRenderer* Player::getRend()
 {
 	return openGL;
 }
+
+//Change the current velocity of the player based on the current velocity
+void Player::changeVelocity(double xdvel, double ydvel, double tstep)
+{
+	phys.ChangeVelocity(xdvel, ydvel, tstep);
+}
+
 //Methods that can be called from model class
 void Player::move(double xdvel, double ydvel, double tstep)
 {

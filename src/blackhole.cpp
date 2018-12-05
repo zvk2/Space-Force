@@ -301,10 +301,8 @@
 
                 //std::cout << "newX = " << newX << std::endl;
                 //std::cout << "newY = " << newY << std::endl;
-
-
-                ply->move(xDeltav, yDeltav, timestep);
-
+				
+                ply->changeVelocity(xDeltav, yDeltav, timestep);
             }
 
 
