@@ -25,6 +25,7 @@ Magnetar::Magnetar(Player* main):ply(main)
 
 	openGL->AppendRenderObject(render);
 	openGL->AppendRenderObject(textRender);
+	multiplayer = false;
 }
 
 void Magnetar::Render()
