@@ -63,6 +63,12 @@ void VirtualPeacefulKing::setVelocity(double x, double y)
     phys.setyVelocity(y);
 }
 
+//return the health of boss
+int VirtualPeacefulKing::getHealth()
+{
+    return hitPoints;
+}
+
 //Check the boundary so that our king will not move outside the screen
 void VirtualPeacefulKing::checkBoundary()
 {
@@ -136,6 +142,10 @@ void VirtualPeacefulKing::move(double step,bool showTime)
 		missile.addAttack(kingCam.x,kingCam.y+(kingCam.h)/3,2);
 	}
 	missile.renderAttack(-step,0);
+    
+    //To check if our king got attacked
+    LostHealth(ply->hit.hitIntersect(&kingCam));
+    
 }
 
 //Animate the king

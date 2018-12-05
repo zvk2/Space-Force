@@ -46,6 +46,9 @@ public:
     //a method which can be called from model class
 
     void move(double step,bool showTime);
+    
+    //return the current health of the boss
+    int getHealth();
 
     //return x position
     double getXPosition();

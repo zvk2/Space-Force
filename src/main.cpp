@@ -349,7 +349,7 @@ int main(int argc, char* argv[]) {
 	//Our king appears!!!!!
 	
 	ply.setAttackColSound(&mus);
-	VirtualPeacefulKing king(&openGL, 20, 2, 4, &ply);
+	VirtualPeacefulKing king(&openGL, 2, 2, 4, &ply);
 	//double kingDelta = 1;
 	// First put our king into the void
 	king.setPosition(11000, 0,showTime);
@@ -661,7 +661,7 @@ int main(int argc, char* argv[]) {
 				ply.hit.addAttack(pCam.x, pCam.y + 51/2,1);
 			}
 		}
-
+        
 		ply.hit.renderAttack(timestep, 0);
 		ply.hit.hitIntersect(&pCam2);
 		ply2.hit.renderAttack(timestep, 1);
@@ -689,6 +689,13 @@ int main(int argc, char* argv[]) {
 			gameOn = false;
 			gameOver = true;
 		}
+        
+        //To check if the king has been killed
+        if (king.getHealth() <= 0)
+        {
+            gameOn = false;
+            gameOver = true;
+        }
 
 		// MODIFY STARS
 		stars.Render(timestep);

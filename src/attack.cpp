@@ -103,6 +103,7 @@
 		}
 
 		// TODO TODO TODO
+        //Return the number of times that is being hit
 		int attack::hitIntersect(SDL_Rect* rect)
 		{
 			int count = 0;
