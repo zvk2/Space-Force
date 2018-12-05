@@ -41,8 +41,16 @@ public:
 
 private:
    
+    
    SDL_Rect playerCam1;
    SDL_Rect playerCam2;
+
+   double xCoord;
+   double yCoord;
+
+	int hitPoints1;
+	int hitPoints2;
+
 
 
 };

@@ -119,14 +119,14 @@ void Multiplayer::TotalDamagePlayer2();
 void Mulitplayer::AttackCollision1()
 {
 	//referring to enemy class
-	int hits = plyBlast1->hitIntersect(&playerCam2);
-	DecrementHealthPlayer2(hits*ply2->GetAttack());
+	int hits1 = plyBlast1->hitIntersect(&playerCam2);
+	DecrementHealthPlayer2(hits1*ply2->GetAttack());
 }
 
 void Mulitplayer::AttackCollision2()
 {
-	int hits = plyBlast2->hitIntersect(&playerCam1);
-	DecrementHealthPlayer1(hits*ply1->GetAttack());
+	int hits2 = plyBlast2->hitIntersect(&playerCam1);
+	DecrementHealthPlayer1(hits2*ply1->GetAttack());
 }
 
 void Multiplayer::DecrementHealthPlayer1(int decAmount1)
