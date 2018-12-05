@@ -547,25 +547,18 @@ int main(int argc, char* argv[]) {
 
 		if(!imPlayer2){
 			ply.move(xDeltav, yDeltav, timestep);
+			ply.checkInvincibility(moveLasttime);
 		}
 		else{
 			ply2.move(xDeltav, yDeltav, timestep);
-		}
-		ply.move(xDeltav, yDeltav, timestep);
-		ply.checkInvincibility(moveLasttime);
-
-
-
-
-
-
-        //Check for king's
-
+			ply2.checkInvincibility(moveLasttime);
+		}       
+        
+        
+        //Check for king's 
+		
         if (SDL_HasIntersection(king.getCameraLoc(), ply.getPlayerCamLoc()) || king.checkRectCollision(king.getCameraLoc(), ply.getPlayerCamLoc()))
-        {
-
-
-
+        {      
             ply.LostHealth(1);
             ply.damage(1);
         }
@@ -637,9 +630,6 @@ int main(int argc, char* argv[]) {
 			}
 		}
 
-		pCam2.x = transfer.x;
-		pCam2.y = transfer.y;
-
 		//attack button
 		if(keyState[SDL_SCANCODE_SPACE] && up == true)
 		{
@@ -667,9 +657,17 @@ int main(int argc, char* argv[]) {
 		}
 
 		ply.hit.renderAttack(timestep, 0);
-		ply.hit.hitIntersect(&pCam2);
+		int ply2hit = ply.hit.hitIntersect(&pCam2);
+		if(imPlayer2 && ply2hit){
+            ply2.LostHealth(1);
+            ply2.damage(1);
+		}
 		ply2.hit.renderAttack(timestep, 1);
-		ply2.hit.hitIntersect(&pCam);
+		int plyhit = ply2.hit.hitIntersect(&pCam);
+		if(!imPlayer2 && plyhit){
+            ply.LostHealth(1);
+            ply.damage(1);
+		}
 		protect.Render();
 
 		//~ ALCOHOL CLOUD STUFF
