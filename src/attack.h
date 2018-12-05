@@ -6,6 +6,7 @@
 #include<stdlib.h>
 #include "INC_SDL.h"
 #include "OpenGLRenderer.hpp"
+#include "music.h"
 
 // Now uses a vector to monitor attacks
 
@@ -36,6 +37,7 @@ class attack
 		void renderAttack(double timestep);
 		void setAttack(SDL_Rect* attac);
 		int hitIntersect(SDL_Rect* rect);
+		void setColSound(music* sounds);
 	private:
 		struct Node* head;
 		struct Node* end;
@@ -44,6 +46,7 @@ class attack
 		SDL_Rect* attackBox;
 		OpenGLRenderer* openGL;
 		SDL_Texture* gAttack;
+		music* mus;
 
 		const char* attackTexture;
 

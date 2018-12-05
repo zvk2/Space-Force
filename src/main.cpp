@@ -320,7 +320,7 @@ int main(int argc, char* argv[]) {
 	// Guess this should be in the class file?
 	king.setPosition(1100, 0);
     king.setVelocity(0, 50);
-
+	ply.setAttackColSound(&mus);
 	// HYPERSTAR
 	HyperStar stars(&ply, &mus);
 
