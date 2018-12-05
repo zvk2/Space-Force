@@ -187,6 +187,10 @@ OpenGLRenderer::OpenGLRenderer(SDL_Window* window)
     #endif
 	program = shader.getProgram();
 
+	// Sphere shader
+	Shader astex("astex");
+	programSphere = astex.getProgram();
+
 	// If you want black
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 
@@ -282,6 +286,7 @@ void OpenGLRenderer::PopulateTextures()
 		{1, 1, "resources/Credit_Image/Zane_Credits.png"},
 		{1, 1, "resources/Credit_Image/zhishengXu.png"},
 	};
+
 	// Iterate over every texture to generate
 	for (auto currentGenerator: textureGenerators)
 	{
@@ -298,6 +303,117 @@ void OpenGLRenderer::PopulateTextures()
 			currentGenerator.columns
 		);
 	}
+
+	// SPOFCON
+	int currentTexture = textureIDs.size();
+	int currentBuffer = bufferIDs.size();
+	int currentVao = vaoIDs.size();
+	textureIDs.push_back(currentTexture);
+	bufferIDs.push_back(currentBuffer);
+	vaoIDs.push_back(currentVao);
+
+    // set program based on which shader we want to see
+    //~ glUseProgram(programSphere);
+
+    /******** geometry bureaucracy ********/
+    int num_vertices = 0;
+    vec4 *sphere_verts = sphere(0.8, 9, 9, &num_vertices);
+
+    int i, gi = 0;
+    /******** texture bureaucracy ********/
+    int width = 256;
+    int height = 256;
+    GLubyte posx[width][height][3];
+    GLubyte posy[width][height][3];
+    GLubyte posz[width][height][3];
+    GLubyte negx[width][height][3];
+    GLubyte negy[width][height][3];
+    GLubyte negz[width][height][3];
+
+    FILE *fp;
+    fp = fopen("resources/imgs/asteroid_cubemap_face.raw", "r");
+    fread(posx, width * height * 3, 1, fp);
+    fclose(fp);
+    fp = fopen("resources/imgs/asteroid_cubemap_face.raw", "r");
+    fread(posy, width * height * 3, 1, fp);
+    fclose(fp);
+    fp = fopen("resources/imgs/asteroid_cubemap_face.raw", "r");
+    fread(posz, width * height * 3, 1, fp);
+    fclose(fp);
+    fp = fopen("resources/imgs/asteroid_cubemap_face.raw", "r");
+    fread(negx, width * height * 3, 1, fp);
+    fclose(fp);
+    fp = fopen("resources/imgs/asteroid_cubemap_face.raw", "r");
+    fread(negy, width * height * 3, 1, fp);
+    fclose(fp);
+    fp = fopen("resources/imgs/asteroid_cubemap_face.raw", "r");
+    fread(negz, width * height * 3, 1, fp);
+    fclose(fp);
+
+    glGenTextures(1, &textureIDs[currentTexture]);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, textureIDs[currentTexture]);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BASE_LEVEL, 0);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL, 0);
+    //Define all 6 faces
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, posx);
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, negx);
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, posy);
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, negy);
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, posz);
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, negz);
+
+	// Get verts
+	vec4 vertices[num_vertices];
+	// putting our sphere into our global verts array
+    for (i = 0; i < num_vertices; i++)
+    {
+        vertices[i] = sphere_verts[i];
+    }
+
+    /******** put shapes into final vertex array ********/
+    glGenVertexArrays(1, &vaoIDs[currentVao]);
+    glBindVertexArray(vaoIDs[currentVao]);
+
+    int size_vertices = sizeof(vertices) / sizeof(vec4);
+
+    glGenBuffers(1, &bufferIDs[currentBuffer]);
+    glBindBuffer(GL_ARRAY_BUFFER, bufferIDs[currentBuffer]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vec4) * size_vertices, NULL, GL_STATIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vec4) * size_vertices, vertices);
+
+    GLuint vPosition = glGetAttribLocation(program, "vPosition");
+    glEnableVertexAttribArray(vPosition);
+    glVertexAttribPointer(vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+
+    // IN A MORE ROBUST AND CLEAN SHADER CLASS, SHOULD PROBABLY WRAP THIS INSIDE
+    // vector<> of uniform locations??
+
+    GLuint cubeMap_location = glGetUniformLocation(program, "cubeMap");
+    //~ glUniform1i(cubeMap_location, 0);
+
+    // *No* dereference, world is a fuf
+	allBufferAttributes["spofcon"] = {
+		// Width
+		(GLfloat) width,
+		// Height
+		(GLfloat) height,
+		// verts
+		num_vertices,
+		// texture
+		currentTexture,
+		// buffer start
+		currentBuffer,
+		// buffer end (changed at the conclusion)
+		currentBuffer,
+		programSphere
+	};
+
+	// END SPOFCON
 
 	// May be causing problems
 	//~ TabulaRasa();
@@ -358,6 +474,8 @@ void OpenGLRenderer::Display()
 	{
 		// Note dereference, world is a fuf
 		BufferAttributes bufferAttributes = currentObject->bufferAttributes;
+
+		glUseProgram(bufferAttributes.program);
 
 		//~ std::cout << bufferAttributes.textureID << std::endl;
 		// AREN'T SUPPOSED TO HAVE A BUNCH OF VAOS BUT WHATEVER
@@ -435,7 +553,6 @@ GLuint OpenGLRenderer::PopulateDefault2DBuffer(
     glGenVertexArrays(1, &vaoIDs[currentVao]);
     glBindVertexArray(vaoIDs[currentVao]);
     #endif
-
 
 	// Texture parameters
 	// Basically, repeat if you need to and linear interpolation for texel -> pixel
@@ -629,7 +746,8 @@ void OpenGLRenderer::PopulateDefault2DBuffers(
 		// buffer start
 		firstBuffer,
 		// buffer end (changed at the conclusion)
-		firstBuffer + bufferOffset - 1
+		firstBuffer + bufferOffset - 1,
+		program
 	};
 
 	//~ std::cout << textureName << " " << firstBuffer << " " << firstBuffer + bufferOffset - 1 << std::endl;

@@ -292,6 +292,14 @@ int main(int argc, char* argv[]) {
 	openGL.AppendRenderObject(background1);
 	openGL.AppendRenderObject(background2);
 
+	std::cout << openGL.allBufferAttributes["spofcon"].program << std::endl;
+
+	RenderObject *testSphere = new RenderObject(
+		0, 0, 1, openGL.allBufferAttributes["spofcon"]
+	);
+
+	openGL.AppendRenderObject(testSphere);
+
 	// THE PLAYER(S)
 	char player1Texture[] = "resources/imgs/starman.png";
 	char player2Texture[] = "resources/imgs/starman_blue.png";
@@ -484,7 +492,7 @@ int main(int argc, char* argv[]) {
 				//SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
 				//bFrames = 0;
 				//blackhole vacuum(gRenderer,gBlackhole,&blackholeRect,blackholeCam);
-        
+
 				blackholeHit = enemyBlackhole.showBlackhole(xDeltav, yDeltav, timestep);
 				if(blackholeHit)
 				{
@@ -499,24 +507,24 @@ int main(int argc, char* argv[]) {
 
 
 
-        
-        
-        
+
+
+
         //Check for king's collision
         if (SDL_HasIntersection(king.getCameraLoc(), ply.getPlayerCamLoc()) || king.checkRectCollision(king.getCameraLoc(), ply.getPlayerCamLoc()))
         {
-            
+
             if (ply.getPlayerCam().y < 0 || (ply.getPlayerCam().y + 50 > SCREEN_HEIGHT))
             {
                 ply.getPlayerCamLoc()->y -= yDeltav;
             }
-            
+
             if (ply.getPlayerCam().x < 0 || (ply.getPlayerCamLoc()->x + 240 > SCREEN_WIDTH))
             {
                 ply.getPlayerCamLoc()->x -= xDeltav;
             }
-            
-            
+
+
             ply.LostHealth(1);
             ply.damage(1);
         }
@@ -644,7 +652,7 @@ int main(int argc, char* argv[]) {
 		//~ delete ply2.render;
 	//~ }
     if (gameOver)
-	{	
+	{
 		openGL.TabulaRasa();
 		GameOver screen = GameOver(&openGL);
 		int selection = screen.runScreen();
@@ -657,7 +665,7 @@ int main(int argc, char* argv[]) {
 		if (selection == 1)
 		{
 			playCredits(&openGL);
-			selection = screen.runScreen();	
+			selection = screen.runScreen();
 		}
 	}
 	if (credits)

@@ -2,6 +2,7 @@
 // Includes
 #ifndef OPENGLRENDERER_HPP
 #define OPENGLRENDERER_HPP
+#include <stdio.h>
 #include <iostream>
 #include <vector>
 #include <string>
@@ -69,6 +70,7 @@ typedef struct BufferAttributes {
 	GLuint textureID;
 	GLuint bufferIDStart;
 	GLuint bufferIDEnd;
+	GLuint program;
 } BufferAttributes;
 
 // Need to think about how to integrate this class with other entity classes
@@ -184,10 +186,13 @@ class OpenGLRenderer
 		// CTM Location
 		GLuint ctmLocation;
 
+		GLuint cubeMap_location;
+
 		GLuint flippedLocation;
 
 		// The "program" (shaders) used
 		GLuint program;
+		GLuint programSphere;
 
 		// All of the bufferAttributes
 		std::map<std::string, BufferAttributes> allBufferAttributes;
