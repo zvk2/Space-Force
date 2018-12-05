@@ -13,6 +13,8 @@
 #include <string>
 #include <cstring>
 #include "OpenGLRenderer.hpp"
+#include "Player.h"
+#include "attack.h"
 
 class Multiplayer
 {

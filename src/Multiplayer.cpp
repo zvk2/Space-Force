@@ -7,8 +7,8 @@
 #include "Multiplayer.h"
 #include "attack.h"
 
-int hitPoints1 = 20;
-int hitPoints2 = 20;
+hitPoints1 = 20;
+hitPoints2 = 20;
 
 //Public methods
 Multiplayer::Multiplayer(Player* p1, Player* p2, attack* atk1, attack* atk2):ply1(p1), ply2(p2), plyBlast1(atk1), plyBlast2(atk2)
