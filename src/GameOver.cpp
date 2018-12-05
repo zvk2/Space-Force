@@ -7,13 +7,23 @@
 	CREDITS plays credits, QUIT exits out of the entire program
 */
 
-GameOver::GameOver(OpenGLRenderer *openGLInit)
+GameOver::GameOver(OpenGLRenderer *openGLInit, bool win)
 {
 	openGL = openGLInit;
+	
+	if (win)
+	{
+		background = new RenderObject(
+			0, 0, -1, openGL->allBufferAttributes["resources/imgs/win_msg.png"]
+		);
+	}
+	else
+	{
+		background = new RenderObject(
+			0, 0, -1, openGL->allBufferAttributes["resources/imgs/game_over.png"]
+		);
+	}
 
-	background = new RenderObject(
-		0, 0, -1, openGL->allBufferAttributes["resources/imgs/game_over.png"]
-	);
 	openGL->AppendRenderObject(background);
 	creditsButton = new RenderObject(
 		SCREEN_WIDTH/2 - BUTTON_WIDTH/2, SCREEN_HEIGHT/2 + 25, -1, openGL->allBufferAttributes["resources/imgs/credits.png"]

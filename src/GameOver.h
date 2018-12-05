@@ -12,7 +12,7 @@ class GameOver
 	public:
 
 		// Constructor
-		GameOver(OpenGLRenderer *openGL);
+		GameOver(OpenGLRenderer *openGL, bool win);
 
 		// Run loop that responds to mouse/keyboard input
 		int runScreen();

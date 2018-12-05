@@ -392,7 +392,6 @@ int main(int argc, char* argv[]) {
 	bool up = true;
 	bool credits = true;
 	bool attacked = false;
-
     //Set up the timer
     clock_t startTimeForBoss = clock();
     
@@ -735,7 +734,7 @@ int main(int argc, char* argv[]) {
     if (gameOver)
 	{	
 		openGL.TabulaRasa();
-		GameOver screen = GameOver(&openGL);
+		GameOver screen = GameOver(&openGL, winnerWinnerChickenDinner);
 		int selection = screen.runScreen();
 		if (selection == 0 || selection == 2)
 		{

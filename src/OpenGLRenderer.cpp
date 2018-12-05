@@ -266,6 +266,7 @@ void OpenGLRenderer::PopulateTextures()
 		// For menu and game over
 		{1, 1, "resources/imgs/titlescreen.png"},
         	{1, 1, "resources/imgs/game_over.png"},
+		{1, 1, "resources/imgs/win_msg.png"},
 		{1, 2, "resources/imgs/start.png"},
 		{1, 2, "resources/imgs/multi.png"},
 		{1, 2, "resources/imgs/credits.png"},
