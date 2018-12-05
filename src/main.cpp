@@ -44,7 +44,12 @@ bool showTime = false;
 bool bossOn = false;
 //The variables that will be used by timer
 double timePassed = 0.0;
-double timeLimit = 4.0;//Subjust to be changed
+#ifdef __APPLE__
+double timeLimit = 3.0;
+#else
+double timeLimit = 15.0;//Subjust to be changed
+#endif
+
 
 
 // Parent folder for credit images
@@ -488,7 +493,7 @@ int main(int argc, char* argv[]) {
 		}
         
         //The boss for only get rendered after 20 seconds
-        timePassed = (clock() - startTimeForBoss)/ CLOCKS_PER_SEC;
+        timePassed = (double)(clock() - startTimeForBoss)/ CLOCKS_PER_SEC;
         if (timePassed >= timeLimit)
         {
             showTime = true;
