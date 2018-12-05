@@ -46,7 +46,7 @@ public:
     void setVelocity(double x, double y);
 
     //a method which can be called from model class
-    void move(double deltax, double deltay, double step);
+    void move(double step);
 
     //return x position
     double getXPosition();

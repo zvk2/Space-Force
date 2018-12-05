@@ -87,9 +87,9 @@ void VirtualPeacefulKing::checkBoundary()
 }
 
 //Move the king
-void VirtualPeacefulKing::move(double deltax, double deltay, double step)
+void VirtualPeacefulKing::move(double step)
 {
-    phys.ChangeVelocity(deltax, deltay, step);
+    phys.ChangeVelocity(0, delta, step);
 
     xCoord += (phys.getxVelocity() * step);
     yCoord += (phys.getyVelocity() * step);

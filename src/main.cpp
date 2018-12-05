@@ -432,14 +432,7 @@ int main(int argc, char* argv[]) {
 
 		// Animate king (test)
 		//boundary check for king
-		if (king.getCamera().y + king.getCamera().h == SCREEN_HEIGHT)
-		{
-			kingDelta = -1;
-		}
-		if (king.getCamera().y == 0)
-		{
-			kingDelta = 1;
-		}
+
 
 		king.animate(frames);
 
@@ -541,7 +534,7 @@ int main(int argc, char* argv[]) {
 			credits = true;
 		}
 
-		king.move(0, kingDelta, timestep);
+		king.move(timestep);
 
 		/*
 		collision = emy.checkPlayerCollision(&ply, timestep);
