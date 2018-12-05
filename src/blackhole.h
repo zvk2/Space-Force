@@ -20,7 +20,7 @@ class blackhole
 public:
     //~ blackhole(SDL_Texture* textBlackhole, Player* main);
     blackhole(Player* main);
-    void showBlackhole(double xDeltav, double yDeltav, double timestep);
+    bool showBlackhole(double xDeltav, double yDeltav, double timestep);
     bool seen();
     void attractPlayer(double xDeltav, double yDeltav, double timestep);
 private:
@@ -35,6 +35,8 @@ private:
     double xDeltav;
     double yDeltav;
     double timestep;
+	SDL_Rect hitBox;
+	bool blackholeHit;
 
     OpenGLRenderer* openGL;
     RenderObject* render;
