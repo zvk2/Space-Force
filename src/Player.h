@@ -97,6 +97,7 @@ class Player
 		bool* shieldStatus();
 		SDL_Rect* shieldInteractions();
 		void HitShield(int hits);
+		void checkInvincibility(Uint32 frames);
 
 		// Lazy, I know
 		RenderObject* render;
@@ -110,6 +111,7 @@ class Player
 		 */
 		SDL_Rect* shield;
 		bool protection;
+		bool invincible;
 		RenderObject* healthBar;
 		double ACCEL;
 		double SPEED_LIMIT;
@@ -125,6 +127,7 @@ class Player
 		Physics phys;
 		OpenGLRenderer* openGL;
 		int *shieldPoint;
+		Uint32 iframe;
 
 		SDL_Rect playerCam;
 		SDL_Rect playerRect;
