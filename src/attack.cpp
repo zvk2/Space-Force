@@ -43,7 +43,7 @@
 		//when the currently first attack hits the end of the screen than
 		//it will free that information and delete it from the list
 		//then it will continue to render all other attacks further across the screen
-		void attack::renderAttack(double timestep)
+		void attack::renderAttack(double timestep, int goLeft)
 		{
 			int xDisplacement = (int) (1000 * timestep);
 
@@ -53,12 +53,20 @@
 			{
 				RenderObject* currentAttack = attackVector[index];
 				//~ std::cout << currentAttack->index << std::endl;
-
-				currentAttack->ChangeCoordinates(
-					currentAttack->x + xDisplacement,
-					currentAttack->y,
-					currentAttack->z
-				);
+				if(goLeft){
+					currentAttack->ChangeCoordinates(
+						currentAttack->x - xDisplacement,
+						currentAttack->y,
+						currentAttack->z
+					);
+				}
+				else{
+					currentAttack->ChangeCoordinates(
+						currentAttack->x + xDisplacement,
+						currentAttack->y,
+						currentAttack->z
+					);
+				}
 
 				// Doing this check every time might be overkill
 				if (currentAttack->x >= SCREEN_WIDTH)
@@ -96,7 +104,7 @@
 
 				if(SDL_HasIntersection(rect, &currentRect))
 				{
-					mus->yourAttackHits();
+					//mus->yourAttackHits();
 					openGL->RemoveRenderObject(currentAttack->index);
 					//~ std::cout << "Attack Die" << std::endl;
 

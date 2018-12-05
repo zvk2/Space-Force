@@ -17,15 +17,15 @@ class ClientInterface
 	
 	public:
 		
-		ClientInterface();
+		ClientInterface(string ip);
 
 		~ClientInterface();
 
 		int Connect();
 
-		SDL_Rect Communicate(SDL_Rect playerRect);
+		SDL_Rect Communicate(SDL_Rect playerRect, int attack);
 
-		string Serialize(SDL_Rect playerRect);
+		string Serialize(SDL_Rect playerRect, int attack);
 		
 		SDL_Rect GetPlayerInfo(string playerInfo);
 };
