@@ -71,6 +71,8 @@ OpenGLRenderer* gRenderer = nullptr;
 ClientInterface* client;
 
 music mus;
+int player1hits = 0;
+int player2hits = 0;
 
 bool init()
 {
@@ -663,9 +665,28 @@ int main(int argc, char* argv[]) {
 		}
         
 		ply.hit.renderAttack(timestep, 0);
-		ply.hit.hitIntersect(&pCam2);
+		player1hits += ply.hit.hitIntersect(&pCam2);
 		ply2.hit.renderAttack(timestep, 1);
-		ply2.hit.hitIntersect(&pCam);
+		player2hits += ply2.hit.hitIntersect(&pCam);
+
+		if(player2hits > 20 || player1hits > 20){
+			gameOver == true;
+		}
+
+		if(!imPlayer2){
+			if(player2hits > 20){
+				winnerWinnerChickenDinner = false;
+			}else{
+				winnerWinnerChickenDinner = true;
+			}
+		}else{
+			if(player2hits > 20){
+				winnerWinnerChickenDinner = true;
+			}else{
+				winnerWinnerChickenDinner = false;
+			}
+		}
+
 		protect.Render();
 
 		//~ ALCOHOL CLOUD STUFF
