@@ -37,6 +37,10 @@ void Player::setAttack(SDL_Rect* attackRect)
 {
 	hit.setAttack(attackRect);
 }
+void Player::setAttackColSound(music* sound)
+{
+	hit.setColSound(sound);
+}
 void Player::hasShield(bool has)
 {
 	protection = has;
