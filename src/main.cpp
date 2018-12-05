@@ -17,6 +17,7 @@
 #include "music.h"
 #include "Shield.h"
 #include "VirtualPeacefulKing.h"
+#include "GameOver.h"
 
 #include "OpenGLRenderer.hpp"
 
@@ -353,6 +354,7 @@ int main(int argc, char* argv[]) {
 	// LOOP STUFF
 	SDL_Event e;
 	bool gameOn = true;
+    bool gameOver = false;
 	bool up = true;
 	bool credits = true;
 
@@ -487,7 +489,7 @@ int main(int argc, char* argv[]) {
 				if(blackholeHit)
 				{
 					gameOn = false;
-					credits = true;
+					gameOver = true;
 				}
 			}
 		}
@@ -549,7 +551,7 @@ int main(int argc, char* argv[]) {
 		{
 			//~ return playCredits();
 			gameOn = false;
-			credits = true;
+			gameOver = true;
 		}
 
 		king.move(0, kingDelta, timestep);
@@ -605,7 +607,7 @@ int main(int argc, char* argv[]) {
 		if (healthBar->currentBufferID == healthBar->bufferAttributes.bufferIDEnd)
 		{
 			gameOn = false;
-			credits = true;
+			gameOver = true;
 		}
 
 		// MODIFY STARS
@@ -641,7 +643,23 @@ int main(int argc, char* argv[]) {
 	//~ {
 		//~ delete ply2.render;
 	//~ }
-
+    if (gameOver)
+	{	
+		openGL.TabulaRasa();
+		GameOver screen = GameOver(&openGL);
+		int selection = screen.runScreen();
+		if (selection == 0 || selection == 2)
+		{
+			openGL.Close();
+			close();
+			return 0;
+		}
+		if (selection == 1)
+		{
+			playCredits(&openGL);
+			selection = screen.runScreen();	
+		}
+	}
 	if (credits)
 	{
 		playCredits(&openGL);
