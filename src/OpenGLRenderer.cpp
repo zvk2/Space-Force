@@ -304,13 +304,13 @@ void OpenGLRenderer::PopulateTextures()
 }
 void OpenGLRenderer::Close()
 {
+	TabulaRasa();
+
 	// Delete our OpengL context
-	SDL_GL_DeleteContext(mainContext);
+	//~ SDL_GL_DeleteContext(mainContext);
 
 	//~ SDL_DestroyWindow(gWindow);
 	gWindow = nullptr;
-
-	TabulaRasa();
 }
 void OpenGLRenderer::TabulaRasa()
 {

@@ -494,7 +494,7 @@ int main(int argc, char* argv[]) {
 
 		ply.move(xDeltav, yDeltav, timestep);
 		ply.checkInvincibility(moveLasttime);
-		
+
 		if (emy.Exists())
 		{
 			bool collision = ply.checkEnemyCollision(&emy, timestep);
@@ -583,7 +583,7 @@ int main(int argc, char* argv[]) {
 			gameOn = false;
 			credits = true;
 		}
-		
+
 		// MODIFY STARS
 		stars.Render(timestep);
 
