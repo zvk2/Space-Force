@@ -20,6 +20,8 @@ class music
 		void fireSound();
 
 		void shieldStarCollision(); 
+		
+		void yourAttackHits();
 
 		//~ bool check();
 
@@ -35,6 +37,8 @@ class music
 		Mix_Chunk *gFire;
 		
 		Mix_Chunk *gShieldSound;
+		
+		Mix_Chunk *gAttack;
 
 		bool success;
 

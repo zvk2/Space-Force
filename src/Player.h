@@ -5,6 +5,7 @@
 #include "INC_SDL.h"
 #include "physics.h"
 #include "attack.h"
+#include "music.h"
 #include <cmath>
 #include "OpenGLRenderer.hpp"
 #include <iostream>
@@ -23,6 +24,7 @@ class Player
 		//Set the position of the player on screen
 		void setPosition(double x, double y);
 		void hasShield(bool has);
+		void setAttackColSound(music* sound);
 
         //Int version
         void setPosition(int x, int y);

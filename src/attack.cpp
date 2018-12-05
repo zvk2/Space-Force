@@ -13,6 +13,10 @@
 
 			attackVector = std::vector<RenderObject*>();
 		}
+		void attack::setColSound(music* sounds)
+		{
+			mus = sounds;
+		}
 		void attack::setAttack(SDL_Rect* attac)
 		{
 			attackBox = attac;
@@ -92,12 +96,13 @@
 
 				if(SDL_HasIntersection(rect, &currentRect))
 				{
+					mus->yourAttackHits();
 					openGL->RemoveRenderObject(currentAttack->index);
 					//~ std::cout << "Attack Die" << std::endl;
 
 					attackVector.erase(attackVector.begin() + index);
 					vectorSize = attackVector.size();
-
+					//////////////
 					count++;
 				}
 				else
