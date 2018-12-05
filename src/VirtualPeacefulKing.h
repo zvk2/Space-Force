@@ -63,7 +63,11 @@ public:
     //Get the camera of the king
     SDL_Rect getCamera();
 
-    bool hasCollision(Player *p);
+    //Get the camera point of the king
+    SDL_Rect* getCameraLoc();
+    
+    //To check whether the king and player have collision since both of them are rects
+    bool checkRectCollision(SDL_Rect* a, SDL_Rect* b);
 
 private:
 

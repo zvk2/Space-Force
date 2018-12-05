@@ -9,7 +9,6 @@
 
 	HyperStar::HyperStar(Player* main, music *mus):ply(main), play(mus)
 	{
-		imBox = {0,0,100,100};
 		openGL = ply->getRend();
 		plyCam = ply->getPlayerCamLoc();
 
@@ -52,7 +51,6 @@
 			x = 1280;
 		}
 		end->next->math = upOrDown;
-		end->next->frame = 0;
 
 		end->next->pre = end;
 		end = end->next;
@@ -92,8 +90,7 @@
 		curr = head->next;
 		while(curr != nullptr)
 		{
-			imBox.y = (curr->frame%2)*100;
-			curr->frame++;
+			curr->render->IterateFrame();
 			if(*hasShield && checkCol(*shield, curr->colTest))
 			{
 
@@ -114,6 +111,7 @@
 				//then checks circle
 				if(checkCirCol(curr->colTest))
 				{
+					ply->LostHealth(1);
 					ply->damage(1);
 					curr->hitPly = true;//hits player only once
 				}

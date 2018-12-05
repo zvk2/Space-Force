@@ -31,7 +31,10 @@ class Player
 
 		//Sets the current velocity of the player
 		void setVelocity(double x, double y);
-
+		
+		//Change the current velocity of the player based on the current velocity
+		void changeVelocity(double xdvel, double ydvel, double tstep);
+		
 		//Methods that can be called from model class
 		void move(double xdvel, double ydvel, double tstep);
 
@@ -97,6 +100,7 @@ class Player
 		bool* shieldStatus();
 		SDL_Rect* shieldInteractions();
 		void HitShield(int hits);
+		void checkInvincibility(Uint32 frames);
 
 		// Lazy, I know
 		RenderObject* render;
@@ -110,6 +114,7 @@ class Player
 		 */
 		SDL_Rect* shield;
 		bool protection;
+		bool invincible;
 		RenderObject* healthBar;
 		double ACCEL;
 		double SPEED_LIMIT;
@@ -125,6 +130,7 @@ class Player
 		Physics phys;
 		OpenGLRenderer* openGL;
 		int *shieldPoint;
+		Uint32 iframe;
 
 		SDL_Rect playerCam;
 		SDL_Rect playerRect;

@@ -16,6 +16,8 @@ Player::Player(int startingHealth, char* characterImages, int attack, OpenGLRend
 		playerCam = {1280/2, 720/2, 240, 51};
 		//~ gRenderer = gRend;
 		protection = false;
+		invincible = false;
+		iframe = 0;
 
 		// May need to rethink z index
 		render = new RenderObject(
@@ -63,6 +65,14 @@ void Player::HitShield(int hits)
 	*shieldPoint = *shieldPoint - hits;
 }
 
+void Player::checkInvincibility(Uint32 frames)
+{
+	if (frames > iframe)
+	{
+		invincible = false;
+	}
+}
+
 //Set the position of the player on screen
 void Player::setPosition(int x, int y)
 {
@@ -77,7 +87,12 @@ void Player::HealthBar(RenderObject* health)//needed to access healthbar other o
 }
 void Player::damage(int hits)//other objects effect on health
 {
-	healthBar->IterateFrame();
+	if (!invincible)
+	{
+		healthBar->ForceFrame();
+		invincible = true;
+		iframe = SDL_GetTicks() + 3000;
+	}
 }
 //attack* Player::attackHit()
 //{
@@ -87,6 +102,13 @@ OpenGLRenderer* Player::getRend()
 {
 	return openGL;
 }
+
+//Change the current velocity of the player based on the current velocity
+void Player::changeVelocity(double xdvel, double ydvel, double tstep)
+{
+	phys.ChangeVelocity(xdvel, ydvel, tstep);
+}
+
 //Methods that can be called from model class
 void Player::move(double xdvel, double ydvel, double tstep)
 {

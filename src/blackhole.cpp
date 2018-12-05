@@ -22,6 +22,8 @@
             blackholeExists = false;
             bFrames = 0;
             gravAccel = 1;
+			hitBox = {0, 0, 50, 50};
+			blackholeHit = false;
 
 			// There will only be one render object
 			render = new RenderObject(
@@ -36,8 +38,10 @@
             return blackholeExists;
         }
 
-        void blackhole::showBlackhole(double xDeltav, double yDeltav, double timestep)
+        bool blackhole::showBlackhole(double xDeltav, double yDeltav, double timestep)
         {
+			bool crash = SDL_HasIntersection(&hitBox, playerCam);
+
             bFrames++;
 
             if (bFrames / 12 > 5)
@@ -51,11 +55,15 @@
                 blackholeExists = true;
                 blackholeCam.y = rand() % (720-300);
                 blackholeCam.x = 1580;
+				hitBox.y = blackholeCam.y + 125;
+				hitBox.x = 1580 + 125;
             }
 
             attractPlayer(xDeltav, yDeltav, timestep);
             //~ SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
             blackholeCam.x = blackholeCam.x - 1;
+			hitBox.x = hitBox.x - 1;
+
 
             if(blackholeCam.x < -300)
             {
@@ -69,6 +77,15 @@
 			);
 
 			render->IterateFrame();
+			
+			if(crash)
+			{
+				return blackholeHit = true;
+			}
+			else
+			{
+				return blackholeHit = false;
+			}
         }
 
         void blackhole::attractPlayer(double xDeltav, double yDeltav, double timestep)
@@ -92,7 +109,7 @@
             double newY;
 			double GM = 5000000;
 			double m = 10;
-			double maxSpeed = 70;
+			double maxSpeed = 65;
 
             if(blackholeCam.x < 1680 && blackholeCam.x > 0)
             {
@@ -284,10 +301,8 @@
 
                 //std::cout << "newX = " << newX << std::endl;
                 //std::cout << "newY = " << newY << std::endl;
-
-
+				
                 ply->move(xDeltav, yDeltav, timestep);
-
             }
 
 

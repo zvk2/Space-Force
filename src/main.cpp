@@ -18,6 +18,7 @@
 #include "Shield.h"
 #include "VirtualPeacefulKing.h"
 #include "Multiplayer.h"
+#include "GameOver.h"
 
 #include "OpenGLRenderer.hpp"
 
@@ -344,6 +345,7 @@ int main(int argc, char* argv[]) {
 
 	// BLACKHOLE
 	blackhole enemyBlackhole(&ply);
+	bool blackholeHit = false;
 
 	// MAGNETAR
 	Magnetar mag(&ply);
@@ -370,6 +372,7 @@ int main(int argc, char* argv[]) {
 	// LOOP STUFF
 	SDL_Event e;
 	bool gameOn = true;
+    bool gameOver = false;
 	bool up = true;
 	bool credits = true;
 	bool attacked = false;
@@ -508,7 +511,13 @@ int main(int argc, char* argv[]) {
 				//SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
 				//bFrames = 0;
 				//blackhole vacuum(gRenderer,gBlackhole,&blackholeRect,blackholeCam);
-				enemyBlackhole.showBlackhole(xDeltav, yDeltav, timestep);
+        
+				blackholeHit = enemyBlackhole.showBlackhole(xDeltav, yDeltav, timestep);
+				if(blackholeHit)
+				{
+					gameOn = false;
+					gameOver = true;
+				}
 			}
 		}
 
@@ -518,6 +527,32 @@ int main(int argc, char* argv[]) {
 		else{
 			ply2.move(xDeltav, yDeltav, timestep);
 		}
+		ply.move(xDeltav, yDeltav, timestep);
+		ply.checkInvincibility(moveLasttime);
+
+
+
+        
+        
+        
+        //Check for king's collision
+        if (SDL_HasIntersection(king.getCameraLoc(), ply.getPlayerCamLoc()) || king.checkRectCollision(king.getCameraLoc(), ply.getPlayerCamLoc()))
+        {
+            
+            if (ply.getPlayerCam().y < 0 || (ply.getPlayerCam().y + 50 > SCREEN_HEIGHT))
+            {
+                ply.getPlayerCamLoc()->y -= yDeltav;
+            }
+            
+            if (ply.getPlayerCam().x < 0 || (ply.getPlayerCamLoc()->x + 240 > SCREEN_WIDTH))
+            {
+                ply.getPlayerCamLoc()->x -= xDeltav;
+            }
+            
+            
+            ply.LostHealth(1);
+            ply.damage(1);
+        }
 
 		if (emy.Exists())
 		{
@@ -527,19 +562,8 @@ int main(int argc, char* argv[]) {
 
 			if (collision && emy.GetHealth() > 0)
 			{
-				//ply.LostHealth(1);
-				//~ if (healthRect.x == 1770)
-				if (healthBar->currentBufferID == healthBar->bufferAttributes.bufferIDEnd)
-				{
-					//~ return playCredits();
-					gameOn = false;
-					credits = true;
-				}
-				else
-				{
-					//~ healthRect.x += 177;
-					healthBar->ForceFrame();
-				}
+				ply.LostHealth(1);
+				ply.damage(1);
 			}
 		}
 		else
@@ -560,7 +584,7 @@ int main(int argc, char* argv[]) {
 		{
 			//~ return playCredits();
 			gameOn = false;
-			credits = true;
+			gameOver = true;
 		}
 
 		king.move(0, kingDelta, timestep);
@@ -642,6 +666,12 @@ int main(int argc, char* argv[]) {
 		 	ac.Render();
 		}
 
+		if (healthBar->currentBufferID == healthBar->bufferAttributes.bufferIDEnd)
+		{
+			gameOn = false;
+			gameOver = true;
+		}
+
 		// MODIFY STARS
 		stars.Render(timestep);
 
@@ -675,7 +705,23 @@ int main(int argc, char* argv[]) {
 	//~ {
 		//~ delete ply2.render;
 	//~ }
-
+    if (gameOver)
+	{	
+		openGL.TabulaRasa();
+		GameOver screen = GameOver(&openGL);
+		int selection = screen.runScreen();
+		if (selection == 0 || selection == 2)
+		{
+			openGL.Close();
+			close();
+			return 0;
+		}
+		if (selection == 1)
+		{
+			playCredits(&openGL);
+			selection = screen.runScreen();	
+		}
+	}
 	if (credits)
 	{
 		playCredits(&openGL);

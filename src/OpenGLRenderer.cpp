@@ -236,6 +236,8 @@ void OpenGLRenderer::PopulateTextures()
 		{1, 1, "resources/imgs/space_2_background.png"},
 		{1, 1, "resources/imgs/attack.png"},
 		{1, 6, "resources/imgs/blackhole.png"},
+		{1, 1, "resources/imgs/Mag_Font2.png"},
+		{1, 1, "resources/imgs/Shield_FontB.png"},
 		// TODO REVISE
 		{1, 1, "resources/imgs/chatter_box.png"},
 		{1, 4, "resources/imgs/faxanaduitis.png"},
@@ -261,11 +263,13 @@ void OpenGLRenderer::PopulateTextures()
 		{1, 16, "resources/imgs/WingedShield.png"},
 		// Eventually
 		{1, 6, "resources/imgs/King.png"},
-		// For menu soon
+		// For menu and game over
 		{1, 1, "resources/imgs/titlescreen.png"},
+        	{1, 1, "resources/imgs/game_over.png"},
 		{1, 2, "resources/imgs/start.png"},
 		{1, 2, "resources/imgs/multi.png"},
 		{1, 2, "resources/imgs/credits.png"},
+        {1, 2, "resources/imgs/quit.png"},
 		// Credits
 		{1, 1, "resources/Credit_Image/carolyn_cole.png"},
 		{1, 1, "resources/Credit_Image/Credit_AnthonyMartrano.png"},
@@ -302,13 +306,13 @@ void OpenGLRenderer::PopulateTextures()
 }
 void OpenGLRenderer::Close()
 {
+	TabulaRasa();
+
 	// Delete our OpengL context
-	SDL_GL_DeleteContext(mainContext);
+	//~ SDL_GL_DeleteContext(mainContext);
 
 	//~ SDL_DestroyWindow(gWindow);
 	gWindow = nullptr;
-
-	TabulaRasa();
 }
 void OpenGLRenderer::TabulaRasa()
 {

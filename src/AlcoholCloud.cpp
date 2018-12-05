@@ -165,6 +165,7 @@ void AlcoholCloud::checkPlayerCollision()
 			if (flareUp)
 			{
 				ply->LostHealth(1);
+				ply->damage(1);
 			}
 
 			ply->ChangeMaxVelocity((double) (rand() % 291) + 10);
@@ -429,7 +430,7 @@ void AlcoholCloud::checkEnemyCollision()
 			emy->ChangeMaxVelocity((double) (rand() % (301-minVelocity) + minVelocity));
 		}
 	}
-	//If out of the cloud, reset the player's max speed to normal
+	//If out of the cloud, reset the enemy's max speed to normal
 	else
 	{
 		emy->ChangeMaxVelocity(300);
