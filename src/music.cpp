@@ -12,6 +12,14 @@ void music::playMusic()
 	}
 }
 
+void music::stopMusic()
+{
+    if (success)
+    {
+        Mix_HaltMusic();
+    }
+}
+
 void music::fireSound()
 {
 	if (success) {
@@ -33,6 +41,14 @@ void music::yourAttackHits()
 	}
 }
 
+void music::WinningMusic()
+{
+    if (success)
+    {
+        Mix_PlayChannel(-1, gWinning, 0);
+    }
+}
+
 // A little strange to have this in lieu of a constructor
 bool music::init()
 {
@@ -40,6 +56,7 @@ bool music::init()
 	gFire = nullptr;
 	gShieldSound = nullptr; 
 	gAttack = nullptr;
+    gWinning = nullptr;
 	//Initialization flag
 	success = true;
 
@@ -96,7 +113,14 @@ bool music::loadMedia()
 	{ 
 		printf("Failed to load hits sound effect! SDL_mixer Error: %s\n", Mix_GetError()); 
 		success = false; 
-	} 
+	}
+    
+    gWinning = Mix_LoadWAV("resources/sounds/WinningBGM.wav");
+    if (gWinning == NULL)
+    {
+        printf("Failed to load hits sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+        success = false;
+    }
 	
 
 	return success;
@@ -113,7 +137,10 @@ void music::close()
 	gMusic = nullptr;
  
 	Mix_FreeChunk(gShieldSound); 
-	gShieldSound = nullptr; 
+	gShieldSound = nullptr;
+    
+    Mix_FreeChunk(gWinning);
+    gWinning = nullptr;
 
 	//Quit SDL subsystems
 	Mix_Quit();

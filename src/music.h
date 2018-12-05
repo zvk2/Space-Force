@@ -16,12 +16,16 @@ class music
 
 	public:
 		void playMusic();
+    
+        void stopMusic();
 
 		void fireSound();
 
 		void shieldStarCollision(); 
 		
 		void yourAttackHits();
+    
+        void WinningMusic();
 
 		//~ bool check();
 
@@ -39,6 +43,8 @@ class music
 		Mix_Chunk *gShieldSound;
 		
 		Mix_Chunk *gAttack;
+    
+        Mix_Chunk *gWinning;
 
 		bool success;
 
