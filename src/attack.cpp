@@ -104,7 +104,7 @@
 
 				if(SDL_HasIntersection(rect, &currentRect))
 				{
-					mus->yourAttackHits();
+					//mus->yourAttackHits();
 					openGL->RemoveRenderObject(currentAttack->index);
 					//~ std::cout << "Attack Die" << std::endl;
 
