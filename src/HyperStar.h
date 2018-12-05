@@ -8,7 +8,7 @@ class HyperStar
 
 	struct StarNode
 	{
-		HyperStar on();
+		//~ HyperStar on();
 		int math;//0 = down 1 = up
 		int frame;
 		double angle;

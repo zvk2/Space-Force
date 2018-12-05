@@ -37,6 +37,10 @@ void Player::setAttack(SDL_Rect* attackRect)
 {
 	hit.setAttack(attackRect);
 }
+void Player::setAttackColSound(music* sound)
+{
+	hit.setColSound(sound);
+}
 void Player::hasShield(bool has)
 {
 	protection = has;
@@ -73,7 +77,7 @@ void Player::HealthBar(RenderObject* health)//needed to access healthbar other o
 }
 void Player::damage(int hits)//other objects effect on health
 {
-	healthBar->IterateFrame();
+	healthBar->ForceFrame();
 }
 //attack* Player::attackHit()
 //{

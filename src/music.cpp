@@ -25,6 +25,13 @@ void music :: shieldStarCollision()
 		Mix_PlayChannel(-1, gShieldSound, 0); 
 	} 
 } 
+void music::yourAttackHits()
+{
+	if(success)
+	{
+		Mix_PlayChannel(-1, gAttack, 0); 
+	}
+}
 
 // A little strange to have this in lieu of a constructor
 bool music::init()
@@ -32,6 +39,7 @@ bool music::init()
 	gMusic = nullptr;
 	gFire = nullptr;
 	gShieldSound = nullptr; 
+	gAttack = nullptr;
 	//Initialization flag
 	success = true;
 
@@ -62,7 +70,7 @@ bool music::loadMedia()
 	success = true;
 
 	//Load music
-	gMusic = Mix_LoadMUS("resources/sounds/spaceJourneyDangerous.wav");
+	gMusic = Mix_LoadMUS("resources/sounds/spaceExciting.wav");
 	if(gMusic == NULL)
 	{
 		printf( "Failed to load music! SDL_mixer Error: %s\n", Mix_GetError() );
@@ -78,11 +86,18 @@ bool music::loadMedia()
 	}
 
 	gShieldSound = Mix_LoadWAV("resources/sounds/shield.wav"); 
-	if(gFire == NULL) 
+	if(gShieldSound == NULL) 
 	{ 
 		printf("Failed to load fire sound effect! SDL_mixer Error: %s\n", Mix_GetError()); 
 		success = false; 
+	}
+	gAttack = Mix_LoadWAV("resources/sounds/hitEnemy.wav"); 
+	if(gAttack == NULL) 
+	{ 
+		printf("Failed to load hits sound effect! SDL_mixer Error: %s\n", Mix_GetError()); 
+		success = false; 
 	} 
+	
 
 	return success;
 }

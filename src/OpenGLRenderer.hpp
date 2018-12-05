@@ -74,10 +74,12 @@ class RenderObject
 	public:
 		// Constructor
 		RenderObject(GLfloat initX, GLfloat initY, GLfloat initZ, BufferAttributes initBufferAttributes);
+		RenderObject(GLfloat initX, GLfloat initY, GLfloat initZ, BufferAttributes initBufferAttributes, bool flipped);
 		~RenderObject();
 		void ChangeCoordinates(GLfloat newX, GLfloat newY, GLfloat newZ);
 		bool FinalFrame();
 		void IterateFrame();
+		void ForceFrame();
 	// Bad taste to make these public
 	// Also probably better to have this just be a stuct or something?
 	//~ private:
@@ -107,6 +109,8 @@ class RenderObject
 
 		// Wait for animations
 		int wait;
+
+		bool flipped;
 };
 
 // Need to think about how to integrate this class with other entity classes
@@ -176,6 +180,9 @@ class OpenGLRenderer
 		SDL_GLContext mainContext;
 		// CTM Location
 		GLuint ctmLocation;
+
+		GLuint flippedLocation;
+
 		// The "program" (shaders) used
 		GLuint program;
 
