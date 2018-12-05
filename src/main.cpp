@@ -49,7 +49,7 @@ double timePassed = 0.0;
 #ifdef __APPLE__
 double timeLimit = 2.0;
 #else
-double timeLimit = 15.0;//Subjust to be changed
+double timeLimit = 45.0;//Subjust to be changed
 #endif
 
 
@@ -354,7 +354,7 @@ int main(int argc, char* argv[]) {
 	//Our king appears!!!!!
 
 	ply.setAttackColSound(&mus);
-	VirtualPeacefulKing king(&openGL, 8, 2, 4, &ply);
+	VirtualPeacefulKing king(&openGL, 10, 2, 4, &ply);
 	//double kingDelta = 1;
 	// First put our king into the void
 	king.setPosition(11000, 0,showTime);

@@ -1,5 +1,7 @@
 #include "Duo.hpp"
 
+
+
 Duo::Duo(OpenGLRenderer *gRenderer, Player* p):
 	ply(p)
 {
