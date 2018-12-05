@@ -26,4 +26,10 @@ class Magnetar
 	RenderObject* render;
 	bool onScreen;
 	bool multiplayer;
+	
+	SDL_Rect textBox;
+	SDL_Rect textScreen;
+	int textH;
+	int textW;
+	RenderObject* textRender;
 };
