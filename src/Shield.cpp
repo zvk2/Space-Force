@@ -32,6 +32,17 @@ Shield::Shield(Player* main): ply(main)
 		protectLoc.x, protectLoc.y, 1, openGL->allBufferAttributes["resources/imgs/shield.png"]
 	);
 	openGL->AppendRenderObject(renderProtect);
+	
+	textH = 100;
+	textW = 700;
+	
+	textBox = false;
+	textScreen = {1280/2 - textW/2,720-textH,textW,textH};
+	endMessage = 3;
+	startMessage = 5;
+	
+	renderText = new RenderObject(textScreen.x,720+textH,1,openGL->allBufferAttributes["resources/imgs/Shield_FontB.png"]);
+	openGL->AppendRenderObject(renderText);
 }
 void Shield::Render()
 {
@@ -54,8 +65,12 @@ void Shield::Render()
 			itemLoc.x = 1280;
 			if(intersect)
 			{
+				startMessage = SDL_GetTicks();
+				endMessage = startMessage+2000;
 				ply->hasShield(true);
 				hits = hits + addStrength;
+				textBox = true;
+				renderText->ChangeCoordinates(textScreen.x,textScreen.y,renderText->z);
 			}
 		}
 		renderItem->ChangeCoordinates(
@@ -79,7 +94,12 @@ void Shield::Render()
 	{
 		RenderPower();
 	}
-
+	if(textBox && startMessage>=endMessage)
+	{
+		renderText->ChangeCoordinates(textScreen.x,720+textH,renderText->z);
+		textBox = false;
+	}
+	startMessage = SDL_GetTicks();
 }
 void Shield::RenderPower()
 {
