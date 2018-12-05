@@ -34,7 +34,7 @@ class attack
 		attack(OpenGLRenderer* Renderer);
 		void addAttack(int x, int y);
 		//~ void addAttack(SDL_Rect* attackBox);
-		void renderAttack(double timestep);
+		void renderAttack(double timestep, int goLeft);
 		void setAttack(SDL_Rect* attac);
 		int hitIntersect(SDL_Rect* rect);
 		void setColSound(music* sounds);

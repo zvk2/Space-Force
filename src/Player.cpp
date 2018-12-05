@@ -1,7 +1,8 @@
 
-
 #include "Player.h"
 #define MAX_SPEED 50
+
+//global variable for multiplayer
 
 //Constructor: takes health, character sheet, and attack value and sets all member vars
 Player::Player(int startingHealth, char* characterImages, int attack, OpenGLRenderer* gRend, bool renderImmediately):
@@ -28,6 +29,11 @@ Player::Player(int startingHealth, char* characterImages, int attack, OpenGLRend
 			openGL->AppendRenderObject(render);
 		}
 	}
+
+//checking collisions between players in multiplayer
+// void Player::MultiplayerCollision(){
+// 	other -> getPlayerCamLoc();
+// }
 
 void Player::setAttack(SDL_Rect* attackRect)
 {

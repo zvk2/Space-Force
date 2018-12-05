@@ -7,7 +7,7 @@
 
 ClientSocket *cs;
 
-ClientInterface::ClientInterface()
+ClientInterface::ClientInterface(string ip)
 {
 	// Initialise SDL net
 	if (SDLNet_Init() == -1)
@@ -19,7 +19,7 @@ ClientInterface::ClientInterface()
 	try
 	{
 		// Initialize client socket with server address, port number, max message size
-		cs = new ClientSocket("127.0.0.1", 1234, 512);
+		cs = new ClientSocket(ip, 1234, 512);
 	}
 	catch (SocketException e)
 	{
@@ -48,14 +48,14 @@ int ClientInterface::Connect(){
 	return connected;
 }
 
-SDL_Rect ClientInterface::Communicate(SDL_Rect playerRect){
+SDL_Rect ClientInterface::Communicate(SDL_Rect playerRect, int attack){
 
 	string receivedMessage = "";
 
 	try
 	{
 		// Serialize the message with our personal protocol
-		string transmitInfo = Serialize(playerRect);
+		string transmitInfo = Serialize(playerRect, attack);
 		// Transmit that data
 		cs->Transmit(transmitInfo);
 		// Check for incoming messages
@@ -76,7 +76,7 @@ SDL_Rect ClientInterface::Communicate(SDL_Rect playerRect){
 }
 
 // Current serialization method, this will change as the game changes
-string ClientInterface::Serialize(SDL_Rect playerRect)
+string ClientInterface::Serialize(SDL_Rect playerRect, int attack)
 {
 	// Get the x and y values and standardize them to be a string of length 4
 	int x = playerRect.x;
@@ -117,9 +117,9 @@ string ClientInterface::Serialize(SDL_Rect playerRect)
 	{
 		yS = std::to_string(y);
 	}
-
+	string attackS = std::to_string(attack);
 	// Return serialized value	
-	stringified = xS + yS;
+	stringified = xS + yS + attackS;
 	return stringified;
 }
 
@@ -128,7 +128,7 @@ SDL_Rect ClientInterface::GetPlayerInfo(string playerInfo)
 {
 	SDL_Rect playerRect = {0, 0, 0, 0};
 	playerRect.x = std::stoi(playerInfo.substr(0, 4));
-	playerRect.y = std::stoi(playerInfo.substr(5, 4));
-
+	playerRect.y = std::stoi(playerInfo.substr(4, 4));
+	playerRect.w = std::stoi(playerInfo.substr(8, 1));
 	return playerRect;
 }
