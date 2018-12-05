@@ -42,6 +42,7 @@ const int TILE_SIZE = 100;
 //Boolean value to control when the boss got rendered
 bool showTime = false;
 bool bossOn = false;
+bool winnerWinnerChickenDinner = false;
 //The variables that will be used by timer
 double timePassed = 0.0;
 #ifdef __APPLE__
@@ -695,6 +696,7 @@ int main(int argc, char* argv[]) {
         {
             gameOn = false;
             gameOver = true;
+            winnerWinnerChickenDinner = true;
         }
 
 		// MODIFY STARS
