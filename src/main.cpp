@@ -20,6 +20,7 @@
 #include "Shield.h"
 #include "VirtualPeacefulKing.h"
 #include "GameOver.h"
+#include "Duo.hpp"
 
 #include "OpenGLRenderer.hpp"
 
@@ -237,7 +238,7 @@ int main(int argc, char* argv[]) {
 	int connected = 0;
 	bool imPlayer2 = false;
 	printf("%d",argc);
-	
+
 	string ip;
 	std::ifstream myfile ("config.txt");
 	if (myfile.is_open())
@@ -332,6 +333,9 @@ int main(int argc, char* argv[]) {
 	Player ply2(10, player2Texture, 1, &openGL, multiplayer);
 	double ACCEL = ply.GetMove();
 
+	// DUO
+	Duo dynamicDuo = Duo(&openGL, &ply);
+
 	// PLAYER ATTACKS
 	SDL_Rect attackRect = {0, 0, 60, 10};
 	SDL_Rect attackRect2 = {0, 0, 60, 10};
@@ -348,7 +352,7 @@ int main(int argc, char* argv[]) {
 
 	// THE KING
 	//Our king appears!!!!!
-	
+
 	ply.setAttackColSound(&mus);
 	VirtualPeacefulKing king(&openGL, 8, 2, 4, &ply);
 	//double kingDelta = 1;
@@ -394,14 +398,14 @@ int main(int argc, char* argv[]) {
 	bool attacked = false;
     //Set up the timer
     clock_t startTimeForBoss = clock();
-    
+
 	while (gameOn)
 	{
 		if(multiplayer && !connected) {
 			connected = client->Connect();
 		}
-        
-        
+
+
 
 		while(SDL_PollEvent(&e))
 		{
@@ -480,19 +484,19 @@ int main(int argc, char* argv[]) {
 		// Animate king (test)
 		//boundary check for king
         timePassed = (double)(clock()-startTimeForBoss)/CLOCKS_PER_SEC;
-        
+
         if (timePassed >= timeLimit)
         {
             showTime = true;
             if (!bossOn)
             {
-                
+
                 king.setPosition(1280-288, 0, showTime);
                 bossOn = true;
             }
             king.animate(frames);
         }
-		
+
         //std::cout << timePassed << std::endl;
 		// Since game levels progress from L to R, no need for sprite to flip
 		// Code for flipping remains here if theres a change of plan
@@ -531,7 +535,7 @@ int main(int argc, char* argv[]) {
 				//SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
 				//bFrames = 0;
 				//blackhole vacuum(gRenderer,gBlackhole,&blackholeRect,blackholeCam);
-        
+
 				blackholeHit = enemyBlackhole.showBlackhole(xDeltav, yDeltav, timestep);
 				if(blackholeHit)
 				{
@@ -552,16 +556,16 @@ int main(int argc, char* argv[]) {
 
 
 
-        
-        
-        
-        //Check for king's 
-		
+
+
+
+        //Check for king's
+
         if (SDL_HasIntersection(king.getCameraLoc(), ply.getPlayerCamLoc()) || king.checkRectCollision(king.getCameraLoc(), ply.getPlayerCamLoc()))
         {
-            
-            
-            
+
+
+
             ply.LostHealth(1);
             ply.damage(1);
         }
@@ -651,7 +655,7 @@ int main(int argc, char* argv[]) {
 			//play fire sound effect
 			mus.fireSound();
 		}
-        
+
 		//lets the attack move across the screen
 		if(attacked){
 			if(!imPlayer2){
@@ -661,7 +665,7 @@ int main(int argc, char* argv[]) {
 				ply.hit.addAttack(pCam.x, pCam.y + 51/2,1);
 			}
 		}
-        
+
 		ply.hit.renderAttack(timestep, 0);
 		ply.hit.hitIntersect(&pCam2);
 		ply2.hit.renderAttack(timestep, 1);
@@ -689,7 +693,7 @@ int main(int argc, char* argv[]) {
 			gameOn = false;
 			gameOver = true;
 		}
-        
+
         //To check if the king has been killed
         if (king.getHealth() <= 0)
         {
@@ -697,6 +701,9 @@ int main(int argc, char* argv[]) {
             gameOver = true;
             winnerWinnerChickenDinner = true;
         }
+
+        // Move the duo
+        dynamicDuo.Move();
 
 		// MODIFY STARS
 		stars.Render(timestep);
@@ -732,7 +739,7 @@ int main(int argc, char* argv[]) {
 		//~ delete ply2.render;
 	//~ }
     if (gameOver)
-	{	
+	{
 		openGL.TabulaRasa();
 		GameOver screen = GameOver(&openGL, winnerWinnerChickenDinner);
 		int selection = screen.runScreen();
@@ -747,7 +754,7 @@ int main(int argc, char* argv[]) {
 		if (selection == 1)
 		{
 			playCredits(&openGL);
-			selection = screen.runScreen();	
+			selection = screen.runScreen();
 		}
 	}
 	if (credits)
