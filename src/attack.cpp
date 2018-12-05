@@ -32,11 +32,19 @@
 			cam.y = y;
 			if(image == 1)
 			{
-			attackVector.push_back(
-				new RenderObject(
-					x, y, 1, openGL->allBufferAttributes["resources/imgs/attack.png"]
-				)
-			);
+				attackVector.push_back(
+					new RenderObject(
+						x, y, 1, openGL->allBufferAttributes["resources/imgs/attack.png"]
+					)
+				);
+			}
+			else
+			{
+				attackVector.push_back(
+					new RenderObject(
+						x, y, 1, openGL->allBufferAttributes["resources/imgs/missile.png"]
+					)
+				);
 			}
 
 			openGL->AppendRenderObject(attackVector[attackVector.size() - 1]);

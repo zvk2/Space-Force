@@ -119,6 +119,11 @@ void VirtualPeacefulKing::move(double step)
 		kingCam.y,
 		render->z
     );
+	if(SDL_GetTicks()%1000 < 50)
+	{
+		missile.addAttack(kingCam.x,kingCam.y+(kingCam.h)/3,2);
+	}
+	missile.renderAttack(-step);
 }
 
 //Animate the king
