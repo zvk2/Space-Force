@@ -674,18 +674,18 @@ int main(int argc, char* argv[]) {
 			gameOver = true;
 			if(!imPlayer2){
 				if(player2hits > 20){
-					winnerWinnerChickenDinner = true;
+					winnerWinnerChickenDinner = false;
 					printf("hi");
 				}else{
-					winnerWinnerChickenDinner = false;
+					winnerWinnerChickenDinner = true;
 					printf("bye");
 				}
 			}else{
 				if(player2hits > 20){
-					winnerWinnerChickenDinner = false;
+					winnerWinnerChickenDinner = true;
 					printf("okkk");
 				}else{
-					winnerWinnerChickenDinner = true;
+					winnerWinnerChickenDinner = false;
 					printf("nokkk");
 				}
 			}
