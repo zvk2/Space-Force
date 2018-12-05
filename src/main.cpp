@@ -326,7 +326,6 @@ int main(int argc, char* argv[]) {
 
 	// BLACKHOLE
 	blackhole enemyBlackhole(&ply);
-	bool blackholeHit = false;
 
 	// MAGNETAR
 	Magnetar mag(&ply);
@@ -482,12 +481,7 @@ int main(int argc, char* argv[]) {
 				//SDL_RenderCopy(gRenderer, gBlackhole, &blackholeRect, &blackholeCam);
 				//bFrames = 0;
 				//blackhole vacuum(gRenderer,gBlackhole,&blackholeRect,blackholeCam);
-				blackholeHit = enemyBlackhole.showBlackhole(xDeltav, yDeltav, timestep);
-				if(blackholeHit)
-				{
-					gameOn = false;
-					credits = true;
-				}
+				enemyBlackhole.showBlackhole(xDeltav, yDeltav, timestep);
 			}
 		}
 
