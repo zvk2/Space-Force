@@ -670,22 +670,28 @@ int main(int argc, char* argv[]) {
 		player2hits += ply2.hit.hitIntersect(&pCam);
 
 		if(player2hits > 20 || player1hits > 20){
-			gameOver == true;
+			gameOn = false;
+			gameOver = true;
+			if(!imPlayer2){
+				if(player2hits > 20){
+					winnerWinnerChickenDinner = true;
+					printf("hi");
+				}else{
+					winnerWinnerChickenDinner = false;
+					printf("bye");
+				}
+			}else{
+				if(player2hits > 20){
+					winnerWinnerChickenDinner = false;
+					printf("okkk");
+				}else{
+					winnerWinnerChickenDinner = true;
+					printf("nokkk");
+				}
+			}
 		}
 
-		if(!imPlayer2){
-			if(player2hits > 20){
-				winnerWinnerChickenDinner = false;
-			}else{
-				winnerWinnerChickenDinner = true;
-			}
-		}else{
-			if(player2hits > 20){
-				winnerWinnerChickenDinner = true;
-			}else{
-				winnerWinnerChickenDinner = false;
-			}
-		}
+		
 
 		protect.Render();
 
