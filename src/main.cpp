@@ -17,7 +17,6 @@
 #include "music.h"
 #include "Shield.h"
 #include "VirtualPeacefulKing.h"
-#include "Multiplayer.h"
 #include "GameOver.h"
 
 #include "OpenGLRenderer.hpp"
