@@ -642,10 +642,10 @@ int main(int argc, char* argv[]) {
 			up = false;
 
 			if(!imPlayer2){
-				ply.hit.addAttack(pCam.x + 240, pCam.y + 51/2);
+				ply.hit.addAttack(pCam.x + 240, pCam.y + 51/2,1);
 			}
 			else{
-				ply2.hit.addAttack(pCam2.x, pCam2.y + 51/2);
+				ply2.hit.addAttack(pCam2.x, pCam2.y + 51/2,1);
 			}
 
 			//play fire sound effect
