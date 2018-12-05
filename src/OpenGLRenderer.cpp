@@ -295,7 +295,10 @@ void OpenGLRenderer::PopulateTextures()
 		);
 	}
 
-	TabulaRasa();
+	// May be causing problems
+	//~ TabulaRasa();
+	RemoveRenderObject(loading->index);
+	Display();
 }
 void OpenGLRenderer::Close()
 {
