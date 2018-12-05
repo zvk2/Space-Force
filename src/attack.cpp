@@ -25,6 +25,13 @@
 			cam.h = attac->h;
 		}
 
+        //Get the head of the list
+        struct Node* attack::getHead()
+        {
+            return head;
+        }
+
+
 		// new attacks are added to the end of the list
 		void attack::addAttack(int x, int y, int image)
 		{

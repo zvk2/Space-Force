@@ -38,6 +38,7 @@ class attack
 		void setAttack(SDL_Rect* attac);
 		int hitIntersect(SDL_Rect* rect);
 		void setColSound(music* sounds);
+        struct Node* getHead();
 	private:
 		struct Node* head;
 		struct Node* end;

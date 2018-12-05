@@ -343,14 +343,14 @@ int main(int argc, char* argv[]) {
 
 	// FAXANDUITIS
 	Enemy emy(&openGL, &ply, 1, &ply.hit, 'f', &timestep);
-	double emyDelta = 1;
+	//double emyDelta = 1;
 
 	// THE KING
 	//Our king appears!!!!!
 	
 	ply.setAttackColSound(&mus);
 	VirtualPeacefulKing king(&openGL, 20, 2, 4, &ply);
-	double kingDelta = 1;
+	//double kingDelta = 1;
 	// First put our king into the void
 	king.setPosition(11000, 0,showTime);
 
@@ -646,6 +646,7 @@ int main(int argc, char* argv[]) {
 			//play fire sound effect
 			mus.fireSound();
 		}
+        
 		//lets the attack move across the screen
 		if(attacked){
 			if(!imPlayer2){

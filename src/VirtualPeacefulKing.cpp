@@ -15,7 +15,7 @@ VirtualPeacefulKing::VirtualPeacefulKing(OpenGLRenderer* gRend, int initialHealt
     kingRect = {0, 0, 288, 288};
     kingCam = {1280/2, 720/2, 288, 288};
 	plyCam = ply-> getPlayerCamLoc();
-	SDL_Rect attackBox = {0,0,70,48};
+	SDL_Rect attackBox = {0,0,180,180};
 	missile.setAttack(&attackBox);
 
 	//~ std::string initTexture = "resources/imgs/King.png";
