@@ -138,6 +138,14 @@ void Player::setVelocity(double x, double y)
 	phys.setxVelocity(x);
 	phys.setyVelocity(y);
 }
+void Player::setXVelocity(double x)
+{
+	phys.setxVelocity(x);
+}
+void Player::setYVelocity(double y)
+{
+	phys.setyVelocity(y);
+}
 
 //Return the current x velocity
 double Player::getxVel()

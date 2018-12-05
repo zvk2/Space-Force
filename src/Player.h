@@ -103,6 +103,8 @@ class Player
 
 		// Lazy, I know
 		RenderObject* render;
+		void setXVelocity(double x);
+		void setYVelocity(double y);
 
 	private:
 

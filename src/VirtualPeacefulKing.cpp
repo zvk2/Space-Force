@@ -9,18 +9,20 @@
 //Public methods
 
 
-VirtualPeacefulKing::VirtualPeacefulKing(OpenGLRenderer* gRend, int initialHealth, int attack,int skillCD):hitPoints(initialHealth),attackPower(attack),phys(0,0,300.0,3600.0),xCoord(1280/10),yCoord(720/2),cd(skillCD)
+VirtualPeacefulKing::VirtualPeacefulKing(OpenGLRenderer* gRend, int initialHealth, int attack,int skillCD, Player* main):hitPoints(initialHealth),attackPower(attack),phys(0,0,300.0,3600.0),missile(gRend),xCoord(1280/10),yCoord(720/2),cd(skillCD), ply(main)
 {
 	openGL = gRend;
-
     kingRect = {0, 0, 288, 288};
     kingCam = {1280/2, 720/2, 288, 288};
+	plyCam = ply-> getPlayerCamLoc();
+	SDL_Rect attackBox = {0,0,70,48};
+	missile.setAttack(&attackBox);
 
 	//~ std::string initTexture = "resources/imgs/King.png";
 	//~ kingTexture = initTexture.c_str();
 
 	render = new RenderObject(
-		kingCam.x, kingCam.y, 0, openGL->allBufferAttributes["resources/imgs/King.png"]
+		kingCam.x, kingCam.y, 0.5, openGL->allBufferAttributes["resources/imgs/King.png"]
 	);
 
 	openGL->AppendRenderObject(render);
@@ -64,14 +66,34 @@ void VirtualPeacefulKing::setVelocity(double x, double y)
 //Check the boundary so that our king will not move outside the screen
 void VirtualPeacefulKing::checkBoundary()
 {
-    if (xCoord < 0)
-        xCoord = 0;
-    if (xCoord + kingCam.w > SCREEN_WIDTH)
-        xCoord = SCREEN_WIDTH - kingCam.w;
-    if (yCoord < 0)
-        yCoord = 0;
-    if (yCoord + kingCam.h > SCREEN_HEIGHT)
-        yCoord = SCREEN_HEIGHT - kingCam.h;
+    if (kingCam.x < 0)
+        kingCam.x = 0;
+    if (kingCam.x + kingCam.w > SCREEN_WIDTH)
+        kingCam.x = SCREEN_WIDTH - kingCam.w;
+    if (kingCam.y <= 0)
+	{
+		kingCam.y = 0;
+		setVelocity(0, 10);
+		delta = 1;
+	}
+    if (kingCam.y + kingCam.h >= SCREEN_HEIGHT)
+	{
+        kingCam.y = SCREEN_HEIGHT - kingCam.h;
+		setVelocity(0,-10);
+		delta = -1;
+	}
+	if(SDL_HasIntersection(&kingCam, plyCam))
+	{
+		int x;
+		int y;
+		y = plyCam->y;
+		if(plyCam->x+plyCam->w > kingCam.x)
+		{
+			x =  plyCam->w + plyCam->x - kingCam.x;
+			x = plyCam->x-x;
+		}
+		ply->setPosition(x,y);
+	}
 
     render->ChangeCoordinates(
 		kingCam.x,
@@ -81,9 +103,10 @@ void VirtualPeacefulKing::checkBoundary()
 }
 
 //Move the king
-void VirtualPeacefulKing::move(double deltax, double deltay, double step, bool showTime)
+void VirtualPeacefulKing::move(double step)
+
 {
-    phys.ChangeVelocity(deltax, deltay, step);
+    phys.ChangeVelocity(0, delta, step);
 
     xCoord += (phys.getxVelocity() * step);
     yCoord += (phys.getyVelocity() * step);
@@ -103,6 +126,11 @@ void VirtualPeacefulKing::move(double deltax, double deltay, double step, bool s
 		kingCam.y,
 		render->z
     );
+	if(SDL_GetTicks()%1000 < 50)
+	{
+		missile.addAttack(kingCam.x,kingCam.y+(kingCam.h)/3,2);
+	}
+	missile.renderAttack(-step);
 }
 
 //Animate the king

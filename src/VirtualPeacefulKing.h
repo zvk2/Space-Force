@@ -23,7 +23,7 @@ public:
     //This boss will have a value of shield which will protect him from direct attack. The boss's health will only decrease if the shield is gone
     //Shield will generate itself throughout the time
     //This boss will also have a special skill to generate blackhole in a given Time interval
-    VirtualPeacefulKing(OpenGLRenderer* gRend, int initialHealth, int attack, int skillCD);
+    VirtualPeacefulKing(OpenGLRenderer* gRend, int initialHealth, int attack, int skillCD, Player* main);
 
     //Damage to the shield
     //void LostShield(int damage);
@@ -44,7 +44,8 @@ public:
     void setVelocity(double x, double y);
 
     //a method which can be called from model class
-    void move(double deltax, double deltay, double step,bool showTime);
+
+    void move(double step);
 
     //return x position
     double getXPosition();
@@ -72,6 +73,7 @@ private:
     //Some basic attributes of our king
     OpenGLRenderer* openGL;
     RenderObject* render;
+	Player* ply;
 
     double ACCEL = 3600.0;
     double SPEED_LIMIT = 300.0;
@@ -81,8 +83,8 @@ private:
     int speed;
     int cd;
     double attackPower;
-
-    
+	double delta;
+    attack missile;
 
     const char* kingTexture;
 
@@ -91,6 +93,7 @@ private:
 
     SDL_Rect kingCam;
     SDL_Rect kingRect;
+	SDL_Rect* plyCam;
 
     double xCoord;
     double yCoord;

@@ -347,14 +347,15 @@ int main(int argc, char* argv[]) {
 
 	// THE KING
 	//Our king appears!!!!!
-	VirtualPeacefulKing king(&openGL, 100, 2, 4);
+	
+	ply.setAttackColSound(&mus);
+	VirtualPeacefulKing king(&openGL, 100, 2, 4, &ply);
 	double kingDelta = 1;
 
-	// First throw the king into the void
-    //The player will not be able to see the boss until some time has been passed
-    king.setPosition(11000, 0,showTime);
+	// Guess this should be in the class file?
+	king.setPosition(1280-288, 0);
+
     king.setVelocity(0, 50);
-	ply.setAttackColSound(&mus);
 	// HYPERSTAR
 	HyperStar stars(&ply, &mus);
 
@@ -460,8 +461,6 @@ int main(int argc, char* argv[]) {
 		SDL_Rect pRect2 = ply2.getPlayerRect();
 		SDL_Rect pCam2 = ply.getPlayerCam();
 		SDL_Rect transfer;
-		SDL_Rect kRect = king.getRect();
-		SDL_Rect kCam = king.getCamera();
 
 		moveLasttime = SDL_GetTicks();
 
@@ -481,37 +480,9 @@ int main(int argc, char* argv[]) {
 
 		// Animate king (test)
 		//boundary check for king
-		if (king.getCamera().y + king.getCamera().h == SCREEN_HEIGHT)
-		{
-			kingDelta = -1;
-			king.setVelocity(0, -10);
-		}
-		if (king.getCamera().y == 0)
-		{
-			kingDelta = 1;
-			king.setVelocity(0, 10);
-		}
-        
-        //The boss for only get rendered after 20 seconds
-        timePassed = (double)(clock() - startTimeForBoss)/ CLOCKS_PER_SEC;
-        if (timePassed >= timeLimit)
-        {
-            showTime = true;
-        }
-        
-        if (showTime)
-        {
-            if (!bossOn)
-            {
-                //Put our king back online
-                king.setPosition(1100, 0,showTime);
-                bossOn = true;
-            }
-            
-            king.animate(frames);
-        }
-		
-        std::cout << timePassed << std::endl;
+
+		king.animate(frames);
+
 		// Since game levels progress from L to R, no need for sprite to flip
 		// Code for flipping remains here if theres a change of plan
 
@@ -573,19 +544,11 @@ int main(int argc, char* argv[]) {
         
         
         
-        //Check for king's collision
+        //Check for king's 
+		
         if (SDL_HasIntersection(king.getCameraLoc(), ply.getPlayerCamLoc()) || king.checkRectCollision(king.getCameraLoc(), ply.getPlayerCamLoc()))
         {
             
-            if (ply.getPlayerCam().y < 0 || (ply.getPlayerCam().y + 50 > SCREEN_HEIGHT))
-            {
-                ply.getPlayerCamLoc()->y -= yDeltav;
-            }
-            
-            if (ply.getPlayerCam().x < 0 || (ply.getPlayerCamLoc()->x + 240 > SCREEN_WIDTH))
-            {
-                ply.getPlayerCamLoc()->x -= xDeltav;
-            }
             
             
             ply.LostHealth(1);
@@ -625,7 +588,7 @@ int main(int argc, char* argv[]) {
 			gameOver = true;
 		}
 
-		king.move(0, kingDelta, timestep,showTime);
+		king.move(timestep);
 
 		/*
 		collision = emy.checkPlayerCollision(&ply, timestep);
@@ -657,18 +620,17 @@ int main(int argc, char* argv[]) {
 				ply2.render->ChangeCoordinates(pCam2.x, pCam2.y, ply2.render->z);
 			}
 		}
-		kCam = king.getCamera();
+
+		pCam2.x = transfer.x;
+		pCam2.y = transfer.y;
 
 		//attack button
 		if(keyState[SDL_SCANCODE_SPACE] && up == true)
 		{
 			up = false;
-			if(!imPlayer2){
-				ply.hit.addAttack(pCam.x + 240, pCam.y + 51/2);
-			}
-			else{
-				ply2.hit.addAttack(pCam2.x, pCam2.y + 51/2);
-			}
+
+			ply.hit.addAttack(pCam.x + 240, pCam.y + 51/2,1);
+
 			//play fire sound effect
 			mus.fireSound();
 		}

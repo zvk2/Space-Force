@@ -26,16 +26,26 @@
 		}
 
 		// new attacks are added to the end of the list
-		void attack::addAttack(int x, int y)
+		void attack::addAttack(int x, int y, int image)
 		{
 			cam.x = x;
 			cam.y = y;
-
-			attackVector.push_back(
-				new RenderObject(
-					x, y, 1, openGL->allBufferAttributes["resources/imgs/attack.png"]
-				)
-			);
+			if(image == 1)
+			{
+				attackVector.push_back(
+					new RenderObject(
+						x, y, 1, openGL->allBufferAttributes["resources/imgs/attack.png"]
+					)
+				);
+			}
+			else
+			{
+				attackVector.push_back(
+					new RenderObject(
+						x, y, 1, openGL->allBufferAttributes["resources/imgs/missile.png"]
+					)
+				);
+			}
 
 			openGL->AppendRenderObject(attackVector[attackVector.size() - 1]);
 		}
