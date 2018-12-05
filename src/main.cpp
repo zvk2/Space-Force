@@ -44,7 +44,7 @@ bool showTime = false;
 bool bossOn = false;
 //The variables that will be used by timer
 double timePassed = 0.0;
-double timeLimit = 5.0;//Subjust to be changed
+double timeLimit = 4.0;//Subjust to be changed
 
 
 // Parent folder for credit images
