@@ -10,7 +10,6 @@ class HyperStar
 	{
 		//~ HyperStar on();
 		int math;//0 = down 1 = up
-		int frame;
 		double angle;
 		double vel;
 		double x;
@@ -39,7 +38,6 @@ class HyperStar
 		SDL_Texture* starIm;
 		Player* ply;
 		music* play;
-		SDL_Rect imBox;
 		SDL_Rect* plyCam;
 		OpenGLRenderer* openGL;
 		struct StarNode* head;
