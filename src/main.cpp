@@ -492,7 +492,8 @@ int main(int argc, char* argv[]) {
 		}
 
 		ply.move(xDeltav, yDeltav, timestep);
-
+		ply.checkInvincibility(moveLasttime);
+		
 		if (emy.Exists())
 		{
 			bool collision = ply.checkEnemyCollision(&emy, timestep);
@@ -501,19 +502,8 @@ int main(int argc, char* argv[]) {
 
 			if (collision && emy.GetHealth() > 0)
 			{
-				//ply.LostHealth(1);
-				//~ if (healthRect.x == 1770)
-				if (healthBar->currentBufferID == healthBar->bufferAttributes.bufferIDEnd)
-				{
-					//~ return playCredits();
-					gameOn = false;
-					credits = true;
-				}
-				else
-				{
-					//~ healthRect.x += 177;
-					healthBar->ForceFrame();
-				}
+				ply.LostHealth(1);
+				ply.damage(1);
 			}
 		}
 		else
@@ -587,6 +577,12 @@ int main(int argc, char* argv[]) {
 		 	ac.Render();
 		}
 
+		if (healthBar->currentBufferID == healthBar->bufferAttributes.bufferIDEnd)
+		{
+			gameOn = false;
+			credits = true;
+		}
+		
 		// MODIFY STARS
 		stars.Render(timestep);
 
