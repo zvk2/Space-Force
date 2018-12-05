@@ -7,13 +7,13 @@
 #include "Multiplayer.h"
 #include "attack.h"
 
-hitPoints1 = 20;
-hitPoints2 = 20;
 
 //Public methods
 Multiplayer::Multiplayer(Player* p1, Player* p2, attack* atk1, attack* atk2):ply1(p1), ply2(p2), plyBlast1(atk1), plyBlast2(atk2)
 {
 	//Get a pointer to both of the players/attacks camBox
+	hitPoints1 = 20;
+	hitPoints2 = 20;
 	playerCam1 = *ply1->getPlayerCamLoc();
 	playerCam2 = *ply2->getPlayerCamLoc();
 }

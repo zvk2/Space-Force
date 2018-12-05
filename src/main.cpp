@@ -17,6 +17,7 @@
 #include "music.h"
 #include "Shield.h"
 #include "VirtualPeacefulKing.h"
+#include "Multiplayer.h"
 
 #include "OpenGLRenderer.hpp"
 
@@ -218,7 +219,6 @@ int main(int argc, char* argv[]) {
 	// Multiplayer stuff
 	bool multiplayer = false;
 	int connected = 0;
-	Multiplayer multCollision();
 	bool imPlayer2 = false;
 	printf("%d",argc);
 	
@@ -314,6 +314,7 @@ int main(int argc, char* argv[]) {
 	char player2Texture[] = "resources/imgs/starman_blue.png";
 	Player ply(10, player1Texture, 1, &openGL, true);
 	Player ply2(10, player2Texture, 1, &openGL, multiplayer);
+	Multiplayer multCollision(&ply, &ply2, &ply.hit, &ply2.hit);
 	double ACCEL = ply.GetMove();
 
 	// PLAYER ATTACKS
@@ -338,7 +339,7 @@ int main(int argc, char* argv[]) {
 	// Guess this should be in the class file?
 	king.setPosition(1100, 0);
     king.setVelocity(0, 50);
-	ply.setAttackColSound(&mus);
+	//ply.setAttackColSound(&mus);
 	// HYPERSTAR
 	HyperStar stars(&ply, &mus);
 
@@ -621,7 +622,9 @@ int main(int argc, char* argv[]) {
 		}
 
 		ply.hit.renderAttack(timestep, 0);
+		multCollision.AttackCollision1();
 		ply2.hit.renderAttack(timestep, 1);
+		multCollision.AttackCollision2();
 		protect.Render();
 
 		//~ ALCOHOL CLOUD STUFF
