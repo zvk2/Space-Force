@@ -32,7 +32,7 @@ class attack
 
 	public:
 		attack(OpenGLRenderer* Renderer);
-		void addAttack(int x, int y);
+		void addAttack(int x, int y, int image);
 		//~ void addAttack(SDL_Rect* attackBox);
 		void renderAttack(double timestep);
 		void setAttack(SDL_Rect* attac);

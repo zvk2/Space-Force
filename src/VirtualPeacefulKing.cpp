@@ -11,13 +11,14 @@
 //Public methods
 
 
-VirtualPeacefulKing::VirtualPeacefulKing(OpenGLRenderer* gRend, int initialHealth, int attack,int skillCD, Player* main):hitPoints(initialHealth),attackPower(attack),phys(0,0,300.0,3600.0),xCoord(1280/10),yCoord(720/2),cd(skillCD), ply(main)
+VirtualPeacefulKing::VirtualPeacefulKing(OpenGLRenderer* gRend, int initialHealth, int attack,int skillCD, Player* main):hitPoints(initialHealth),attackPower(attack),phys(0,0,300.0,3600.0),missile(gRend),xCoord(1280/10),yCoord(720/2),cd(skillCD), ply(main)
 {
 	openGL = gRend;
-
     kingRect = {0, 0, 288, 288};
     kingCam = {1280/2, 720/2, 288, 288};
 	plyCam = ply-> getPlayerCamLoc();
+	SDL_Rect attackBox = {0,0,70,48};
+	missile.setAttack(&attackBox);
 
 	//~ std::string initTexture = "resources/imgs/King.png";
 	//~ kingTexture = initTexture.c_str();

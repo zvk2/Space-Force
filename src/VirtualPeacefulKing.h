@@ -85,7 +85,7 @@ private:
     int cd;
     double attackPower;
 	double delta;
-    
+    attack missile;
 
     const char* kingTexture;
 

@@ -480,24 +480,17 @@ int main(int argc, char* argv[]) {
         
         
         
-        //Check for king's collision
+        //Check for king's 
+		
         if (SDL_HasIntersection(king.getCameraLoc(), ply.getPlayerCamLoc()) || king.checkRectCollision(king.getCameraLoc(), ply.getPlayerCamLoc()))
         {
             
-            if (ply.getPlayerCam().y < 0 || (ply.getPlayerCam().y + 50 > SCREEN_HEIGHT))
-            {
-                ply.getPlayerCamLoc()->y -= yDeltav;
-            }
-            
-            if (ply.getPlayerCam().x < 0 || (ply.getPlayerCamLoc()->x + 240 > SCREEN_WIDTH))
-            {
-                ply.getPlayerCamLoc()->x -= xDeltav;
-            }
             
             
             ply.LostHealth(1);
             ply.damage(1);
         }
+		
 		
 		if (emy.Exists())
 		{
@@ -555,7 +548,7 @@ int main(int argc, char* argv[]) {
 		if(keyState[SDL_SCANCODE_SPACE] && up == true)
 		{
 			up = false;
-			ply.hit.addAttack(pCam.x + 240, pCam.y + 51/2);
+			ply.hit.addAttack(pCam.x + 240, pCam.y + 51/2,1);
 
 			//play fire sound effect
 			mus.fireSound();
