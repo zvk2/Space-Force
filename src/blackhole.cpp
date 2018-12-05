@@ -109,7 +109,7 @@
             double newY;
 			double GM = 5000000;
 			double m = 10;
-			double maxSpeed = 70;
+			double maxSpeed = 65;
 
             if(blackholeCam.x < 1680 && blackholeCam.x > 0)
             {
