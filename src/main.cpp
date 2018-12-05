@@ -669,19 +669,20 @@ int main(int argc, char* argv[]) {
 		ply2.hit.renderAttack(timestep, 1);
 		player2hits += ply2.hit.hitIntersect(&pCam);
 
-		if(player2hits > 20 || player1hits > 20){
+
+		if(player2hits == 20 || player1hits == 20){
 			gameOn = false;
 			gameOver = true;
 			if(!imPlayer2){
-				if(player1hits > 20){
-					winnerWinnerChickenDinner = true;
+				if(player2hits == 20){
+					winnerWinnerChickenDinner = false;
 					printf("hi");
 				}else{
-					winnerWinnerChickenDinner = false;
+					winnerWinnerChickenDinner = true;
 					printf("bye");
 				}
 			}else{
-				if(player2hits > 20){
+				if(player2hits == 20){
 					winnerWinnerChickenDinner = true;
 					printf("okkk");
 				}else{
