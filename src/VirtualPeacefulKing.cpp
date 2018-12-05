@@ -117,7 +117,7 @@ void VirtualPeacefulKing::move(double step,bool showTime)
         checkBoundary();
     }
     
-
+    
     kingCam.x = (int) xCoord;
     kingCam.y = (int) yCoord;
 

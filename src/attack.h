@@ -17,7 +17,7 @@ struct Node
 	struct Node *next;
 	struct Node *pre;
 };
-// What does this do?
+
 struct interList
 {
 	int type;

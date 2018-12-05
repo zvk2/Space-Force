@@ -349,7 +349,7 @@ int main(int argc, char* argv[]) {
 	//Our king appears!!!!!
 	
 	ply.setAttackColSound(&mus);
-	VirtualPeacefulKing king(&openGL, 100, 2, 4, &ply);
+	VirtualPeacefulKing king(&openGL, 20, 2, 4, &ply);
 	double kingDelta = 1;
 	// First put our king into the void
 	king.setPosition(11000, 0,showTime);
@@ -486,13 +486,14 @@ int main(int argc, char* argv[]) {
             showTime = true;
             if (!bossOn)
             {
+                
                 king.setPosition(1280-288, 0, showTime);
-                bossOn = false;
+                bossOn = true;
             }
             king.animate(frames);
         }
 		
-        std::cout << timePassed << std::endl;
+        //std::cout << timePassed << std::endl;
 		// Since game levels progress from L to R, no need for sprite to flip
 		// Code for flipping remains here if theres a change of plan
 
