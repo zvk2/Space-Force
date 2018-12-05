@@ -219,6 +219,7 @@ int main(int argc, char* argv[]) {
 	// Multiplayer stuff
 	bool multiplayer = false;
 	int connected = 0;
+	Multiplayer multCollision();
 
 	if (!init())
 	{

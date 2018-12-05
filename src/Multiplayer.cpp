@@ -5,7 +5,6 @@
 //score board?
 
 #include "Multiplayer.h"
-#include "Player.h"
 #include "attack.h"
 
 int hitPoints1 = 20;
@@ -15,20 +14,20 @@ int hitPoints2 = 20;
 Multiplayer::Multiplayer(Player* p1, Player* p2, attack* atk1, attack* atk2):ply1(p1), ply2(p2), plyBlast1(atk1), plyBlast2(atk2)
 {
 	//Get a pointer to both of the players/attacks camBox
-	playerCam1 = ply1->getPlayerCamLoc();
-	playerCam2 = ply2->getPlayerCamLoc();
+	playerCam1 = *ply1->getPlayerCamLoc();
+	playerCam2 = *ply2->getPlayerCamLoc();
 }
 
-void Multiplayer::PlayerCollision()
+bool Multiplayer::PlayerCollision()
 {
-	if (SDL_HasIntersection(playerCam1, playerCam2))
+	if (SDL_HasIntersection(&playerCam1, &playerCam2))
 	{
 		return true;
 	}
 
 	return false;	
 }
-
+/*
 bool Multiplayer::CheckPlayerCollision(Player* player2, double tstep)
 {
 	SDL_Rect p2Rect = player2->getPlayerCam();
@@ -91,7 +90,7 @@ bool Multiplayer::CheckPlayerCollision(Player* player2, double tstep)
 	}
 	return false;
 }
-
+*/
 void Multiplayer::TotalDamagePlayer1()
 {
 	if(hitPoints1 > 0)
@@ -104,7 +103,7 @@ void Multiplayer::TotalDamagePlayer1()
 	}
 }
 
-void Multiplayer::TotalDamagePlayer2();
+void Multiplayer::TotalDamagePlayer2()
 {
 	if(hitPoints2 > 0)
 	{
@@ -116,14 +115,14 @@ void Multiplayer::TotalDamagePlayer2();
 	}
 }
 
-void Mulitplayer::AttackCollision1()
+void Multiplayer::AttackCollision1()
 {
 	//referring to enemy class
 	int hits1 = plyBlast1->hitIntersect(&playerCam2);
 	DecrementHealthPlayer2(hits1*ply2->GetAttack());
 }
 
-void Mulitplayer::AttackCollision2()
+void Multiplayer::AttackCollision2()
 {
 	int hits2 = plyBlast2->hitIntersect(&playerCam1);
 	DecrementHealthPlayer1(hits2*ply1->GetAttack());
