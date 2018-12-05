@@ -398,6 +398,7 @@ int main(int argc, char* argv[]) {
 	bool attacked = false;
     //Set up the timer
     clock_t startTimeForBoss = clock();
+    int player2DeadCount = 0;
 
 	while (gameOn)
 	{
@@ -652,22 +653,31 @@ int main(int argc, char* argv[]) {
 				ply2.hit.addAttack(pCam2.x, pCam2.y + 51/2,1);
 			}
 			else{
-				ply.hit.addAttack(pCam.x, pCam.y + 51/2,1);
+				ply.hit.addAttack(pCam.x + 240, pCam.y + 51/2,1);
 			}
 		}
 
 		ply.hit.renderAttack(timestep, 0);
 		int ply2hit = ply.hit.hitIntersect(&pCam2);
-		if(imPlayer2 && ply2hit){
-            ply2.LostHealth(1);
-            ply2.damage(1);
+		if(ply2hit){
+			player2DeadCount += 1;
+			cout << player2DeadCount << endl;
+			if(player2DeadCount >= 20){
+				gameOn = false;
+				gameOver = true;
+				if(!imPlayer2){
+		            winnerWinnerChickenDinner = true;
+				}
+			}
 		}
+
 		ply2.hit.renderAttack(timestep, 1);
 		int plyhit = ply2.hit.hitIntersect(&pCam);
 		if(!imPlayer2 && plyhit){
             ply.LostHealth(1);
             ply.damage(1);
 		}
+
 		protect.Render();
 
 		//~ ALCOHOL CLOUD STUFF
