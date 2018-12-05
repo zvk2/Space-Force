@@ -45,7 +45,7 @@ public:
 
     //a method which can be called from model class
 
-    void move(double step);
+    void move(double step,bool showTime);
 
     //return x position
     double getXPosition();

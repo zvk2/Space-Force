@@ -103,7 +103,7 @@ void VirtualPeacefulKing::checkBoundary()
 }
 
 //Move the king
-void VirtualPeacefulKing::move(double step)
+void VirtualPeacefulKing::move(double step,bool showTime)
 
 {
     phys.ChangeVelocity(0, delta, step);
@@ -130,7 +130,7 @@ void VirtualPeacefulKing::move(double step)
 	{
 		missile.addAttack(kingCam.x,kingCam.y+(kingCam.h)/3,2);
 	}
-	missile.renderAttack(-step);
+	missile.renderAttack(-step,0);
 }
 
 //Animate the king

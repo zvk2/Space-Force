@@ -351,9 +351,8 @@ int main(int argc, char* argv[]) {
 	ply.setAttackColSound(&mus);
 	VirtualPeacefulKing king(&openGL, 100, 2, 4, &ply);
 	double kingDelta = 1;
-
-	// Guess this should be in the class file?
-	king.setPosition(1280-288, 0);
+	// First put our king into the void
+	king.setPosition(11000, 0,showTime);
 
     king.setVelocity(0, 50);
 	// HYPERSTAR
@@ -480,9 +479,20 @@ int main(int argc, char* argv[]) {
 
 		// Animate king (test)
 		//boundary check for king
-
-		king.animate(frames);
-
+        timePassed = (double)(clock()-startTimeForBoss)/CLOCKS_PER_SEC;
+        
+        if (timePassed >= timeLimit)
+        {
+            showTime = true;
+            if (!bossOn)
+            {
+                king.setPosition(1280-288, 0, showTime);
+                bossOn = false;
+            }
+            king.animate(frames);
+        }
+		
+        std::cout << timePassed << std::endl;
 		// Since game levels progress from L to R, no need for sprite to flip
 		// Code for flipping remains here if theres a change of plan
 
@@ -555,6 +565,7 @@ int main(int argc, char* argv[]) {
             ply.damage(1);
         }
 
+        //Check for lesser enemies
 		if (emy.Exists())
 		{
 			bool collision = ply.checkEnemyCollision(&emy, timestep);
@@ -588,7 +599,7 @@ int main(int argc, char* argv[]) {
 			gameOver = true;
 		}
 
-		king.move(timestep);
+		king.move(timestep,showTime);
 
 		/*
 		collision = emy.checkPlayerCollision(&ply, timestep);
@@ -637,10 +648,10 @@ int main(int argc, char* argv[]) {
 		//lets the attack move across the screen
 		if(attacked){
 			if(!imPlayer2){
-				ply2.hit.addAttack(pCam2.x, pCam2.y + 51/2);
+				ply2.hit.addAttack(pCam2.x, pCam2.y + 51/2,1);
 			}
 			else{
-				ply.hit.addAttack(pCam.x, pCam.y + 51/2);
+				ply.hit.addAttack(pCam.x, pCam.y + 51/2,1);
 			}
 		}
 
