@@ -320,7 +320,7 @@ int main(int argc, char* argv[]) {
 	double kingDelta = 1;
 
 	// Guess this should be in the class file?
-	king.setPosition(1100, 0);
+	king.setPosition(1280-288, 0);
     king.setVelocity(0, 50);
 	// HYPERSTAR
 	HyperStar stars(&ply, &mus);
@@ -435,12 +435,10 @@ int main(int argc, char* argv[]) {
 		if (king.getCamera().y + king.getCamera().h == SCREEN_HEIGHT)
 		{
 			kingDelta = -1;
-			king.setVelocity(0, -10);
 		}
 		if (king.getCamera().y == 0)
 		{
 			kingDelta = 1;
-			king.setVelocity(0, 10);
 		}
 
 		king.animate(frames);

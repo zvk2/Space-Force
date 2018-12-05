@@ -62,14 +62,22 @@ void VirtualPeacefulKing::setVelocity(double x, double y)
 //Check the boundary so that our king will not move outside the screen
 void VirtualPeacefulKing::checkBoundary()
 {
-    if (xCoord < 0)
-        xCoord = 0;
-    if (xCoord + kingCam.w > SCREEN_WIDTH)
-        xCoord = SCREEN_WIDTH - kingCam.w;
-    if (yCoord < 0)
-        yCoord = 0;
-    if (yCoord + kingCam.h > SCREEN_HEIGHT)
-        yCoord = SCREEN_HEIGHT - kingCam.h;
+    if (kingCam.x < 0)
+        kingCam.x = 0;
+    if (kingCam.x + kingCam.w > SCREEN_WIDTH)
+        kingCam.x = SCREEN_WIDTH - kingCam.w;
+    if (kingCam.y <= 0)
+	{
+		kingCam.y = 0;
+		setVelocity(0, 10);
+		delta = 1;
+	}
+    if (kingCam.y + kingCam.h >= SCREEN_HEIGHT)
+	{
+        kingCam.y = SCREEN_HEIGHT - kingCam.h;
+		setVelocity(0,-10);
+		delta = -1;
+	}
 
     render->ChangeCoordinates(
 		kingCam.x,

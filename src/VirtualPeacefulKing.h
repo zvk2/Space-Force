@@ -84,7 +84,7 @@ private:
     int speed;
     int cd;
     double attackPower;
-
+	double delta;
     
 
     const char* kingTexture;
