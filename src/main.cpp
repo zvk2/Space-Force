@@ -106,7 +106,6 @@ bool init()
 		std::cout << "SDL_image could not initialize! SDL_image Error: " << IMG_GetError() << std::endl;
 		return false;
 	}
-	client = new ClientInterface();
 
 	return true;
 }
@@ -153,7 +152,7 @@ int playCredits(OpenGLRenderer *openGL)
 	Uint32 startTime = SDL_GetTicks();
 	double timeDelta = 0;
 
-	std::cout << creditNames[index].c_str() << std::endl;
+	//std::cout << creditNames[index].c_str() << std::endl;
 	RenderObject *currentCreditImage = new RenderObject(
 		0, 0, 1, openGL->allBufferAttributes[creditNames[index].c_str()]
 	);
@@ -202,7 +201,7 @@ int playCredits(OpenGLRenderer *openGL)
 			openGL->RemoveRenderObject(currentCreditImage->index);
 
 			// Get new
-			std::cout << currentCreditName << std::endl;
+			//std::cout << currentCreditName << std::endl;
 			currentCreditImage = new RenderObject(
 				0, 0, 1, openGL->allBufferAttributes[currentCreditName]
 			);
@@ -230,6 +229,24 @@ int main(int argc, char* argv[]) {
 	// Multiplayer stuff
 	bool multiplayer = false;
 	int connected = 0;
+	bool imPlayer2 = false;
+	printf("%d",argc);
+	
+	string ip;
+	std::ifstream myfile ("config.txt");
+	if (myfile.is_open())
+	{
+		while ( getline (myfile,ip) )
+		{
+			//cout << line << '\n';
+		}
+    	myfile.close();
+    }
+
+    if(ip != "localhost"){
+		imPlayer2 = true;
+    }
+	client = new ClientInterface(ip);
 
 	if (!init())
 	{
@@ -265,7 +282,7 @@ int main(int argc, char* argv[]) {
 		if(selection == 3){
 			multiplayer = true;
 		}
-		cout << "SELECTION " << selection << endl;
+		//cout << "SELECTION " << selection << endl;
 	}
 
 	// Now that we are ready to start the game, clean the openGLRenderer
@@ -368,13 +385,14 @@ int main(int argc, char* argv[]) {
     bool gameOver = false;
 	bool up = true;
 	bool credits = true;
+	bool attacked = false;
 
     //Set up the timer
     clock_t startTimeForBoss = clock();
     
 	while (gameOn)
 	{
-		if(selection == 3 && !connected) {
+		if(multiplayer && !connected) {
 			connected = client->Connect();
 		}
         
@@ -443,9 +461,17 @@ int main(int argc, char* argv[]) {
 		moveLasttime = SDL_GetTicks();
 
 		// ANIMATE THE PLAYER(S)
-		ply.animate(frames);
-		if (connected){
+		if(!imPlayer2){
+			ply.animate(frames);
+			if (connected){
+				ply2.animate(frames);
+			}
+		}
+		else{
 			ply2.animate(frames);
+			if (connected){
+				ply.animate(frames);
+			}
 		}
 
 		// Animate king (test)
@@ -528,6 +554,12 @@ int main(int argc, char* argv[]) {
 			}
 		}
 
+		if(!imPlayer2){
+			ply.move(xDeltav, yDeltav, timestep);
+		}
+		else{
+			ply2.move(xDeltav, yDeltav, timestep);
+		}
 		ply.move(xDeltav, yDeltav, timestep);
 		ply.checkInvincibility(moveLasttime);
 
@@ -597,29 +629,58 @@ int main(int argc, char* argv[]) {
 			//Minor enemies should be destroyed in event of collision
 		}
 		*/
-		pCam = ply.getPlayerCam();
+		int sendAttack = 0;
+		if(keyState[SDL_SCANCODE_SPACE] && up == true){
+			sendAttack = 1;
+		}
 
 		if(connected){
-			transfer = client->Communicate(pCam);
+			if(imPlayer2){
+				pCam2 = ply2.getPlayerCam();
+				transfer = client->Communicate(pCam2, sendAttack);
+				pCam.x = transfer.x;
+				pCam.y = transfer.y;
+				attacked = transfer.w;
+				ply.render->ChangeCoordinates(pCam.x, pCam.y, ply.render->z);
+			}
+			else{
+				pCam = ply.getPlayerCam();
+				transfer = client->Communicate(pCam, sendAttack);
+				pCam2.x = transfer.x;
+				pCam2.y = transfer.y;
+				attacked = transfer.w;
+				ply2.render->ChangeCoordinates(pCam2.x, pCam2.y, ply2.render->z);
+			}
 		}
-		pCam2.x = transfer.x;
-		pCam2.y = transfer.y;
-
 		kCam = king.getCamera();
 
 		//attack button
-
 		if(keyState[SDL_SCANCODE_SPACE] && up == true)
 		{
 			up = false;
-			ply.hit.addAttack(pCam.x + 240, pCam.y + 51/2);
-
+			if(!imPlayer2){
+				ply.hit.addAttack(pCam.x + 240, pCam.y + 51/2);
+			}
+			else{
+				ply2.hit.addAttack(pCam2.x, pCam2.y + 51/2);
+			}
 			//play fire sound effect
 			mus.fireSound();
 		}
 		//lets the attack move across the screen
-		ply.hit.renderAttack(timestep);
+		if(attacked){
+			if(!imPlayer2){
+				ply2.hit.addAttack(pCam2.x, pCam2.y + 51/2);
+			}
+			else{
+				ply.hit.addAttack(pCam.x, pCam.y + 51/2);
+			}
+		}
 
+		ply.hit.renderAttack(timestep, 0);
+		ply.hit.hitIntersect(&pCam2);
+		ply2.hit.renderAttack(timestep, 1);
+		ply2.hit.hitIntersect(&pCam);
 		protect.Render();
 
 		//~ ALCOHOL CLOUD STUFF

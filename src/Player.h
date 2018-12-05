@@ -30,7 +30,10 @@ class Player
 
 		//Sets the current velocity of the player
 		void setVelocity(double x, double y);
-
+		
+		//Change the current velocity of the player based on the current velocity
+		void changeVelocity(double xdvel, double ydvel, double tstep);
+		
 		//Methods that can be called from model class
 		void move(double xdvel, double ydvel, double tstep);
 

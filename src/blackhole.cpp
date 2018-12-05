@@ -109,7 +109,7 @@
             double newY;
 			double GM = 5000000;
 			double m = 10;
-			double maxSpeed = 70;
+			double maxSpeed = 65;
 
             if(blackholeCam.x < 1680 && blackholeCam.x > 0)
             {
@@ -150,8 +150,8 @@
 						{
 							newY = maxSpeed;
 						}
-
-						/*std::cout << "r = " << r << std::endl;
+/*
+						std::cout << "r = " << r << std::endl;
 						std::cout << "x1 = " << x1 << std::endl;
 						std::cout << "y1 = " << y1 << std::endl;
 						std::cout << "angleH = " << angleH << std::endl;
@@ -162,8 +162,8 @@
 						std::cout << "Vy = " << Vy << std::endl;
 						std::cout << "newX = " << newX << std::endl;
 						std::cout << "newY = " << newY << std::endl;
-						std::cout << "----------" << std::endl;*/
-
+						std::cout << "----------" << std::endl;
+*/
 
                         //newX = newX + pow(gravAccel, 2);
                         //newY = newY / (newY - 1);
@@ -301,10 +301,8 @@
 
                 //std::cout << "newX = " << newX << std::endl;
                 //std::cout << "newY = " << newY << std::endl;
-
-
+				
                 ply->move(xDeltav, yDeltav, timestep);
-
             }
 
 
