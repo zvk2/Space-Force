@@ -35,12 +35,16 @@ void VirtualPeacefulKing::LostHealth(int damage)
 }
 
 //set the current position of the king
-void VirtualPeacefulKing::setPosition(double x, double y)
+void VirtualPeacefulKing::setPosition(double x, double y, bool showTime)
 {
     xCoord = x;
     yCoord = y;
 
-    checkBoundary();
+    if (showTime)
+    {
+        checkBoundary();
+    }
+    
 
     kingCam.x = (int) xCoord;
     kingCam.y = (int) yCoord;
@@ -79,7 +83,7 @@ void VirtualPeacefulKing::checkBoundary()
 }
 
 //Move the king
-void VirtualPeacefulKing::move(double deltax, double deltay, double step)
+void VirtualPeacefulKing::move(double deltax, double deltay, double step, bool showTime)
 {
     phys.ChangeVelocity(deltax, deltay, step);
 
@@ -87,7 +91,11 @@ void VirtualPeacefulKing::move(double deltax, double deltay, double step)
     yCoord += (phys.getyVelocity() * step);
 
     //Our king will not move pass the screen
-    checkBoundary();
+    if (showTime)
+    {
+        checkBoundary();
+    }
+    
 
     kingCam.x = (int) xCoord;
     kingCam.y = (int) yCoord;

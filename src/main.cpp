@@ -3,6 +3,8 @@
 #include <vector>
 #include <string>
 #include <cstring>
+#include <ctime>
+#include <cstdlib>
 #include "INC_SDL.h"
 #include "Magnetar.h"
 #include "AlcoholCloud.h"
@@ -36,6 +38,14 @@ const int TILE_SIZE = 100;
 
 // Constant for acceleration
 //const double ACCEL = 3600.0;
+
+//Boolean value to control when the boss got rendered
+bool showTime = false;
+bool bossOn = false;
+//The variables that will be used by timer
+double timePassed = 0.0;
+double timeLimit = 5.0;//Subjust to be changed
+
 
 // Parent folder for credit images
 // Not const due to contrivance (can pass immediately if not const)
@@ -318,8 +328,9 @@ int main(int argc, char* argv[]) {
 	VirtualPeacefulKing king(&openGL, 100, 2, 4);
 	double kingDelta = 1;
 
-	// Guess this should be in the class file?
-	king.setPosition(1100, 0);
+	// First throw the king into the void
+    //The player will not be able to see the boss until some time has been passed
+    king.setPosition(11000, 0,showTime);
     king.setVelocity(0, 50);
 	ply.setAttackColSound(&mus);
 	// HYPERSTAR
@@ -358,11 +369,16 @@ int main(int argc, char* argv[]) {
 	bool up = true;
 	bool credits = true;
 
+    //Set up the timer
+    clock_t startTimeForBoss = clock();
+    
 	while (gameOn)
 	{
 		if(selection == 3 && !connected) {
 			connected = client->Connect();
 		}
+        
+        
 
 		while(SDL_PollEvent(&e))
 		{
@@ -444,9 +460,27 @@ int main(int argc, char* argv[]) {
 			kingDelta = 1;
 			king.setVelocity(0, 10);
 		}
-
-		king.animate(frames);
-
+        
+        //The boss for only get rendered after 20 seconds
+        timePassed = (clock() - startTimeForBoss)/ CLOCKS_PER_SEC;
+        if (timePassed >= timeLimit)
+        {
+            showTime = true;
+        }
+        
+        if (showTime)
+        {
+            if (!bossOn)
+            {
+                //Put our king back online
+                king.setPosition(1100, 0,showTime);
+                bossOn = true;
+            }
+            
+            king.animate(frames);
+        }
+		
+        std::cout << timePassed << std::endl;
 		// Since game levels progress from L to R, no need for sprite to flip
 		// Code for flipping remains here if theres a change of plan
 
@@ -554,7 +588,7 @@ int main(int argc, char* argv[]) {
 			gameOver = true;
 		}
 
-		king.move(0, kingDelta, timestep);
+		king.move(0, kingDelta, timestep,showTime);
 
 		/*
 		collision = emy.checkPlayerCollision(&ply, timestep);

@@ -9,7 +9,6 @@
 #include <cmath>
 #include "OpenGLRenderer.hpp"
 #include <iostream>
-#include <cstdlib>
 #include <climits>
 #define MAX_SPEED 50
 
