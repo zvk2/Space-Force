@@ -1,6 +1,69 @@
 #include "Duo.hpp"
 
+#ifdef __APPLE__
+mat4 x_rot_matrix(GLfloat theta)
+{
+    mat4 rmat = identity_matrix();
+    
+    rmat.y.y = cos(theta);
+    rmat.y.z = sin(theta);
+    rmat.z.y = -sin(theta);
+    rmat.z.z = cos(theta);
+    
+    return rmat;
+}
 
+mat4 y_rot_matrix(GLfloat theta)
+{
+    mat4 rmat = identity_matrix();
+    
+    rmat.x.x = cos(theta);
+    rmat.x.z = -sin(theta);
+    rmat.z.x = sin(theta);
+    rmat.z.z = cos(theta);
+    
+    return rmat;
+}
+
+mat4 z_rot_matrix(GLfloat theta)
+{
+    mat4 rmat = identity_matrix();
+    
+    rmat.x.x = cos(theta);
+    rmat.x.y = sin(theta);
+    rmat.y.x = -sin(theta);
+    rmat.y.y = cos(theta);
+    
+    return rmat;
+}
+
+
+mat4 m_mult(mat4 a, mat4 b) {
+    mat4 rmat;
+    
+    rmat.x.x = (a.x.x * b.x.x) + (a.x.y * b.y.x) + (a.x.z * b.z.x) + (a.x.w * b.w.x);
+    rmat.y.x = (a.y.x * b.x.x) + (a.y.y * b.y.x) + (a.y.z * b.z.x) + (a.y.w * b.w.x);
+    rmat.z.x = (a.z.x * b.x.x) + (a.z.y * b.y.x) + (a.z.z * b.z.x) + (a.z.w * b.w.x);
+    rmat.w.x = (a.w.x * b.x.x) + (a.w.y * b.y.x) + (a.w.z * b.z.x) + (a.w.w * b.w.x);
+    
+    rmat.x.y = (a.x.x * b.x.y) + (a.x.y * b.y.y) + (a.x.z * b.z.y) + (a.x.w * b.w.y);
+    rmat.y.y = (a.y.x * b.x.y) + (a.y.y * b.y.y) + (a.y.z * b.z.y) + (a.y.w * b.w.y);
+    rmat.z.y = (a.z.x * b.x.y) + (a.z.y * b.y.y) + (a.z.z * b.z.y) + (a.z.w * b.w.y);
+    rmat.w.y = (a.w.x * b.x.y) + (a.w.y * b.y.y) + (a.w.z * b.z.y) + (a.w.w * b.w.y);
+    
+    rmat.x.z = (a.x.x * b.x.z) + (a.x.y * b.y.z) + (a.x.z * b.z.z) + (a.x.w * b.w.z);
+    rmat.y.z = (a.y.x * b.x.z) + (a.y.y * b.y.z) + (a.y.z * b.z.z) + (a.y.w * b.w.z);
+    rmat.z.z = (a.z.x * b.x.z) + (a.z.y * b.y.z) + (a.z.z * b.z.z) + (a.z.w * b.w.z);
+    rmat.w.z = (a.w.x * b.x.z) + (a.w.y * b.y.z) + (a.w.z * b.z.z) + (a.w.w * b.w.z);
+    
+    rmat.x.w = (a.x.x * b.x.w) + (a.x.y * b.y.w) + (a.x.z * b.z.w) + (a.x.w * b.w.w);
+    rmat.y.w = (a.y.x * b.x.w) + (a.y.y * b.y.w) + (a.y.z * b.z.w) + (a.y.w * b.w.w);
+    rmat.z.w = (a.z.x * b.x.w) + (a.z.y * b.y.w) + (a.z.z * b.z.w) + (a.z.w * b.w.w);
+    rmat.w.w = (a.w.x * b.x.w) + (a.w.y * b.y.w) + (a.w.z * b.z.w) + (a.w.w * b.w.w);
+    
+    return rmat;
+}
+#endif
 
 Duo::Duo(OpenGLRenderer *gRenderer, Player* p):
 	ply(p)

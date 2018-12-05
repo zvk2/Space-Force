@@ -49,7 +49,7 @@ double timePassed = 0.0;
 #ifdef __APPLE__
 double timeLimit = 2.0;
 #else
-double timeLimit = 45.0;//Subjust to be changed
+double timeLimit = 15.0;//Subjust to be changed
 #endif
 
 
