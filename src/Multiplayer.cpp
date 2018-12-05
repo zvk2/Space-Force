@@ -5,8 +5,11 @@
 //score board?
 
 #include "Multiplayer.h"
-#include "PLayer.h"
+#include "Player.h"
 #include "attack.h"
+
+int hitPoints1 = 20;
+int hitPoints2 = 20;
 
 //Public methods
 Multiplayer::Multiplayer(Player* p1, Player* p2, attack* atk1, attack* atk2):ply1(p1), ply2(p2), plyBlast1(atk1), plyBlast2(atk2)
@@ -89,39 +92,41 @@ bool Player::CheckPlayerCollision(Player* player2, double tstep)
 	return false;
 }
 
-//flip player2 in the main when it is rendered 
-
-int Multiplayer::DamagePlayer1()
+int Multiplayer::TotalDamagePlayer1()
 {
-	
+	if(hitPoints1 > 0)
+	{
+		//player 1 still alive
+	}
+	else
+	{
+		//player2 dead
+	}
 }
 
-int Multiplayer::DamagePlayer2();
+int Multiplayer::TotalDamagePlayer2();
 {
-	
+	if(hitPoints2 > 0)
+	{
+		//player2 still alive
+	}
+	else
+	{
+		//player2 dead
+	}
 }
 
 bool Mulitplayer::AttackCollision1()
 {
 	//referring to enemy class
 	int hits = plyBlast1->hitIntersect(&playerCam2);
-	DecrementHealth(hits*ply2->GetAttack());
+	DecrementHealthPlayer2(hits*ply2->GetAttack());
 }
 
 bool Mulitplayer::AttackCollision2()
 {
 	int hits = plyBlast2->hitIntersect(&playerCam1);
-	DecrementHealth(hits*ply1->GetAttack());
-}
-
-void Multiplayer::LostHealthPlayer1(int damage1)
-{
-	DecrementHealth(damage);
-}
-
-void Multiplayer::LostHealthPlayer2(int damage2)
-{
-	DecrementHealth(damage);
+	DecrementHealthPlayer1(hits*ply1->GetAttack());
 }
 
 void Multiplayer::DecrementHealthPlayer1(int decAmount1)
