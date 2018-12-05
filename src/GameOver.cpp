@@ -64,7 +64,7 @@ int GameOver::runScreen()
 					menuButton->currentBufferID = menuButton->bufferAttributes.bufferIDStart;
 				}*/
 				// 'Credits' button animation using coordinates
-				if (x >= SCREEN_WIDTH/2 - BUTTON_WIDTH/2 && x <= SCREEN_WIDTH/2 + BUTTON_WIDTH/2 && y >= SCREEN_HEIGHT/2 + 25 && y <= SCREEN_HEIGHT/2 + BUTTON_HEIGHT + 50)
+				if (x >= SCREEN_WIDTH/2 - BUTTON_WIDTH/2 && x <= SCREEN_WIDTH/2 + BUTTON_WIDTH/2 && y >= SCREEN_HEIGHT/2 + 25 && y <= SCREEN_HEIGHT/2 + BUTTON_HEIGHT + 25)
 				{
 					creditsButton->currentBufferID = creditsButton->bufferAttributes.bufferIDEnd;
 				}
@@ -92,7 +92,7 @@ int GameOver::runScreen()
 					break;
 				}*/
 
-				if (x > SCREEN_WIDTH/2 - BUTTON_WIDTH/2 && x < SCREEN_WIDTH/2 + BUTTON_WIDTH/2 && y > SCREEN_HEIGHT/2 + 25 && y < SCREEN_HEIGHT/2 + BUTTON_HEIGHT + 50)
+				if (x > SCREEN_WIDTH/2 - BUTTON_WIDTH/2 && x < SCREEN_WIDTH/2 + BUTTON_WIDTH/2 && y > SCREEN_HEIGHT/2 + 25 && y < SCREEN_HEIGHT/2 + BUTTON_HEIGHT + 25)
 				{
 					// 'Credits' button clicked
 					running = false;
