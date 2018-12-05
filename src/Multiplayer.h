@@ -13,6 +13,8 @@
 #include <string>
 #include <cstring>
 #include "OpenGLRenderer.hpp"
+#include "Player.h"
+#include "attack.h"
 
 class Multiplayer
 {
@@ -33,7 +35,7 @@ public:
 
 	void AttackCollision2();
 
-	void DecrementHealthPlayer1(int decAmount1)
+	void DecrementHealthPlayer1(int decAmount1);
 
 	void DecrementHealthPlayer2(int decAmount2);
 
@@ -50,6 +52,15 @@ private:
 
 	int hitPoints1;
 	int hitPoints2;
+
+	attack* plyBlast1;
+	Player* ply1;
+
+	attack* plyBlast2;
+	Player* ply2;
+
+	bool life1;
+	bool life2;
 
 
 
