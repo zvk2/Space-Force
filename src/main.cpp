@@ -419,8 +419,6 @@ int main(int argc, char* argv[]) {
 		SDL_Rect pRect2 = ply2.getPlayerRect();
 		SDL_Rect pCam2 = ply.getPlayerCam();
 		SDL_Rect transfer;
-		SDL_Rect kRect = king.getRect();
-		SDL_Rect kCam = king.getCamera();
 
 		moveLasttime = SDL_GetTicks();
 
@@ -551,7 +549,6 @@ int main(int argc, char* argv[]) {
 		pCam2.x = transfer.x;
 		pCam2.y = transfer.y;
 
-		kCam = king.getCamera();
 
 		//attack button
 

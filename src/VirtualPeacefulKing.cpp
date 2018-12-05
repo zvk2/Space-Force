@@ -17,6 +17,7 @@ VirtualPeacefulKing::VirtualPeacefulKing(OpenGLRenderer* gRend, int initialHealt
 
     kingRect = {0, 0, 288, 288};
     kingCam = {1280/2, 720/2, 288, 288};
+	plyCam = ply-> getPlayerCamLoc();
 
 	//~ std::string initTexture = "resources/imgs/King.png";
 	//~ kingTexture = initTexture.c_str();
@@ -77,6 +78,18 @@ void VirtualPeacefulKing::checkBoundary()
         kingCam.y = SCREEN_HEIGHT - kingCam.h;
 		setVelocity(0,-10);
 		delta = -1;
+	}
+	if(SDL_HasIntersection(&kingCam, plyCam))
+	{
+		int x;
+		int y;
+		y = plyCam->y;
+		if(plyCam->x+plyCam->w > kingCam.x)
+		{
+			x =  plyCam->w + plyCam->x - kingCam.x;
+			x = plyCam->x-x;
+		}
+		ply->setPosition(x,y);
 	}
 
     render->ChangeCoordinates(

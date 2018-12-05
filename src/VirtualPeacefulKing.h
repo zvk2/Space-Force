@@ -94,6 +94,7 @@ private:
 
     SDL_Rect kingCam;
     SDL_Rect kingRect;
+	SDL_Rect* plyCam;
 
     double xCoord;
     double yCoord;
