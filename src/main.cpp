@@ -292,10 +292,8 @@ int main(int argc, char* argv[]) {
 	openGL.AppendRenderObject(background1);
 	openGL.AppendRenderObject(background2);
 
-	std::cout << openGL.allBufferAttributes["spofcon"].program << std::endl;
-
 	RenderObject *testSphere = new RenderObject(
-		0, 0, 1, openGL.allBufferAttributes["spofcon"]
+		0, 0, 0, openGL.allBufferAttributes["spofcon"]
 	);
 
 	openGL.AppendRenderObject(testSphere);

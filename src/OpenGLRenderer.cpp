@@ -205,9 +205,13 @@ OpenGLRenderer::OpenGLRenderer(SDL_Window* window)
 	// Clip outside
 	glEnable(GL_CULL_FACE);
 
+	glUseProgram(program);
 	// Transformation matrix
 	ctmLocation = glGetUniformLocation(program, "ctm");
 	flippedLocation = glGetUniformLocation(program, "flipped");
+
+	glUseProgram(programSphere);
+	cubeMap_location = glGetUniformLocation(programSphere, "cubeMap");
 
 	// Get the textures
 	PopulateTextures();
@@ -305,6 +309,8 @@ void OpenGLRenderer::PopulateTextures()
 	}
 
 	// SPOFCON
+	glUseProgram(programSphere);
+
 	int currentTexture = textureIDs.size();
 	int currentBuffer = bufferIDs.size();
 	int currentVao = vaoIDs.size();
@@ -317,7 +323,7 @@ void OpenGLRenderer::PopulateTextures()
 
     /******** geometry bureaucracy ********/
     int num_vertices = 0;
-    vec4 *sphere_verts = sphere(0.8, 9, 9, &num_vertices);
+    vec4 *sphere_verts = sphere(0.1, 9, 18, &num_vertices);
 
     int i, gi = 0;
     /******** texture bureaucracy ********/
@@ -386,14 +392,13 @@ void OpenGLRenderer::PopulateTextures()
     glBufferData(GL_ARRAY_BUFFER, sizeof(vec4) * size_vertices, NULL, GL_STATIC_DRAW);
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vec4) * size_vertices, vertices);
 
-    GLuint vPosition = glGetAttribLocation(program, "vPosition");
+    GLuint vPosition = glGetAttribLocation(programSphere, "vPosition");
     glEnableVertexAttribArray(vPosition);
     glVertexAttribPointer(vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
 
     // IN A MORE ROBUST AND CLEAN SHADER CLASS, SHOULD PROBABLY WRAP THIS INSIDE
     // vector<> of uniform locations??
 
-    GLuint cubeMap_location = glGetUniformLocation(program, "cubeMap");
     //~ glUniform1i(cubeMap_location, 0);
 
     // *No* dereference, world is a fuf
@@ -475,6 +480,8 @@ void OpenGLRenderer::Display()
 		// Note dereference, world is a fuf
 		BufferAttributes bufferAttributes = currentObject->bufferAttributes;
 
+		std::cout << bufferAttributes.program << std::endl;
+
 		glUseProgram(bufferAttributes.program);
 
 		//~ std::cout << bufferAttributes.textureID << std::endl;
@@ -498,10 +505,16 @@ void OpenGLRenderer::Display()
 		// Enable the texture
 		// TECHNICALLY CAN BE USED TO SWAP TEXTURES IN AN ARRAY
 		// HOWEVER, YOU CAN ALSO JUST CHANGE WHAT TEXTURE IS BOUND
-		glUniform1i(glGetUniformLocation(program, "texture"), 0);
-
-		// Contrived at moment
-		glUniform1i(glGetUniformLocation(program, "flipped"), currentObject->flipped);
+		if (bufferAttributes.program == program)
+		{
+			glUniform1i(glGetUniformLocation(program, "texture"), 0);
+			// Contrived at moment
+			glUniform1i(glGetUniformLocation(program, "flipped"), currentObject->flipped);
+		}
+		else
+		{
+			glUniform1i(glGetUniformLocation(programSphere, "cubeMap"), 0);
+		}
 
 		// Draw vertices in the buffer
 		glDrawArrays(GL_TRIANGLES, 0, bufferAttributes.numVertices);
@@ -538,6 +551,8 @@ GLuint OpenGLRenderer::PopulateDefault2DBuffer(
 	GLfloat texTop
 )
 {
+	glUseProgram(program);
+
 	//~ int currentTexture = textureIDs.size();
 	int currentBuffer = bufferIDs.size();
 	int currentVao = vaoIDs.size();
