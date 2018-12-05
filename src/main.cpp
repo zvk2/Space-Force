@@ -390,7 +390,7 @@ int main(int argc, char* argv[]) {
 	bool gameOn = true;
     bool gameOver = false;
 	bool up = true;
-	bool credits = true;
+	bool credits = false;
 	bool attacked = false;
     //Set up the timer
     clock_t startTimeForBoss = clock();
