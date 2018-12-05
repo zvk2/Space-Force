@@ -14,13 +14,11 @@ Multiplayer::Multiplayer(Player* p1, Player* p2, attack* atk1, attack* atk2):ply
 	//Get a pointer to both of the players/attacks camBox
 	playerCam1 = ply1->getPlayerCamLoc();
 	playerCam2 = ply2->getPlayerCamLoc();
-	atkCam1 = atk1->getPlayerCamLoc();
-	atkCam2 = atk2->getPlayerCamLoc();
 }
 
 void Multiplayer::PlayerCollision()
 {
-	if (SDL_HasIntersection(ply1, ply2))
+	if (SDL_HasIntersection(playerCam1, playerCam2))
 	{
 		return true;
 	}
@@ -106,13 +104,13 @@ int Multiplayer::DamagePlayer2();
 bool Mulitplayer::AttackCollision1()
 {
 	//referring to enemy class
-	int hits = atk1->hitIntersect(&playerCam2);
+	int hits = plyBlast1->hitIntersect(&playerCam2);
 	DecrementHealth(hits*ply2->GetAttack());
 }
 
 bool Mulitplayer::AttackCollision2()
 {
-	int hits = atk2->hitIntersect(&playerCam1);
+	int hits = plyBlast2->hitIntersect(&playerCam1);
 	DecrementHealth(hits*ply1->GetAttack());
 }
 
