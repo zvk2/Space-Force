@@ -98,22 +98,22 @@ void init(void)
     GLubyte negz[width][height][3];
 
     FILE *fp;
-    fp = fopen("src/posx.raw", "r");
+    fp = fopen("src/asteroid_cubemap_face.raw", "r");
     fread(posx, width * height * 3, 1, fp);
     fclose(fp);
-    fp = fopen("src/posy.raw", "r");
+    fp = fopen("src/asteroid_cubemap_face.raw", "r");
     fread(posy, width * height * 3, 1, fp);
     fclose(fp);
-    fp = fopen("src/posz.raw", "r");
+    fp = fopen("src/asteroid_cubemap_face.raw", "r");
     fread(posz, width * height * 3, 1, fp);
     fclose(fp);
-    fp = fopen("src/negx.raw", "r");
+    fp = fopen("src/asteroid_cubemap_face.raw", "r");
     fread(negx, width * height * 3, 1, fp);
     fclose(fp);
-    fp = fopen("src/negy.raw", "r");
+    fp = fopen("src/asteroid_cubemap_face.raw", "r");
     fread(negy, width * height * 3, 1, fp);
     fclose(fp);
-    fp = fopen("src/negz.raw", "r");
+    fp = fopen("src/asteroid_cubemap_face.raw", "r");
     fread(negz, width * height * 3, 1, fp);
     fclose(fp);
 
