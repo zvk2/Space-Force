@@ -7,7 +7,7 @@ Command POTUS Donald Trump's US Space Force as the spaceman sitting in the Tesla
 
 
 # Special Note For Mac users
--Current the OpenGL library is not supported in macOS starting from Mojave 10.14.1. Apple officially stops the support of basic OpenGL API. If you try to run it and game will probably crash because all rendering in done in OpenGL instead of SDL. The testing environment we tested is Sierra 10.12.6.
+-Currently the OpenGL library is not supported in macOS starting from Mojave 10.14.1. Apple officially stops the support of basic OpenGL API. If you try to run it and game will probably crash because all rendering is done in OpenGL instead of SDL. The testing environment we tested is Sierra 10.12.6.
 
 # Goals:
 
